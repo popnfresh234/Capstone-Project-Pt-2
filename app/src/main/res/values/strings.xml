@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">I Love Youbike</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_refresh">Refresh</string>
+
+    <string-array name="main_list_items">
+        <item>Favorite Stations</item>
+        <item>Nearest Station</item>
+        <item>All Stations</item>
+        <item>View Stations on Map</item>
+    </string-array>
+</resources>
