@@ -3,6 +3,10 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
+    <string name="text_view_empty_view">No Station Data</string>
+
+    <string name="sync_account_type">alexander.dmtaiwan.com</string>
+    <string name="content_authority">com.dmtaiwan.alexander.iloveyoubike</string>
 
     <string-array name="main_list_items">
         <item>Favorite Stations</item>

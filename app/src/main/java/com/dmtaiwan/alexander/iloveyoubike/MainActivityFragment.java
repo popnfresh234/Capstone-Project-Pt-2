@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import Utilities.RecyclerAdapter;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapter;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
