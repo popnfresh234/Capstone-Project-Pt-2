@@ -52,6 +52,8 @@ public class StationContract {
 
         public static final String COLUMN_SPACES_AVAILABLE = "spaces_available";
 
+        public static final String COLUMN_LAST_UPDATED = "last_updated";
+
         public static Uri buildUriStation(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }

@@ -52,7 +52,8 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
             StationContract.StationEntry.COLUMN_STATION_LAT,
             StationContract.StationEntry.COLUMN_STATION_LONG,
             StationContract.StationEntry.COLUMN_BIKES_AVAIABLE,
-            StationContract.StationEntry.COLUMN_SPACES_AVAILABLE
+            StationContract.StationEntry.COLUMN_SPACES_AVAILABLE,
+            StationContract.StationEntry.COLUMN_LAST_UPDATED
     };
 
     public static final int COL_ID = 0;
@@ -65,7 +66,15 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public static final int COL_STATION_LONG = 7;
     public static final int COL_BIKES_AVAILABLE = 8;
     public static final int COL_SPACES_AVAILABLE = 9;
+    public static final int COL_LAST_UPDATED = 10;
 
+
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(int stationId, RecyclerAdapterStation.ViewHolder vh);
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -92,7 +101,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         mAdapter = new RecyclerAdapterStation(getActivity(), new RecyclerAdapterStation.StationAdapterOnClickHandler() {
             @Override
             public void onClick(int stationId, RecyclerAdapterStation.ViewHolder vh) {
-
+                ((Callback)getActivity()).onItemSelected(stationId, vh);
             }
         }, mEmptyView);
         mRecyclerView.setAdapter(mAdapter);

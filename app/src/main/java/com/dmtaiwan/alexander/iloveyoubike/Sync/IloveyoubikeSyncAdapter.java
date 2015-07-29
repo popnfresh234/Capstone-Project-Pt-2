@@ -38,7 +38,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String LOG_TAG = IloveyoubikeSyncAdapter.class.getSimpleName();
     private static final String APIUrl = "http://data.taipei/opendata/datalist/apiAccess?scope=resourceAquire&rid=ddb80380-f1b3-4f8e-8016-7ed9cba571d5";
 
-    public static final int SYNC_INTERVAL = 60 * 180;
+    public static final int SYNC_INTERVAL = 60*60;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
 
     public IloveyoubikeSyncAdapter(Context context, boolean autoInitialize) {
@@ -118,6 +118,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
                 double stationLong = stationObject.getDouble("lng");
                 int bikesAvailable = stationObject.getInt("sbi");
                 int spacesAvailable = stationObject.getInt("bemp");
+                long time = stationObject.getLong("mday");
 
                 ContentValues stationValues = new ContentValues();
                 stationValues.put(StationContract.StationEntry.COLUMN_STATION_ID, stationId);
@@ -129,6 +130,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
                 stationValues.put(StationContract.StationEntry.COLUMN_STATION_LONG, stationLong);
                 stationValues.put(StationContract.StationEntry.COLUMN_BIKES_AVAIABLE, bikesAvailable);
                 stationValues.put(StationContract.StationEntry.COLUMN_SPACES_AVAILABLE, spacesAvailable);
+                stationValues.put(StationContract.StationEntry.COLUMN_LAST_UPDATED,time);
 
                 cVVector.add(stationValues);
             }

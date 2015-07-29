@@ -7,7 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,4 +34,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
+
 }

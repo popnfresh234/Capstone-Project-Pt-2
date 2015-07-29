@@ -28,7 +28,8 @@ public class StationDbHelper extends SQLiteOpenHelper {
                 StationEntry.COLUMN_STATION_LAT + " REAL NOT NULL, " +
                 StationEntry.COLUMN_STATION_LONG + " REAL NOT NULL, " +
                 StationEntry.COLUMN_BIKES_AVAIABLE + " INTEGER NOT NULL, " +
-                StationEntry.COLUMN_SPACES_AVAILABLE + " INTEGER NOT NULL " +
+                StationEntry.COLUMN_SPACES_AVAILABLE + " INTEGER NOT NULL, " +
+                StationEntry.COLUMN_LAST_UPDATED + " TEXT NOT NULL " +
                 " );";
 
         db.execSQL(SQL_CREATE_STATION_TABLE);
