@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
 
-
+        <!--Main Activity-->
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
@@ -25,9 +25,13 @@
             </intent-filter>
         </activity>
 
-
+        <!--StationListActivity-->
         <activity android:name=".StationListActivity" />
 
+        <!--StationDetailActivity-->
+        <activity android:name=".StationDetailActivity">
+
+        </activity>
         <!--Authenticator Service-->
         <service android:name=".Sync.IloveyoubikeAuthenticatorService">
             <intent-filter>

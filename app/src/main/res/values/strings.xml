@@ -7,7 +7,18 @@
 
     <string name="sync_account_type">alexander.dmtaiwan.com</string>
     <string name="content_authority">com.dmtaiwan.alexander.iloveyoubike</string>
+    <string name="text_view_spaces_available">Spaces Available</string>
+    <string name="text_view_bikes_available">Bikes Available</string>
 
+    <!--Shared Prefs -->
+    <string name="pref_key_language" translatable="false">language</string>
+    <string name="pref_language_label">Language</string>
+    
+    <string name="pref_language_label_english">English</string>
+    <string name="pref_language_label_chinese">Chinese</string>
+    
+    <string name="pref_language_english">english</string>
+    <string name="pref_language_chinese">chinese</string>
     <string-array name="main_list_items">
         <item>Favorite Stations</item>
         <item>Nearest Station</item>

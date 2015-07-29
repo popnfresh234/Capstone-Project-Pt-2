@@ -12,14 +12,7 @@ import com.dmtaiwan.alexander.iloveyoubike.R;
 import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
 import com.dmtaiwan.alexander.iloveyoubike.data.YoubikeStation;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -60,29 +53,11 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
         mCursor.moveToPosition(position);
         holder.stationName.setText(mCursor.getString(StationListFragment.COL_STATION_NAME_EN));
 
-        String time = formatTime(mCursor.getString(StationListFragment.COL_LAST_UPDATED));
+        String time = Utilities.formatTime(mCursor.getString(StationListFragment.COL_LAST_UPDATED));
         holder.distance.setText(time);
     }
 
-    private String formatTime(String string) {
-        DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
-        String timeString = "";
-        try {
-            Date date = format.parse(string);
-            Calendar calendar = GregorianCalendar.getInstance();
-            calendar.setTime(date);
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            int minute = calendar.get(Calendar.MINUTE);
-            String hourString = String.valueOf(hour);
-            String minuteString = String.valueOf(minute);
-            timeString = hourString + ":" + minuteString;
 
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        return timeString;
-    }
 
 
     @Override
