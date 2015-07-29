@@ -91,7 +91,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        //TODO RecyclerView & RecyclerAdapter -> ListView & CursorAdapter
         View rootView = inflater.inflate(R.layout.fragment_station_list, container, false);
         ButterKnife.inject(this, rootView);
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);

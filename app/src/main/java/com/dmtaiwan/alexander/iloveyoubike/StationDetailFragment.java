@@ -1,8 +1,10 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -97,11 +99,21 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         cursor.moveToFirst();
-        mStationName.setText(cursor.getString(COL_STATION_NAME_EN));
-        mDistrict.setText(cursor.getString(COL_STATION_DISTRICT_EN));
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String language = preferences.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
+
+        if(language.equals(getActivity().getString(R.string.pref_language_english))){
+            mStationName.setText(cursor.getString(COL_STATION_NAME_EN));
+            mDistrict.setText(cursor.getString(COL_STATION_DISTRICT_EN));
+        }else{
+            mStationName.setText(cursor.getString(COL_STATION_NAME_ZH));
+            mDistrict.setText(cursor.getString(COL_STATION_DISTRICT_ZH));
+        }
+
         mDistance.setText(String.valueOf(cursor.getDouble(COL_STATION_LAT)));
         mBikesAvailable.setText(String.valueOf(cursor.getInt(COL_BIKES_AVAILABLE)));
         mSpacesAvailable.setText(String.valueOf(cursor.getInt(COL_SPACES_AVAILABLE)));
+        cursor.close();
     }
 
     @Override

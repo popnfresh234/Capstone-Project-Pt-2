@@ -14,19 +14,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_my_location_black_48dp"/>
+
 
         <LinearLayout
-            android:layout_marginLeft="@dimen/item_spacing_horizontal"
             android:layout_gravity="center_vertical"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_weight="1">
+            android:layout_weight="3">
             <TextView
                 android:id="@+id/text_view_station_detail_station_name"
                 android:layout_width="wrap_content"
@@ -40,15 +35,11 @@
                 tools:text="station district"/>
         </LinearLayout>
 
-        <TextView
-            android:gravity="right"
-            android:id="@+id/text_view_station_detail_distance"
+        <ImageView
             android:layout_gravity="center_vertical"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="4.4km"/>
-
+            android:src="@drawable/ic_my_location_black_48dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -57,16 +48,38 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <View
-            android:layout_width="@dimen/icon_spacing"
-            android:layout_height="@dimen/icon_spacing"/>
+
         <TextView
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/item_spacing_horizontal"
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/text_view_bikes_available"/>
+            android:text="@string/text_view_station_detail_distance"/>
+
+        <TextView
+            android:gravity="right"
+            android:id="@+id/text_view_station_detail_distance"
+            android:layout_gravity="center_vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            tools:text="4.4km"/>
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/item_spacing_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_gravity="center_vertical"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_view_station_detail_bikes_available"/>
 
         <TextView
             android:layout_gravity="center_vertical"
@@ -84,16 +97,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <View
-            android:layout_width="@dimen/icon_spacing"
-            android:layout_height="@dimen/icon_spacing"/>
         <TextView
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/item_spacing_horizontal"
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/text_view_spaces_available"/>
+            android:text="@string/text_view_station_detail_spaces_available"/>
 
         <TextView
             android:layout_gravity="center_vertical"

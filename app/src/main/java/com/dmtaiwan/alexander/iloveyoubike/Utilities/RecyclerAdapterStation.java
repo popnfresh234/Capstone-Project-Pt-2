@@ -1,7 +1,9 @@
 package com.dmtaiwan.alexander.iloveyoubike.Utilities;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,8 +52,17 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String language = preferences.getString(mContext.getString(R.string.pref_key_language), mContext.getString(R.string.pref_language_english));
+
         mCursor.moveToPosition(position);
-        holder.stationName.setText(mCursor.getString(StationListFragment.COL_STATION_NAME_EN));
+
+        if (language.equals(mContext.getString(R.string.pref_language_english))) {
+            holder.stationName.setText(mCursor.getString(StationListFragment.COL_STATION_NAME_EN));
+        }else{
+            holder.stationName.setText(mCursor.getString(StationListFragment.COL_STATION_NAME_ZH));
+        }
+
 
         String time = Utilities.formatTime(mCursor.getString(StationListFragment.COL_LAST_UPDATED));
         holder.distance.setText(time);
