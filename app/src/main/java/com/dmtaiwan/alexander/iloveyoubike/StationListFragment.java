@@ -152,15 +152,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
         Log.i(LOG_TAG, "onCreateLoader");
 //        String sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
-        //Use calculated distance between two points to sort stations based on proximity.  (StationLat-LocationLat)^2 + (StationLong - LocationLong)^2 = Distance^2
-        //SQLITE can't perform sqrt function but not necessary for sort order
-
-        String sortOrderDistance = "((" + String.valueOf(lat) +
-                "-" + StationContract.StationEntry.COLUMN_STATION_LAT + ") * (" + String.valueOf(lat) + "-"
-                + StationContract.StationEntry.COLUMN_STATION_LAT + ") +(" + String.valueOf(longitude) + "-"
-                + StationContract.StationEntry.COLUMN_STATION_LONG + ") * (" + String.valueOf(longitude) + "-"
-                + StationContract.StationEntry.COLUMN_STATION_LONG + "))";
-
+        String sortOrderDistance = Utilities.getSortOrderDistanceString(lat, longitude);
         //Create a URI for querying all stations
         Uri allStationsUri = StationContract.StationEntry.buildUriAllStations();
         return new CursorLoader(getActivity(),

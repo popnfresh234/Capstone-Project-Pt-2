@@ -1,5 +1,7 @@
 package com.dmtaiwan.alexander.iloveyoubike.Utilities;
 
+import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,6 +20,16 @@ public class Utilities {
 
     public static final double TAIPEI_LAT = 25.0333;
     public static final double TAIPEI_LONG = 121.6333;
+
+    //Use calculated distance between two points to sort stations based on proximity.  (StationLat-LocationLat)^2 + (StationLong - LocationLong)^2 = Distance^2
+    //SQLITE can't perform sqrt function but not necessary for sort order
+    public static final String getSortOrderDistanceString(double lat, double longitude){
+        return "((" + String.valueOf(lat) +
+                "-" + StationContract.StationEntry.COLUMN_STATION_LAT + ") * (" + String.valueOf(lat) + "-"
+                + StationContract.StationEntry.COLUMN_STATION_LAT + ") +(" + String.valueOf(longitude) + "-"
+                + StationContract.StationEntry.COLUMN_STATION_LONG + ") * (" + String.valueOf(longitude) + "-"
+                + StationContract.StationEntry.COLUMN_STATION_LONG + "))";
+    }
 
     public static String formatTime(String string) {
         DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
