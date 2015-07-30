@@ -14,6 +14,11 @@ import java.util.Locale;
 public class Utilities {
     public static final String EXTRA_STATION_ID = "com.dmtaiwan.alexander.extra.stationid";
 
+    public static final String SHARED_PREFS_LOCATION_KEY = "com.dmtaiwan.alexander.key.location";
+
+    public static final double TAIPEI_LAT = 25.0333;
+    public static final double TAIPEI_LONG = 121.6333;
+
     public static String formatTime(String string) {
         DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
         String timeString = "";

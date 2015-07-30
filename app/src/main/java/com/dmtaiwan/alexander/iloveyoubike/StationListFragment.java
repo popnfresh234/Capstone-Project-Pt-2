@@ -1,9 +1,12 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -23,7 +26,9 @@ import android.widget.TextView;
 
 import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+import com.google.gson.Gson;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -100,7 +105,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         mAdapter = new RecyclerAdapterStation(getActivity(), new RecyclerAdapterStation.StationAdapterOnClickHandler() {
             @Override
             public void onClick(int stationId, RecyclerAdapterStation.ViewHolder vh) {
-                ((Callback)getActivity()).onItemSelected(stationId, vh);
+                ((Callback) getActivity()).onItemSelected(stationId, vh);
             }
         }, mEmptyView);
         mRecyclerView.setAdapter(mAdapter);
@@ -125,15 +130,45 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        //Use this as default data
+        double lat = Utilities.TAIPEI_LAT;
+        double longitude = Utilities.TAIPEI_LONG;
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String locationJson = prefs.getString(Utilities.SHARED_PREFS_LOCATION_KEY, "");
+
+        //If a location has been stored in shared prefs, retrieve it and set the lat/long coordinates for the query
+        if (!locationJson.equals("")) {
+            try {
+                Gson gson = new Gson();
+                Location location = gson.fromJson(locationJson, Location.class);
+                lat = location.getLatitude();
+                longitude = location.getLongitude();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         Log.i(LOG_TAG, "onCreateLoader");
-        String sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
+//        String sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
+        //Use calculated distance between two points to sort stations based on proximity.  (StationLat-LocationLat)^2 + (StationLong - LocationLong)^2 = Distance^2
+        //SQLITE can't perform sqrt function but not necessary for sort order
+
+        String sortOrderDistance = "((" + String.valueOf(lat) +
+                "-" + StationContract.StationEntry.COLUMN_STATION_LAT + ") * (" + String.valueOf(lat) + "-"
+                + StationContract.StationEntry.COLUMN_STATION_LAT + ") +(" + String.valueOf(longitude) + "-"
+                + StationContract.StationEntry.COLUMN_STATION_LONG + ") * (" + String.valueOf(longitude) + "-"
+                + StationContract.StationEntry.COLUMN_STATION_LONG + "))";
+
+        //Create a URI for querying all stations
         Uri allStationsUri = StationContract.StationEntry.buildUriAllStations();
         return new CursorLoader(getActivity(),
                 allStationsUri,
                 STATION_COLUMNS,
                 null,
                 null,
-                sortOrder);
+                sortOrderDistance);
     }
 
     @Override
