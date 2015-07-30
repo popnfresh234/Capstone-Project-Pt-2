@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
@@ -31,6 +32,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
     private static final String LOG_TAG = StationDetailFragment.class.getSimpleName();
     public static final int DETAIL_LOADER = 0;
+    private boolean mUsingId;
 
     private static final String[] STATION_COLUMNS = {
             StationContract.StationEntry._ID,
@@ -58,23 +60,62 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public static final int COL_SPACES_AVAILABLE = 9;
     public static final int COL_LAST_UPDATED = 10;
 
-    @InjectView(R.id.text_view_station_detail_station_name) TextView mStationName;
-    @InjectView(R.id.text_view_station_detail_distance)TextView mDistance;
-    @InjectView(R.id.text_view_station_detail_district)TextView mDistrict;
-    @InjectView(R.id.text_view_station_detail_bikes) TextView mBikesAvailable;
-    @InjectView(R.id.text_view_station_detail_spaces) TextView mSpacesAvailable;
+    @InjectView(R.id.text_view_station_detail_station_name)
+    TextView mStationName;
+    @InjectView(R.id.text_view_station_detail_distance)
+    TextView mDistance;
+    @InjectView(R.id.text_view_station_detail_district)
+    TextView mDistrict;
+    @InjectView(R.id.text_view_station_detail_bikes)
+    TextView mBikesAvailable;
+    @InjectView(R.id.text_view_station_detail_spaces)
+    TextView mSpacesAvailable;
+    @InjectView(R.id.station_detail_container)
+    LinearLayout mContainer;
+    @InjectView(R.id.text_view_station_detail_empty)
+    TextView mEmptyView;
+
     private int mStationId;
+    private String mLanguage;
+    private Location mUserLocation;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+        if(mUserLocation!= null) {
+            getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+        }
+        if (mUserLocation == null) {
+            mContainer.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        }
         super.onActivityCreated(savedInstanceState);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mStationId = getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, 0);
+        if (getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1) != -1) {
+            mStationId = getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1);
+            mUsingId = true;
+        }
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mLanguage = preferences.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
+
+
+        //Fetch user location from shared prefs
+        String jsonLocation = preferences.getString(Utilities.SHARED_PREFS_LOCATION_KEY, "");
+        if (!jsonLocation.equals("")) {
+            try {
+                Gson gson = new Gson();
+                mUserLocation = gson.fromJson(jsonLocation, Location.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                mUserLocation = null;
+            }
+        } else {
+            mUserLocation = null;
+        }
     }
 
     @Nullable
@@ -89,65 +130,56 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         Log.i(LOG_TAG, "onCreateLoader");
         String sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
-        Uri stationDetailUri = StationContract.StationEntry.buildUriStation(mStationId);
-        return new CursorLoader(getActivity(),
-                stationDetailUri,
-                STATION_COLUMNS,
-                null,
-                null,
-                null);
+        if(mUsingId) {
+            Uri stationDetailUri = StationContract.StationEntry.buildUriStation(mStationId);
+            return new CursorLoader(
+                    getActivity(),
+                    stationDetailUri,
+                    STATION_COLUMNS,
+                    null,
+                    null,
+                    null);
+        }else{
+            Uri nearestStatonUri = StationContract.StationEntry.buildUriAllStations();
+            return new CursorLoader(
+                    getActivity(),
+                    nearestStatonUri,
+                    STATION_COLUMNS,
+                    null,
+                    null,
+                    Utilities.getSortOrderDistanceString(mUserLocation.getLatitude(), mUserLocation.getLongitude()) + "LIMIT 1"
+            );
+        }
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         cursor.moveToFirst();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String language = preferences.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
 
-        //calculate the distasnce from the user's last known location
-        double stationLat = cursor.getDouble(COL_STATION_LAT);
-        double stationLong = cursor.getDouble(COL_STATION_LONG);
-        float distance = calculateDistance(stationLat, stationLong);
 
-        if(language.equals(getActivity().getString(R.string.pref_language_english))){
+
+        if (mLanguage.equals(getActivity().getString(R.string.pref_language_english))) {
             mStationName.setText(cursor.getString(COL_STATION_NAME_EN));
             mDistrict.setText(cursor.getString(COL_STATION_DISTRICT_EN));
-        }else{
+        } else {
             mStationName.setText(cursor.getString(COL_STATION_NAME_ZH));
             mDistrict.setText(cursor.getString(COL_STATION_DISTRICT_ZH));
         }
 
         //Set the distance if we obtain one from the user's location.  If not, set to no data
-        if (distance != 0f) {
-            mDistance.setText(String.valueOf(distance));
-        }else{
+        if (mUserLocation != null) {
+            //calculate the distasnce from the user's last known location
+            double stationLat = cursor.getDouble(COL_STATION_LAT);
+            double stationLong = cursor.getDouble(COL_STATION_LONG);
+            float distance = Utilities.calculateDistance(stationLat, stationLong, mUserLocation);
+            mDistance.setText(Utilities.formatDistance(distance));
+        } else {
             mDistance.setText(getActivity().getString(R.string.text_view_station_detail_no_data));
         }
 
         mBikesAvailable.setText(String.valueOf(cursor.getInt(COL_BIKES_AVAILABLE)));
         mSpacesAvailable.setText(String.valueOf(cursor.getInt(COL_SPACES_AVAILABLE)));
         cursor.close();
-    }
-
-    private float calculateDistance(double stationLat, double stationLong) {
-        Location stationLocation = new Location("");
-
-        stationLocation.setLatitude(stationLat);
-        stationLocation.setLongitude(stationLong);
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String jsonLocation = prefs.getString(Utilities.SHARED_PREFS_LOCATION_KEY, "");
-        if(!jsonLocation.equals("")) {
-            try {
-                Gson gson = new Gson();
-                Location userLocation = gson.fromJson(jsonLocation, Location.class);
-                return userLocation.distanceTo(stationLocation);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return 0f;
     }
 
     @Override

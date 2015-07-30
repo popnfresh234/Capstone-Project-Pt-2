@@ -15,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -130,11 +129,12 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
+        
         //Use this as default data
-        double lat = Utilities.TAIPEI_LAT;
-        double longitude = Utilities.TAIPEI_LONG;
-
+        double lat;
+        double longitude;
+        Location location;
+        String sortOrder;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String locationJson = prefs.getString(Utilities.SHARED_PREFS_LOCATION_KEY, "");
 
@@ -142,17 +142,21 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         if (!locationJson.equals("")) {
             try {
                 Gson gson = new Gson();
-                Location location = gson.fromJson(locationJson, Location.class);
-                lat = location.getLatitude();
-                longitude = location.getLongitude();
+                location = gson.fromJson(locationJson, Location.class);
             } catch (Exception e) {
                 e.printStackTrace();
+                location = null;
             }
+        }else{
+            location = null;
         }
 
-        Log.i(LOG_TAG, "onCreateLoader");
-//        String sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
-        String sortOrderDistance = Utilities.getSortOrderDistanceString(lat, longitude);
+        if(location == null) {
+            sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
+        }else {
+            sortOrder = Utilities.getSortOrderDistanceString(location.getLatitude(), location.getLongitude());
+        }
+
         //Create a URI for querying all stations
         Uri allStationsUri = StationContract.StationEntry.buildUriAllStations();
         return new CursorLoader(getActivity(),
@@ -160,7 +164,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
                 STATION_COLUMNS,
                 null,
                 null,
-                sortOrderDistance);
+                sortOrder);
     }
 
     @Override

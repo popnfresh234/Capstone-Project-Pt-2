@@ -3,6 +3,7 @@ package com.dmtaiwan.alexander.iloveyoubike.Utilities;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.location.Location;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.dmtaiwan.alexander.iloveyoubike.R;
 import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
 import com.dmtaiwan.alexander.iloveyoubike.data.YoubikeStation;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -29,13 +31,28 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
     final private Context mContext;
     final private StationAdapterOnClickHandler mClickHandler;
     final private View mEmptyView;
+    final String mLanguage;
+    private Location mUserLocation;
 
 
     public RecyclerAdapterStation(Context context, StationAdapterOnClickHandler clickHandler, View emptyView) {
         mContext = context;
         mClickHandler = clickHandler;
         mEmptyView = emptyView;
-
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mLanguage = preferences.getString(mContext.getString(R.string.pref_key_language), mContext.getString(R.string.pref_language_english));
+        String jsonString = preferences.getString(Utilities.SHARED_PREFS_LOCATION_KEY, "");
+        if (!jsonString.equals("")) {
+            try {
+                Gson gson = new Gson();
+                mUserLocation = gson.fromJson(jsonString, Location.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                mUserLocation = null;
+            }
+        }else{
+            mUserLocation = null;
+        }
     }
 
     public static interface StationAdapterOnClickHandler {
@@ -52,20 +69,29 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String language = preferences.getString(mContext.getString(R.string.pref_key_language), mContext.getString(R.string.pref_language_english));
+
+
 
         mCursor.moveToPosition(position);
 
-        if (language.equals(mContext.getString(R.string.pref_language_english))) {
+        if (mLanguage.equals(mContext.getString(R.string.pref_language_english))) {
             holder.stationName.setText(mCursor.getString(StationListFragment.COL_STATION_NAME_EN));
         }else{
             holder.stationName.setText(mCursor.getString(StationListFragment.COL_STATION_NAME_ZH));
         }
 
-
         String time = Utilities.formatTime(mCursor.getString(StationListFragment.COL_LAST_UPDATED));
-        holder.distance.setText(time);
+        holder.time.setText(time);
+
+        //calculate the distasnce from the user's last known location
+        double stationLat = mCursor.getDouble(StationListFragment.COL_STATION_LAT);
+        double stationLong = mCursor.getDouble(StationListFragment.COL_STATION_LONG);
+
+        if (mUserLocation != null) {
+            float distance = Utilities.calculateDistance(stationLat, stationLong, mUserLocation);
+            holder.distance.setText(Utilities.formatDistance(distance));
+        }
+
     }
 
 
@@ -82,8 +108,9 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
 
         @InjectView(R.id.text_view_station_list_station_name)
         TextView stationName;
-        @InjectView(R.id.text_view_station_list_distance)
-        TextView distance;
+        @InjectView(R.id.text_view_station_list_time)
+        TextView time;
+        @InjectView(R.id.text_view_station_list_distance) TextView distance;
 
         public ViewHolder(View itemView) {
             super(itemView);

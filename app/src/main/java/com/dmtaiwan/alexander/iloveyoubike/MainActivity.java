@@ -40,13 +40,16 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     }
 
     public void onListItemClick(int position) {
+        Intent intent;
         switch (position) {
             case 0:
                 break;
             case 1:
+                intent = new Intent(this, StationDetailActivity.class);
+                startActivity(intent);
                 break;
             case 2:
-                Intent intent = new Intent(this, StationListActivity.class);
+                intent = new Intent(this, StationListActivity.class);
                 startActivity(intent);
                 break;
             case 3:
