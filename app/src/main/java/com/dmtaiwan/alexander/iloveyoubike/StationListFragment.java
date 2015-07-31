@@ -98,9 +98,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
         //Check if this is a favorites list
         mIsFavorites = getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_FAVORITES, false);
-
-
-
     }
 
     @Override
@@ -157,7 +154,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         if (layoutManager != null && layoutManager instanceof LinearLayoutManager) {
             mScrollPosition = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
             Log.i(LOG_TAG, String.valueOf(mScrollPosition));
-                    outState.putInt(Utilities.OUTSTATE_SCROLL_POSITION, mScrollPosition);
+            outState.putInt(Utilities.OUTSTATE_SCROLL_POSITION, mScrollPosition);
         }
         super.onSaveInstanceState(outState);
     }
@@ -178,42 +175,31 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         //Create a URI for querying all stations
         Uri allStationsUri = StationContract.StationEntry.buildUriAllStations();
 
-        //TODO REFRESH ADAPTER ON RETURN TO LIST
-        //Query for stations with ID's contained in favorites if viewing favorites
+
+        String selection = null;
+        String[] selectionArgs = null;
         if (mIsFavorites) {
             ArrayList<String> favoritesArray = Utilities.getFavoriteArray(prefs);
-            String[] strings = new String[favoritesArray.size()];
-            favoritesArray.toArray(strings);
-
-            String selection = Utilities.generateFavoritesWhereString(favoritesArray);
-            Log.i(LOG_TAG, favoritesArray.toString());
-            Log.i(LOG_TAG, selection);
-
-            return new CursorLoader(
-                    getActivity(),
-                    allStationsUri,
-                    STATION_COLUMNS,
-                    selection,
-                    strings,
-                    sortOrder);
+            if (favoritesArray != null) {
+                String[] strings = new String[favoritesArray.size()];
+                selectionArgs = favoritesArray.toArray(strings);
+                selection = Utilities.generateFavoritesWhereString(favoritesArray);
+            }
         }
         //Otherwise view all stations
-        else {
-            return new CursorLoader(
-                    getActivity(),
-                    allStationsUri,
-                    STATION_COLUMNS,
-                    null,
-                    null,
-                    sortOrder);
-        }
 
-        //Create a URI for querying favorite stations
+        return new CursorLoader(
+                getActivity(),
+                allStationsUri,
+                STATION_COLUMNS,
+                selection,
+                selectionArgs,
+                sortOrder);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i(LOG_TAG,"onLoadFinished");
+        Log.i(LOG_TAG, "onLoadFinished");
         mAdapter.swapCursor(data);
     }
 

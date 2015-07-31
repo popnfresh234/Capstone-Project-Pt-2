@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
@@ -16,6 +17,8 @@ import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationDbHelper;
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback{
@@ -56,9 +59,16 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         Intent intent;
         switch (position) {
             case 0:
-                intent = new Intent(this, StationListActivity.class);
-                intent.putExtra(Utilities.EXTRA_FAVORITES, true);
-                startActivity(intent);
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                ArrayList<String> favoritesArray = Utilities.getFavoriteArray(prefs);
+                if(favoritesArray != null && favoritesArray.size()>0) {
+                    intent = new Intent(this, StationListActivity.class);
+                    intent.putExtra(Utilities.EXTRA_FAVORITES, true);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(this, "You haven't added any favorites yet!", Toast.LENGTH_LONG).show();
+                }
+
                 break;
             case 1:
                 intent = new Intent(this, StationDetailActivity.class);

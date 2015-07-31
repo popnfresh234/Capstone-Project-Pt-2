@@ -99,7 +99,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void parseJson(String jsonData) {
 
-
+        getContext().getContentResolver().delete(StationContract.StationEntry.buildUriAllStations(), null, null);
 
         try {
             JSONObject result = new JSONObject(jsonData);

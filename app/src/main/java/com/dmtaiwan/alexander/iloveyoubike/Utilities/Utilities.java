@@ -1,9 +1,12 @@
 package com.dmtaiwan.alexander.iloveyoubike.Utilities;
 
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.location.Location;
 import android.util.Log;
 
+import com.dmtaiwan.alexander.iloveyoubike.R;
+import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -111,6 +114,21 @@ public class Utilities {
         }
         selection += "?)";
         return selection;
+    }
+
+    public static int getStatusIconDrawable(Cursor cursor) {
+        int bikesAvailable = cursor.getInt(StationListFragment.COL_BIKES_AVAILABLE);
+        int spacesAvailable = cursor.getInt(StationListFragment.COL_SPACES_AVAILABLE);
+        if (bikesAvailable > 0 && spacesAvailable > 0) {
+            Log.i(LOG_TAG, "GREEN");
+            return R.drawable.green48x48;
+        } else if (spacesAvailable == 0) {
+            Log.i(LOG_TAG, "YELLOW");
+            return R.drawable.yellow48x48;
+        } else {
+            Log.i(LOG_TAG, "RED");
+            return R.drawable.red48x48;
+        }
     }
 
 

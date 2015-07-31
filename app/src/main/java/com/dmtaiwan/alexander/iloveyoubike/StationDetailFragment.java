@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -64,22 +65,15 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public static final int COL_SPACES_AVAILABLE = 9;
     public static final int COL_LAST_UPDATED = 10;
 
-    @InjectView(R.id.text_view_station_detail_station_name)
-    TextView mStationName;
-    @InjectView(R.id.text_view_station_detail_distance)
-    TextView mDistance;
-    @InjectView(R.id.text_view_station_detail_district)
-    TextView mDistrict;
-    @InjectView(R.id.text_view_station_detail_bikes)
-    TextView mBikesAvailable;
-    @InjectView(R.id.text_view_station_detail_spaces)
-    TextView mSpacesAvailable;
-    @InjectView(R.id.station_detail_container)
-    LinearLayout mContainer;
-    @InjectView(R.id.text_view_station_detail_empty)
-    TextView mEmptyView;
-    @InjectView(R.id.button_station_detail_favorite)
-    ImageButton mFavoriteButton;
+    @InjectView(R.id.image_view_station_detail_status) ImageView mStatus;
+    @InjectView(R.id.text_view_station_detail_station_name) TextView mStationName;
+    @InjectView(R.id.text_view_station_detail_distance) TextView mDistance;
+    @InjectView(R.id.text_view_station_detail_district) TextView mDistrict;
+    @InjectView(R.id.text_view_station_detail_bikes) TextView mBikesAvailable;
+    @InjectView(R.id.text_view_station_detail_spaces) TextView mSpacesAvailable;
+    @InjectView(R.id.station_detail_container) LinearLayout mContainer;
+    @InjectView(R.id.text_view_station_detail_empty) TextView mEmptyView;
+    @InjectView(R.id.button_station_detail_favorite) ImageButton mFavoriteButton;
 
     private int mStationId;
     private String mLanguage;
@@ -119,7 +113,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_station_detail, container, false);
         ButterKnife.inject(this, rootView);
         return rootView;
     }
@@ -156,6 +150,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         cursor.moveToFirst();
+
+        //Set status icon
+        mStatus.setImageResource(Utilities.getStatusIconDrawable(cursor));
 
         //Get the stationID and check for favorite
         mStationId = cursor.getInt(COL_STATION_ID);
