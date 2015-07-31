@@ -213,6 +213,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.i(LOG_TAG,"onLoadFinished");
         mAdapter.swapCursor(data);
     }
 

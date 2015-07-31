@@ -2,6 +2,8 @@ package com.dmtaiwan.alexander.iloveyoubike;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,6 +13,8 @@ import android.util.Log;
 import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
+import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+import com.dmtaiwan.alexander.iloveyoubike.data.StationDbHelper;
 import com.google.gson.Gson;
 
 
@@ -22,9 +26,18 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Initialize SyncAdapter
+        //Initialize SyncAdapter, fills database if new account
         IloveyoubikeSyncAdapter.initializeSyncAdapter(this);
         mLocationProvider = new LocationProvider(this, this);
+
+        //If for some reason the account has already been created but the app's data has been cleared fill database
+        StationDbHelper dbHelper = new StationDbHelper(this);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(StationContract.StationEntry.TABLE_NAME, null, null, null, null, null, null);
+        Log.i(LOG_TAG, String.valueOf(cursor.getCount()));
+        if (cursor.getCount() == 0) {
+            IloveyoubikeSyncAdapter.syncImmediately(this);
+        }
     }
 
     @Override

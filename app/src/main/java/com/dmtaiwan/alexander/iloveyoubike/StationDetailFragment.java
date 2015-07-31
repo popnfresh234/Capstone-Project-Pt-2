@@ -90,13 +90,13 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        if (mUserLocation != null) {
+//        if (mUserLocation != null) {
             getLoaderManager().initLoader(DETAIL_LOADER, null, this);
-        }
-        if (mUserLocation == null) {
-            mContainer.setVisibility(View.GONE);
-            mEmptyView.setVisibility(View.VISIBLE);
-        }
+//        }
+//        if (mUserLocation == null) {
+//            mContainer.setVisibility(View.GONE);
+//            mEmptyView.setVisibility(View.VISIBLE);
+//        }
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -225,6 +225,8 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                 mFavoritesArray = new ArrayList<String>();
                 mFavoritesArray.add(String.valueOf(mStationId));
                 Log.i(LOG_TAG, mFavoritesArray.toString());
+                spe.putString(Utilities.SHARED_PREFS_FAVORITE_KEY, gson.toJson(mFavoritesArray));
+                spe.commit();
             }
             //Otherwise adding to the list of favorites
             else {

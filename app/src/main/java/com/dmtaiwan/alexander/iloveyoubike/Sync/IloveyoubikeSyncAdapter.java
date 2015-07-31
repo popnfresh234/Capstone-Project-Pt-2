@@ -50,7 +50,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
         Log.i(LOG_TAG, "onPerformSync");
         URL url;
         HttpURLConnection urlConnection = null;
-        String responseString = "oops";
+        String responseString = null;
         try {
             url = new URL(APIUrl);
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -59,6 +59,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
             int responseCode = urlConnection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 responseString = readStream(urlConnection.getInputStream());
+                parseJson(responseString);
             } else {
                 Log.i("Async Error", String.valueOf(responseCode));
             }
@@ -69,7 +70,6 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
                 urlConnection.disconnect();
             }
         }
-        parseJson(responseString);
     }
 
 
@@ -99,7 +99,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void parseJson(String jsonData) {
 
-        getContext().getContentResolver().delete(StationContract.StationEntry.buildUriAllStations(), null, null);
+
 
         try {
             JSONObject result = new JSONObject(jsonData);
