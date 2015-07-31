@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +28,8 @@ import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
-import com.google.gson.Gson;
+
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -39,6 +41,9 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     private static final String LOG_TAG = StationListFragment.class.getSimpleName();
     private static final int STATION_LOADER = 0;
     private RecyclerAdapterStation mAdapter;
+    private Boolean mIsFavorites = false;
+    private int mScrollPosition;
+
     @InjectView(R.id.toolbar_station)
     Toolbar mToolbar;
     @InjectView(R.id.recycler_view_station_list)
@@ -90,11 +95,17 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        //Check if this is a favorites list
+        mIsFavorites = getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_FAVORITES, false);
+
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        setRetainInstance(true);
         View rootView = inflater.inflate(R.layout.fragment_station_list, container, false);
         ButterKnife.inject(this, rootView);
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
@@ -108,7 +119,21 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
             }
         }, mEmptyView);
         mRecyclerView.setAdapter(mAdapter);
+
+        //Returning to fragment
+        if (savedInstanceState != null) {
+            Log.i(LOG_TAG, "savedInstanceRestore");
+            Log.i(LOG_TAG, String.valueOf(mScrollPosition));
+            mScrollPosition = savedInstanceState.getInt(Utilities.OUTSTATE_SCROLL_POSITION);
+            mRecyclerView.smoothScrollToPosition(mScrollPosition);
+        }
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        restartLoader();
     }
 
     @Override
@@ -126,45 +151,64 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+        if (layoutManager != null && layoutManager instanceof LinearLayoutManager) {
+            mScrollPosition = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
+            Log.i(LOG_TAG, String.valueOf(mScrollPosition));
+                    outState.putInt(Utilities.OUTSTATE_SCROLL_POSITION, mScrollPosition);
+        }
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        
-        //Use this as default data
-        double lat;
-        double longitude;
-        Location location;
+
         String sortOrder;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String locationJson = prefs.getString(Utilities.SHARED_PREFS_LOCATION_KEY, "");
+        Location location = Utilities.getUserLocation(prefs);
 
-        //If a location has been stored in shared prefs, retrieve it and set the lat/long coordinates for the query
-        if (!locationJson.equals("")) {
-            try {
-                Gson gson = new Gson();
-                location = gson.fromJson(locationJson, Location.class);
-            } catch (Exception e) {
-                e.printStackTrace();
-                location = null;
-            }
-        }else{
-            location = null;
-        }
-
-        if(location == null) {
+        if (location == null) {
             sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
-        }else {
+        } else {
             sortOrder = Utilities.getSortOrderDistanceString(location.getLatitude(), location.getLongitude());
         }
 
         //Create a URI for querying all stations
         Uri allStationsUri = StationContract.StationEntry.buildUriAllStations();
-        return new CursorLoader(getActivity(),
-                allStationsUri,
-                STATION_COLUMNS,
-                null,
-                null,
-                sortOrder);
+
+        //TODO REFRESH ADAPTER ON RETURN TO LIST
+        //Query for stations with ID's contained in favorites if viewing favorites
+        if (mIsFavorites) {
+            ArrayList<String> favoritesArray = Utilities.getFavoriteArray(prefs);
+            String[] strings = new String[favoritesArray.size()];
+            favoritesArray.toArray(strings);
+
+            String selection = Utilities.generateFavoritesWhereString(favoritesArray);
+            Log.i(LOG_TAG, favoritesArray.toString());
+            Log.i(LOG_TAG, selection);
+
+            return new CursorLoader(
+                    getActivity(),
+                    allStationsUri,
+                    STATION_COLUMNS,
+                    selection,
+                    strings,
+                    sortOrder);
+        }
+        //Otherwise view all stations
+        else {
+            return new CursorLoader(
+                    getActivity(),
+                    allStationsUri,
+                    STATION_COLUMNS,
+                    null,
+                    null,
+                    sortOrder);
+        }
+
+        //Create a URI for querying favorite stations
     }
 
     @Override
@@ -181,5 +225,9 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         //String location = Utility.getPreferredLocation(getActivity());
         //new FetchWeatherTask(getActivity()).execute(location);
         IloveyoubikeSyncAdapter.syncImmediately(getActivity());
+    }
+
+    public void restartLoader() {
+        getLoaderManager().restartLoader(STATION_LOADER, null, this);
     }
 }

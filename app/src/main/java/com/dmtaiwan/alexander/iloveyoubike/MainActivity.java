@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         Intent intent;
         switch (position) {
             case 0:
+                intent = new Intent(this, StationListActivity.class);
+                intent.putExtra(Utilities.EXTRA_FAVORITES, true);
+                startActivity(intent);
                 break;
             case 1:
                 intent = new Intent(this, StationDetailActivity.class);

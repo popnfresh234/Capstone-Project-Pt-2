@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dmtaiwan.alexander.iloveyoubike.R;
@@ -92,6 +93,19 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
             holder.distance.setText(Utilities.formatDistance(distance));
         }
 
+        //Set the icon based on bike availability]
+        int bikesAvailable = mCursor.getInt(StationListFragment.COL_BIKES_AVAILABLE);
+        int spacesAvailable = mCursor.getInt(StationListFragment.COL_SPACES_AVAILABLE);
+        if (bikesAvailable > 0 && spacesAvailable > 0) {
+            holder.stationStatus.setImageResource(R.drawable.green48x48);
+        }
+        else if (spacesAvailable == 0) {
+            holder.stationStatus.setImageResource(R.drawable.yellow48x48);
+        }
+        else if (bikesAvailable == 0) {
+            holder.stationStatus.setImageResource(R.drawable.red48x48);
+        }
+
     }
 
 
@@ -106,6 +120,8 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        @InjectView(R.id.image_view_station_list_status)
+        ImageView stationStatus;
         @InjectView(R.id.text_view_station_list_station_name)
         TextView stationName;
         @InjectView(R.id.text_view_station_list_time)

@@ -118,6 +118,19 @@
                 android:gravity="right"
                 tools:text="13" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/item_margin"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:id="@+id/button_station_detail_favorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_favorite_outline_grey600_48dp"
+                android:background="?android:attr/selectableItemBackground"/>
+        </LinearLayout>
     </LinearLayout>
 
     <TextView

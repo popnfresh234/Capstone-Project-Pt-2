@@ -1,13 +1,18 @@
 package com.dmtaiwan.alexander.iloveyoubike.Utilities;
 
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.util.Log;
 
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -19,9 +24,17 @@ import java.util.Locale;
 public class Utilities {
     private static final String LOG_TAG = Utilities.class.getSimpleName();
 
+    //Constants for Intents
     public static final String EXTRA_STATION_ID = "com.dmtaiwan.alexander.extra.stationid";
+    public static final String EXTRA_FAVORITES = "com.dmtaiwan.alexander.extra.favorites";
 
+    //Constants for shared prefs
     public static final String SHARED_PREFS_LOCATION_KEY = "com.dmtaiwan.alexander.key.location";
+    public static final String SHARED_PREFS_FAVORITE_KEY = "com.dmtaiwan.alexander.key.favorite";
+
+    //Constants for saved states
+    public static final String OUTSTATE_SCROLL_POSITION = "com.dmtaiwan.alexander.outstate.scroll";
+
 
     public static final double TAIPEI_LAT = 25.0333;
     public static final double TAIPEI_LONG = 121.6333;
@@ -60,6 +73,44 @@ public class Utilities {
         }
 
         return timeString;
+    }
+
+    //Fetch Location object from shared prefs
+
+    public static Location getUserLocation(SharedPreferences prefs) {
+        String locationJson = prefs.getString(Utilities.SHARED_PREFS_LOCATION_KEY, "");
+        //If a location has been stored in shared prefs, retrieve it and set the lat/long coordinates for the query
+        if (!locationJson.equals("")) {
+            try {
+                Gson gson = new Gson();
+                return gson.fromJson(locationJson, Location.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }else{
+            return null;
+        }
+    }
+
+    public static ArrayList<String> getFavoriteArray(SharedPreferences prefs) {
+        String favoriteJson = prefs.getString(Utilities.SHARED_PREFS_FAVORITE_KEY, "");
+        if(!favoriteJson.equals("")) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<String>>(){}.getType();
+            return gson.fromJson(favoriteJson, type);
+        }else{
+            return null;
+        }
+    }
+
+    public static String generateFavoritesWhereString(ArrayList<String> favoritesArray) {
+        String selection = StationContract.StationEntry.COLUMN_STATION_ID + " in (";
+        for (int i = 0; i < favoritesArray.size()-1; i++) {
+            selection += "?,";
+        }
+        selection += "?)";
+        return selection;
     }
 
 

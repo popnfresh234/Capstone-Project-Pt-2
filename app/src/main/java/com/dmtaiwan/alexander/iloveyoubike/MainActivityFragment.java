@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.DividerItemDecoration;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapter;
 
 import butterknife.ButterKnife;
@@ -45,6 +46,7 @@ public class MainActivityFragment extends android.app.Fragment {
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.app_name));
         mRecyclerView.setAdapter(new RecyclerAdapter(getActivity()));
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
