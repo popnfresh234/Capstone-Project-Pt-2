@@ -10,6 +10,7 @@ public class StationDetailActivity extends AppCompatActivity{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportPostponeEnterTransition();
         setContentView(R.layout.activity_detail);
 
         if (savedInstanceState == null) {

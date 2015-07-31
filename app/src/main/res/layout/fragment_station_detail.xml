@@ -30,6 +30,7 @@
 
                 <TextView
                     android:id="@+id/text_view_station_detail_station_name"
+                    android:transitionName="@string/transitoin_station_name_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="station name" />
@@ -43,6 +44,7 @@
 
             <ImageView
                 android:id="@+id/image_view_station_detail_status"
+                android:transitionName="@string/transition_status_iamge_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

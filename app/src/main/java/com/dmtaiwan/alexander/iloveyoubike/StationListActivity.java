@@ -1,9 +1,13 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
@@ -25,6 +29,14 @@ public class StationListActivity extends AppCompatActivity implements StationLis
         Log.i(LOG_TAG, String.valueOf(stationId));
         Intent detailIntent = new Intent(this, StationDetailActivity.class);
         detailIntent.putExtra(Utilities.EXTRA_STATION_ID, stationId);
-        startActivity(detailIntent);
+        Pair<View, String> p1 = Pair.create((View)vh.stationStatus, getString(R.string.transition_status_iamge_view));
+        Pair<View, String> p2 = Pair.create((View)vh.stationName, getString(R.string.transitoin_station_name_text));
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
+        if(Build.VERSION.SDK_INT  >= Build.VERSION_CODES.KITKAT) {
+            startActivity(detailIntent, options.toBundle());
+        }else {
+            startActivity(detailIntent);
+        }
     }
+
 }

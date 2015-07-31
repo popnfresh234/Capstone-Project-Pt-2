@@ -17,6 +17,7 @@
 
         <ImageView
             android:id="@+id/image_view_station_list_status"
+            android:transitionName="@string/transition_status_iamge_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

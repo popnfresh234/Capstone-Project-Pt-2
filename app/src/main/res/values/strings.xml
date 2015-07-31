@@ -30,6 +30,10 @@
     <string name="text_view_station_list_time_label">Last update:</string>
     <string name="text_view_station_detail_empty">No Location Data Available</string>
 
+    <!--Transition Strings-->
+    <string name="transition_status_iamge_view" translatable="false">status_image</string>
+    <string name="transitoin_station_name_text" translatable="false">station_name</string>
+
     <string-array name="main_list_items">
         <item>Favorite Stations</item>
         <item>Nearest Station</item>

@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
@@ -87,6 +88,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        getActivity().supportPostponeEnterTransition();
         getLoaderManager().initLoader(STATION_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
@@ -201,6 +203,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.i(LOG_TAG, "onLoadFinished");
         mAdapter.swapCursor(data);
+        scheduleStartPostponedTransition(mRecyclerView);
     }
 
     @Override
@@ -217,4 +220,16 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public void restartLoader() {
         getLoaderManager().restartLoader(STATION_LOADER, null, this);
     }
+    private void scheduleStartPostponedTransition(final View sharedElement) {
+        sharedElement.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
+                        getActivity().supportStartPostponedEnterTransition();
+                        return true;
+                    }
+                });
+    }
+
 }

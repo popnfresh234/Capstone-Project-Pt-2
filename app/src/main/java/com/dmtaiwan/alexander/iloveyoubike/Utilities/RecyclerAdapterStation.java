@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
 import android.preference.PreferenceManager;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -81,6 +82,9 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
             holder.stationName.setText(mCursor.getString(StationListFragment.COL_STATION_NAME_ZH));
         }
 
+        ViewCompat.setTransitionName(holder.stationName, mContext.getResources().getString(R.string.transitoin_station_name_text)+position);
+        ViewCompat.setTransitionName(holder.stationStatus, mContext.getResources().getString(R.string.transition_status_iamge_view)+position);
+
         String time = Utilities.formatTime(mCursor.getString(StationListFragment.COL_LAST_UPDATED));
         holder.time.setText(time);
 
@@ -124,9 +128,9 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         @InjectView(R.id.image_view_station_list_status)
-        ImageView stationStatus;
+        public ImageView stationStatus;
         @InjectView(R.id.text_view_station_list_station_name)
-        TextView stationName;
+        public TextView stationName;
         @InjectView(R.id.text_view_station_list_time)
         TextView time;
         @InjectView(R.id.text_view_station_list_distance) TextView distance;
@@ -144,6 +148,7 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
             int stationId = mCursor.getInt(StationListFragment.COL_STATION_ID);
             mClickHandler.onClick(stationId, this);
         }
+
     }
 
     public Cursor getCursor() {
@@ -157,5 +162,6 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
         notifyDataSetChanged();
         mEmptyView.setVisibility(getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }
+
 
 }

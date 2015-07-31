@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -151,8 +152,10 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         cursor.moveToFirst();
 
+
         //Set status icon
         mStatus.setImageResource(Utilities.getStatusIconDrawable(cursor));
+        scheduleStartPostponedTransition(mStatus);
 
         //Get the stationID and check for favorite
         mStationId = cursor.getInt(COL_STATION_ID);
@@ -242,5 +245,17 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             spe.putString(Utilities.SHARED_PREFS_FAVORITE_KEY, gson.toJson(mFavoritesArray));
             spe.commit();
         }
+    }
+
+    private void scheduleStartPostponedTransition(final View sharedElement) {
+        sharedElement.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
+                        getActivity().supportStartPostponedEnterTransition();
+                        return true;
+                    }
+                });
     }
 }
