@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+        <TextView
+            android:id="@+id/text_view_station_detail_station_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:transitionName="@string/transitoin_station_name_text"
+            tools:text="station name"
+            android:textSize="@dimen/station_detail_station_text_size"/>
+
+        <TextView
+            android:id="@+id/text_view_station_detail_district"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/station_detail_district_text_size"
+            tools:text="station district" />
+
+    <ImageView
+        android:id="@+id/image_view_station_detail_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_my_location_black_48dp"
+        android:transitionName="@string/transition_status_iamge_view" />
+
+</LinearLayout>
