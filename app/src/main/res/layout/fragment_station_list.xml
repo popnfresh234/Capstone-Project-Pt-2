@@ -20,6 +20,8 @@
             android:layout_height="wrap_content"
             android:background="@color/theme_primary"
             app:layout_scrollFlags="scroll|enterAlways"
+            app:theme="@style/Theme.AppCompat.NoActionBar"
+            app:popupTheme="@style/Theme.AppCompat.Light.NoActionBar"
             android:elevation="0dp">
 
         </android.support.v7.widget.Toolbar>

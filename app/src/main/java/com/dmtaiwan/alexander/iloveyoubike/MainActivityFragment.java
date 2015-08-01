@@ -2,6 +2,7 @@ package com.dmtaiwan.alexander.iloveyoubike;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,9 +24,10 @@ import butterknife.InjectView;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends android.app.Fragment {
+public class MainActivityFragment extends Fragment {
     @InjectView(R.id.toolbar) Toolbar mToolbar;
     @InjectView(R.id.recycler_view_main) RecyclerView mRecyclerView;
+
 
     public MainActivityFragment() {
     }

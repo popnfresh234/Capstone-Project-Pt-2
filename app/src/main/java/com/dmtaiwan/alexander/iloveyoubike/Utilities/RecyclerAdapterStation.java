@@ -82,6 +82,7 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
             holder.stationName.setText(mCursor.getString(StationListFragment.COL_STATION_NAME_ZH));
         }
 
+        //Set transition names so views can be found if activity is recreated ie after rotation
         ViewCompat.setTransitionName(holder.stationName, mContext.getResources().getString(R.string.transitoin_station_name_text)+position);
         ViewCompat.setTransitionName(holder.stationStatus, mContext.getResources().getString(R.string.transition_status_iamge_view)+position);
 

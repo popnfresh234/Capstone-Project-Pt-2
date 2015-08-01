@@ -1,5 +1,6 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -7,9 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
 
 import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
@@ -21,9 +24,10 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback{
+public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private LocationProvider mLocationProvider;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         //Initialize SyncAdapter, fills database if new account
         IloveyoubikeSyncAdapter.initializeSyncAdapter(this);
         mLocationProvider = new LocationProvider(this, this);
+        mContext = this;
 
         //If for some reason the account has already been created but the app's data has been cleared fill database
         StationDbHelper dbHelper = new StationDbHelper(this);
@@ -61,18 +66,48 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
             case 0:
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 ArrayList<String> favoritesArray = Utilities.getFavoriteArray(prefs);
-                if(favoritesArray != null && favoritesArray.size()>0) {
+                if (favoritesArray != null && favoritesArray.size() > 0) {
                     intent = new Intent(this, StationListActivity.class);
                     intent.putExtra(Utilities.EXTRA_FAVORITES, true);
                     startActivity(intent);
-                }else{
-                    Toast.makeText(this, "You haven't added any favorites yet!", Toast.LENGTH_LONG).show();
+                } else {
+                    //Create a snackbar offering to launch station list activity to select a station
+                    Snackbar.make(findViewById(R.id.fragment_main), getString(R.string.snackbar_favorites), Snackbar.LENGTH_LONG)
+                            .setActionTextColor(getResources().getColor(R.color.theme_primary_dark))
+                            .setAction(getString(R.string.snackbar_action_list), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent stationListIntent = new Intent(mContext, StationListActivity.class);
+                                    startActivity(stationListIntent);
+                                }
+                            })
+                            .show();
                 }
 
                 break;
             case 1:
-                intent = new Intent(this, StationDetailActivity.class);
-                startActivity(intent);
+                //Check if the user has a location
+                SharedPreferences prefsLocation = PreferenceManager.getDefaultSharedPreferences(this);
+                Location location = Utilities.getUserLocation(prefsLocation);
+
+                //If locatin is available, launch details activity
+                if (location != null) {
+                    intent = new Intent(this, StationDetailActivity.class);
+                    startActivity(intent);
+                } else {
+                    //Create a snackbar offering to launch settings to turn on location
+                    Snackbar.make(findViewById(R.id.fragment_main), getString(R.string.snackbar_location), Snackbar.LENGTH_LONG)
+                            .setActionTextColor(getResources().getColor(R.color.theme_primary_dark))
+                            .setAction(getString(R.string.snackbar_action_settings), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                    startActivity(settingsIntent);
+                                }
+                            })
+                            .show();
+                }
+
                 break;
             case 2:
                 intent = new Intent(this, StationListActivity.class);
@@ -84,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
                 break;
         }
     }
-
 
     @Override
     public void handleNewLocation(Location location) {

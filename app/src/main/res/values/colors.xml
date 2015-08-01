@@ -2,11 +2,16 @@
 <resources>
     <color name="theme_primary">#ff9800</color>
     <color name="theme_primary_dark">#f57c00</color>
-    <color name="theme_accent">#8bc34a</color>
+    <color name="theme_accent">#8c9eff</color>
 
     <color name="default_text_light_bg">#de000000</color>
     <color name="secondary_text_light_bg">#89000000</color>
 
     <color name="default_text_dark_bg">#FFFFFF</color>
     <color name="secondary_text_dark_bg">#b2FFFFFF</color>
+
+    <color name="pastel_pink">#f06292</color>
+    <color name="pastel_teal">#4db6ac</color>
+    <color name="pastel_orange">#ffa726</color>
+    <color name="pastel_green">#aed581</color>
 </resources>
