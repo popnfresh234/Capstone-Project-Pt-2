@@ -1,12 +1,17 @@
 package com.dmtaiwan.alexander.iloveyoubike.Utilities;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.dmtaiwan.alexander.iloveyoubike.R;
 import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
+import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -34,9 +39,13 @@ public class Utilities {
     //Constants for shared prefs
     public static final String SHARED_PREFS_LOCATION_KEY = "com.dmtaiwan.alexander.key.location";
     public static final String SHARED_PREFS_FAVORITE_KEY = "com.dmtaiwan.alexander.key.favorite";
+    public static final String SHARED_PREFS_DATA_STATUS_KEY = "com.dmtaiwan.alexander.key.data";
 
     //Constants for saved states
     public static final String OUTSTATE_SCROLL_POSITION = "com.dmtaiwan.alexander.outstate.scroll";
+
+    public static final int ICON_SIZE_SMALL = 0;
+    public static final int ICON_SIZE_LARGE = 1;
 
 
     public static final double TAIPEI_LAT = 25.0333;
@@ -91,43 +100,48 @@ public class Utilities {
                 e.printStackTrace();
                 return null;
             }
-        }else{
+        } else {
             return null;
         }
     }
 
     public static ArrayList<String> getFavoriteArray(SharedPreferences prefs) {
         String favoriteJson = prefs.getString(Utilities.SHARED_PREFS_FAVORITE_KEY, "");
-        if(!favoriteJson.equals("")) {
+        if (!favoriteJson.equals("")) {
             Gson gson = new Gson();
-            Type type = new TypeToken<ArrayList<String>>(){}.getType();
+            Type type = new TypeToken<ArrayList<String>>() {
+            }.getType();
             return gson.fromJson(favoriteJson, type);
-        }else{
+        } else {
             return null;
         }
     }
 
     public static String generateFavoritesWhereString(ArrayList<String> favoritesArray) {
         String selection = StationContract.StationEntry.COLUMN_STATION_ID + " in (";
-        for (int i = 0; i < favoritesArray.size()-1; i++) {
+        for (int i = 0; i < favoritesArray.size() - 1; i++) {
             selection += "?,";
         }
         selection += "?)";
         return selection;
     }
 
-    public static int getStatusIconDrawable(Cursor cursor) {
+    public static int getStatusIconDrawable(Cursor cursor, int size) {
         int bikesAvailable = cursor.getInt(StationListFragment.COL_BIKES_AVAILABLE);
         int spacesAvailable = cursor.getInt(StationListFragment.COL_SPACES_AVAILABLE);
         if (bikesAvailable > 0 && spacesAvailable > 0) {
-            Log.i(LOG_TAG, "GREEN");
-            return R.drawable.green48x48;
+//            if (size == Utilities.ICON_SIZE_LARGE)
+                return R.drawable.ic_green96x96;
+//            else return R.drawable.green48x48;
+
         } else if (spacesAvailable == 0) {
-            Log.i(LOG_TAG, "YELLOW");
-            return R.drawable.yellow48x48;
+//            if (size == Utilities.ICON_SIZE_LARGE)
+                return R.drawable.ic_yellow96x96;
+//            else return R.drawable.yellow48x48;
         } else {
-            Log.i(LOG_TAG, "RED");
-            return R.drawable.red48x48;
+//            if (size == Utilities.ICON_SIZE_LARGE)
+                return R.drawable.ic_red96x96;
+//            else return R.drawable.green48x48;
         }
     }
 
@@ -160,4 +174,17 @@ public class Utilities {
         return front + "." + back;
     }
 
+    public static int getServerStatus(Context c) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
+        return sp.getInt(Utilities.SHARED_PREFS_DATA_STATUS_KEY, IloveyoubikeSyncAdapter.STATUS_SERVER_UNKNOWN);
+    }
+
+    static public boolean isNetworkAvailable(Context c) {
+        ConnectivityManager cm =
+                (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+    }
 }

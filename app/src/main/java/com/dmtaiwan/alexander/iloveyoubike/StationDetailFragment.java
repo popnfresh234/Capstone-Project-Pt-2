@@ -154,7 +154,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
 
         //Set status icon
-        mStatus.setImageResource(Utilities.getStatusIconDrawable(cursor));
+        mStatus.setImageResource(Utilities.getStatusIconDrawable(cursor, Utilities.ICON_SIZE_LARGE));
         scheduleStartPostponedTransition(mStatus);
 
         //Get the stationID and check for favorite

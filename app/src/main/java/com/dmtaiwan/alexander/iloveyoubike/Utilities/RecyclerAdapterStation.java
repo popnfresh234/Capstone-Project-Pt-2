@@ -112,7 +112,7 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
 //        else if (bikesAvailable == 0) {
 //            holder.stationStatus.setImageResource(R.drawable.red48x48);
 //        }
-        holder.stationStatus.setImageResource(Utilities.getStatusIconDrawable(mCursor));
+        holder.stationStatus.setImageResource(Utilities.getStatusIconDrawable(mCursor, Utilities.ICON_SIZE_SMALL));
 
     }
 

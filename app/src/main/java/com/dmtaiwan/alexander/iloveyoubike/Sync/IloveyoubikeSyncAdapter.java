@@ -7,6 +7,7 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.database.Cursor;
@@ -14,9 +15,11 @@ import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.dmtaiwan.alexander.iloveyoubike.R;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
 
 import org.json.JSONArray;
@@ -41,6 +44,10 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int SYNC_INTERVAL = 60*60;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
 
+    public static final int STATUS_SERVER_DOWN = 0;
+    public static final int STATUS_SERVER_INVALID = 1;
+    public static final int STATUS_SERVER_UNKNOWN = 2;
+
     public IloveyoubikeSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
     }
@@ -62,6 +69,13 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
                 parseJson(responseString);
             } else {
                 Log.i("Async Error", String.valueOf(responseCode));
+                switch (responseCode) {
+                    case HttpURLConnection.HTTP_NOT_FOUND:
+                        setStatus(getContext(), STATUS_SERVER_INVALID);
+                        return;
+                    default:
+                        setStatus(getContext(), STATUS_SERVER_DOWN);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,6 +85,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }
     }
+
 
 
 
@@ -85,6 +100,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            setStatus(getContext(), STATUS_SERVER_DOWN);
         } finally {
             if (reader != null) {
                 try {
@@ -157,6 +173,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
 
         } catch (JSONException e) {
             e.printStackTrace();
+            setStatus(getContext(), STATUS_SERVER_INVALID);
         }
     }
 
@@ -234,5 +251,11 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
 
     public static void initializeSyncAdapter(Context context) {
         getSyncAccount(context);
+    }
+
+    private static void setStatus(Context context, int locationStatus) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor spe = sp.edit();
+        spe.putInt(Utilities.SHARED_PREFS_DATA_STATUS_KEY, locationStatus);
     }
 }

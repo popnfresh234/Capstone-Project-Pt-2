@@ -43,6 +43,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     private static final int STATION_LOADER = 0;
     private RecyclerAdapterStation mAdapter;
     private Boolean mIsFavorites = false;
+    private Boolean mSortDefaultOrder = false;
     private int mScrollPosition;
 
     @InjectView(R.id.toolbar_station)
@@ -144,8 +145,17 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            updateWeather();
+            updateStationData();
             return true;
+        }
+        if (id == R.id.action_sort_default) {
+            mSortDefaultOrder = true;
+            restartLoader();
+        }
+
+        if (id == R.id.action_sort_proximity) {
+            mSortDefaultOrder = false;
+            restartLoader();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -170,6 +180,8 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
         if (location == null) {
             sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
+        } else if (mSortDefaultOrder) {
+            sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
         } else {
             sortOrder = Utilities.getSortOrderDistanceString(location.getLatitude(), location.getLongitude());
         }
@@ -188,6 +200,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
                 selection = Utilities.generateFavoritesWhereString(favoritesArray);
             }
         }
+
         //Otherwise view all stations
 
         return new CursorLoader(
@@ -203,6 +216,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.i(LOG_TAG, "onLoadFinished");
         mAdapter.swapCursor(data);
+        updateEmptyView();
         scheduleStartPostponedTransition(mRecyclerView);
     }
 
@@ -211,9 +225,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         mAdapter.swapCursor(null);
     }
 
-    private void updateWeather() {
-        //String location = Utility.getPreferredLocation(getActivity());
-        //new FetchWeatherTask(getActivity()).execute(location);
+    private void updateStationData() {
         IloveyoubikeSyncAdapter.syncImmediately(getActivity());
     }
 
@@ -232,4 +244,26 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
                 });
     }
 
+    private void updateEmptyView() {
+        if (mAdapter.getItemCount() == 0) {
+            if (mEmptyView != null) {
+
+                int emptyViewText = R.string.text_view_empty_view;
+                int status = Utilities.getServerStatus(getActivity());
+                switch (status) {
+                    case IloveyoubikeSyncAdapter.STATUS_SERVER_DOWN:
+                        emptyViewText = R.string.text_view_empty_view_server_down;
+                        break;
+                    case IloveyoubikeSyncAdapter.STATUS_SERVER_INVALID:
+                        emptyViewText = R.string.text_view_empty_view_server_invalid;
+                        break;
+                    default:
+                        if (!Utilities.isNetworkAvailable(getActivity())) {
+                            emptyViewText = R.string.text_view_empty_view_network;
+                        }
+                }
+                mEmptyView.setText(emptyViewText);
+            }
+        }
+    }
 }

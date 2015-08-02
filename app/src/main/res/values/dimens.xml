@@ -14,6 +14,10 @@
     <dimen name="list_item_height">56dp</dimen>
     <dimen name="item_margin">8dp</dimen>
 
-    <dimen name="station_detail_station_text_size">48sp</dimen>
-    <dimen name="station_detail_district_text_size">24sp</dimen>
+    <dimen name="station_detail_station_text_size">34sp</dimen>
+    <dimen name="station_detail_district_text_size">20sp</dimen>
+
+    <dimen name="detail_view_padding_vertical">@dimen/abc_list_item_padding_horizontal_material</dimen>
+    <dimen name="detail_station_horizontal_padding">32dp</dimen>
+    <dimen name="status_icon">96dp</dimen>
 </resources>

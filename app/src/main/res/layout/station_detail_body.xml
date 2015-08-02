@@ -1,94 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:id="@+id/detail_additional_pane"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_weight="2"
+    android:paddingBottom="@dimen/abc_list_item_padding_horizontal_material"
+    android:paddingEnd="@dimen/detail_station_horizontal_padding"
+    android:paddingLeft="@dimen/detail_station_horizontal_padding"
+    android:paddingRight="@dimen/detail_station_horizontal_padding"
+    android:paddingStart="@dimen/detail_station_horizontal_padding"
+    android:paddingTop="@dimen/abc_list_item_padding_horizontal_material"
+    app:columnCount="2">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/item_spacing_vertical"
-        android:orientation="horizontal">
+
+
 
 
         <TextView
-            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="3"
-            android:text="@string/text_view_station_detail_distance" />
+            android:text="@string/text_view_station_detail_distance"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/secondary_text_light_bg"
+            android:gravity="center_vertical"
+            app:layout_columnWeight="1"
+            app:layout_gravity="fill"
+            app:layout_rowWeight="1"/>
 
         <TextView
             android:id="@+id/text_view_station_detail_distance"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="right"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textColor="@color/theme_accent"
+            android:gravity="center_vertical|right"
+            app:layout_gravity="fill"
             tools:text="4.4km" />
-    </LinearLayout>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/item_spacing_vertical"
-        android:orientation="horizontal">
+
 
         <TextView
-            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="3"
-            android:text="@string/text_view_station_detail_bikes_available" />
+            android:text="@string/text_view_station_detail_bikes_available"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/secondary_text_light_bg"
+            android:gravity="center_vertical"
+            app:layout_gravity="fill"
+            app:layout_rowWeight="1"/>
 
         <TextView
             android:id="@+id/text_view_station_detail_bikes"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="right"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textColor="@color/theme_accent"
+            android:gravity="center_vertical|right"
+            app:layout_gravity="fill"
             tools:text="124" />
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/item_spacing_vertical"
-        android:orientation="horizontal">
+
 
         <TextView
-            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="3"
-            android:text="@string/text_view_station_detail_spaces_available" />
+            android:text="@string/text_view_station_detail_spaces_available"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/secondary_text_light_bg"
+            android:gravity="center_vertical"
+            app:layout_gravity="fill"
+            app:layout_rowWeight="1"/>
 
         <TextView
             android:id="@+id/text_view_station_detail_spaces"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="right"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textColor="@color/theme_accent"
+            android:gravity="center_vertical|right"
+            app:layout_gravity="fill"
             tools:text="13" />
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/item_margin"
-        android:gravity="center_horizontal">
+
 
         <ImageButton
             android:id="@+id/button_station_detail_favorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_favorite_outline_grey600_48dp" />
-    </LinearLayout>
+            android:src="@drawable/ic_favorite_outline_grey600_48dp"
+            app:layout_columnSpan="2"
+            app:layout_gravity="fill_horizontal"
+            android:gravity="center_horizontal"
+            app:layout_columnWeight="1"/>
 
-</LinearLayout>
+</android.support.v7.widget.GridLayout>

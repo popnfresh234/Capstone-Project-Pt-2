@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         setContentView(R.layout.activity_main);
         //Initialize SyncAdapter, fills database if new account
         IloveyoubikeSyncAdapter.initializeSyncAdapter(this);
+
+        //Create location provider to attempt to determine location
         mLocationProvider = new LocationProvider(this, this);
         mContext = this;
 
