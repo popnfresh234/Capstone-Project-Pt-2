@@ -56,4 +56,5 @@
         <item>All Stations</item>
         <item>View Stations on Map</item>
     </string-array>
+    <string name="title_activity_maps">Station Map</string>
 </resources>

@@ -116,6 +116,8 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
                 startActivity(intent);
                 break;
             case 3:
+                intent = new Intent(this, MapsActivity.class);
+                startActivity(intent);
                 break;
             default:
                 break;
