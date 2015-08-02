@@ -95,22 +95,7 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-     * This should only be called once and when we are sure that {@link #mMap} is not null.
-     */
-    private void setUpMap() {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        Location userLocation = Utilities.getUserLocation(sp);
-        if (userLocation != null) {
-            mMap.addMarker(new MarkerOptions().position(new LatLng(userLocation.getLatitude(), userLocation.getLongitude())).title("Marker"));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 14.5f));
 
-        }
-
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -129,10 +114,35 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.i(LOG_TAG, String.valueOf(data.getCount()));
+        int count = 0;
+        while (data.moveToNext()) {
+
+            if (mMap != null) {
+                mMap.addMarker(new MarkerOptions().position(new LatLng(data.getDouble(COL_STATION_LAT), data.getDouble(COL_STATION_LONG))).title(data.getString(COL_STATION_NAME_EN)));
+            }
+            data.moveToNext();
+        }
+        data.close();
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    /**
+     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
+     * just add a marker near Africa.
+     * <p/>
+            * This should only be called once and when we are sure that {@link #mMap} is not null.
+            */
+    private void setUpMap() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        Location userLocation = Utilities.getUserLocation(sp);
+        if (userLocation != null) {
+            mMap.addMarker(new MarkerOptions().position(new LatLng(userLocation.getLatitude(), userLocation.getLongitude())).title("Marker"));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 14.5f));
+        }
 
     }
 }
