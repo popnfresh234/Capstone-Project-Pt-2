@@ -99,6 +99,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1) != -1) {
             mStationId = getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1);
             mUsingId = true; //Set flag showing that ID is passed with intent
@@ -124,7 +125,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         }
         return rootView;
     }
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {

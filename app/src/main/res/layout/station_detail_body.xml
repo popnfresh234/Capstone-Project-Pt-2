@@ -15,77 +15,94 @@
     app:columnCount="2">
 
 
+    <TextView
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:text="@string/text_view_station_detail_distance"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/secondary_text_light_bg"
+        app:layout_columnWeight="1"
+        app:layout_gravity="fill"
+        app:layout_rowWeight="1" />
+
+    <TextView
+        android:id="@+id/text_view_station_detail_distance"
+        android:gravity="center_vertical|right"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="@color/theme_accent"
+        app:layout_gravity="fill"
+        tools:text="4.4km" />
 
 
+    <TextView
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:text="@string/text_view_station_detail_bikes_available"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/secondary_text_light_bg"
+        app:layout_gravity="fill"
+        app:layout_rowWeight="1" />
 
-        <TextView
-            android:layout_height="wrap_content"
-            android:text="@string/text_view_station_detail_distance"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textColor="@color/secondary_text_light_bg"
-            android:gravity="center_vertical"
-            app:layout_columnWeight="1"
-            app:layout_gravity="fill"
-            app:layout_rowWeight="1"/>
-
-        <TextView
-            android:id="@+id/text_view_station_detail_distance"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:textColor="@color/theme_accent"
-            android:gravity="center_vertical|right"
-            app:layout_gravity="fill"
-            tools:text="4.4km" />
+    <TextView
+        android:id="@+id/text_view_station_detail_bikes"
+        android:gravity="center_vertical|right"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="@color/theme_accent"
+        app:layout_gravity="fill"
+        tools:text="124" />
 
 
+    <TextView
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:text="@string/text_view_station_detail_spaces_available"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/secondary_text_light_bg"
+        app:layout_gravity="fill"
+        app:layout_rowWeight="1" />
 
+    <TextView
+        android:id="@+id/text_view_station_detail_spaces"
+        android:gravity="center_vertical|right"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="@color/theme_accent"
+        app:layout_gravity="fill"
+        tools:text="13" />
 
-        <TextView
-            android:layout_height="wrap_content"
-            android:text="@string/text_view_station_detail_bikes_available"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textColor="@color/secondary_text_light_bg"
-            android:gravity="center_vertical"
-            app:layout_gravity="fill"
-            app:layout_rowWeight="1"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        app:layout_columnSpan="2">
 
-        <TextView
-            android:id="@+id/text_view_station_detail_bikes"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:textColor="@color/theme_accent"
-            android:gravity="center_vertical|right"
-            app:layout_gravity="fill"
-            tools:text="124" />
-
-
-
-        <TextView
-            android:layout_height="wrap_content"
-            android:text="@string/text_view_station_detail_spaces_available"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textColor="@color/secondary_text_light_bg"
-            android:gravity="center_vertical"
-            app:layout_gravity="fill"
-            app:layout_rowWeight="1"/>
-
-        <TextView
-            android:id="@+id/text_view_station_detail_spaces"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:textColor="@color/theme_accent"
-            android:gravity="center_vertical|right"
-            app:layout_gravity="fill"
-            tools:text="13" />
-
-
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
         <ImageButton
             android:id="@+id/button_station_detail_favorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_favorite_outline_grey600_48dp"
-            app:layout_columnSpan="2"
-            app:layout_gravity="fill_horizontal"
+            android:src="@drawable/ic_favorite_outline_grey600_48dp" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/button_station_detail_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
             android:gravity="center_horizontal"
-            app:layout_columnWeight="1"/>
+            android:src="@drawable/ic_map_black_48dp" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+    </LinearLayout>
 
 </android.support.v7.widget.GridLayout>

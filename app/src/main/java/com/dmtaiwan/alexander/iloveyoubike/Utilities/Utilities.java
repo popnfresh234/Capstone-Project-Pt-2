@@ -49,8 +49,8 @@ public class Utilities {
     public static final int ICON_SIZE_LARGE = 1;
 
 
-    public static final double TAIPEI_LAT = 25.0333;
-    public static final double TAIPEI_LONG = 121.6333;
+    public static final double TAIPEI_LAT = 25.033611;
+    public static final double TAIPEI_LONG = 121.565;
 
     //Use calculated distance between two points to sort stations based on proximity.  (StationLat-LocationLat)^2 + (StationLong - LocationLong)^2 = Distance^2
     //SQLITE can't perform sqrt function but not necessary for sort order
@@ -151,11 +151,11 @@ public class Utilities {
     }
 
 
-    public static float calculateDistance(double stationLat, double stationLong, Location userLocation) {
+    public static float calculateDistance(double targetLat, double targetLong, Location userLocation) {
         Location stationLocation = new Location("");
 
-        stationLocation.setLatitude(stationLat);
-        stationLocation.setLongitude(stationLong);
+        stationLocation.setLatitude(targetLat);
+        stationLocation.setLongitude(targetLong);
 
         return userLocation.distanceTo(stationLocation);
     }

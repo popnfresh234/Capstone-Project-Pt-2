@@ -137,8 +137,6 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
 
-
-
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
@@ -166,12 +164,15 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
     private void setUserLocation() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         Location userLocation = Utilities.getUserLocation(sp);
+
         if (userLocation != null) {
-            //Set marker and zoom map to user's location
-//            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(userLocation.getLatitude(), userLocation.getLongitude())).title(getString(R.string.marker_user_location));
-//            Marker marker = mMap.addMarker(markerOptions);
-//            marker.showInfoWindow();
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 14.5f), 1000, null);
+            //Get the user's location and zoom the camera if less than 20km (20000meters) from Taipei, otherwise zoom to default location
+            float distanceFromTaipei = Utilities.calculateDistance(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG, userLocation);
+            if (distanceFromTaipei <= 20000) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 14.5f), 1000, null);
+            }else{
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 1000, null);
+            }
         } else {
             //Default location
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 1000, null);
@@ -182,22 +183,22 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
         int i = 0;
         //Create hashmap for associating stationId with marker
         mIdMap = new HashMap<Marker, Integer>();
-            if(data.moveToFirst()) {
-                do {
-                    //Populate the map
-                    i++;
-                    int stationId = data.getInt(COL_STATION_ID);
-                    int bikesAvailable = data.getInt(COL_BIKES_AVAILABLE);
-                    int spacesAvailable = data.getInt(COL_SPACES_AVAILABLE);
-                    int markerDrawable = Utilities.getMarkerIconDrawable(bikesAvailable, spacesAvailable);
-                    String snippet = getString(R.string.snippet_string_bikes) + String.valueOf(bikesAvailable) + " " + getString(R.string.snippet_string_spaces) + String.valueOf(spacesAvailable);
-                    MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(data.getDouble(COL_STATION_LAT), data.getDouble(COL_STATION_LONG))).title(data.getString(COL_STATION_NAME_EN));
-                    markerOptions.snippet(snippet);
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(markerDrawable));
-                    Marker marker = mMap.addMarker(markerOptions);
-                    mIdMap.put(marker, stationId);
-                }while(data.moveToNext());
-            }
+        if (data.moveToFirst()) {
+            do {
+                //Populate the map
+                i++;
+                int stationId = data.getInt(COL_STATION_ID);
+                int bikesAvailable = data.getInt(COL_BIKES_AVAILABLE);
+                int spacesAvailable = data.getInt(COL_SPACES_AVAILABLE);
+                int markerDrawable = Utilities.getMarkerIconDrawable(bikesAvailable, spacesAvailable);
+                String snippet = getString(R.string.snippet_string_bikes) + String.valueOf(bikesAvailable) + " " + getString(R.string.snippet_string_spaces) + String.valueOf(spacesAvailable);
+                MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(data.getDouble(COL_STATION_LAT), data.getDouble(COL_STATION_LONG))).title(data.getString(COL_STATION_NAME_EN));
+                markerOptions.snippet(snippet);
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(markerDrawable));
+                Marker marker = mMap.addMarker(markerOptions);
+                mIdMap.put(marker, stationId);
+            } while (data.moveToNext());
+        }
         Log.i(LOG_TAG, "Stations added to map: " + String.valueOf(i));
     }
 

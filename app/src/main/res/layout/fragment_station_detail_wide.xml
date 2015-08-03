@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -38,73 +38,76 @@
 
             <TextView
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:text="@string/text_view_station_detail_distance"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:textColor="@color/secondary_text_light_bg"
-                android:gravity="center_vertical"
                 app:layout_columnWeight="1"
                 app:layout_gravity="fill"
-                app:layout_rowWeight="1"/>
+                app:layout_rowWeight="1" />
 
             <TextView
                 android:id="@+id/text_view_station_detail_distance"
+                android:gravity="center_vertical|right"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="@color/theme_accent"
-                android:gravity="center_vertical|right"
                 app:layout_gravity="fill"
                 tools:text="4.4km" />
 
 
-
-
             <TextView
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:text="@string/text_view_station_detail_bikes_available"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:textColor="@color/secondary_text_light_bg"
-                android:gravity="center_vertical"
                 app:layout_gravity="fill"
-                app:layout_rowWeight="1"/>
+                app:layout_rowWeight="1" />
 
             <TextView
                 android:id="@+id/text_view_station_detail_bikes"
+                android:gravity="center_vertical|right"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="@color/theme_accent"
-                android:gravity="center_vertical|right"
                 app:layout_gravity="fill"
                 tools:text="124" />
 
 
-
             <TextView
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:text="@string/text_view_station_detail_spaces_available"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:textColor="@color/secondary_text_light_bg"
-                android:gravity="center_vertical"
                 app:layout_gravity="fill"
-                app:layout_rowWeight="1"/>
+                app:layout_rowWeight="1" />
 
             <TextView
                 android:id="@+id/text_view_station_detail_spaces"
+                android:gravity="center_vertical|right"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                 android:textColor="@color/theme_accent"
-                android:gravity="center_vertical|right"
                 app:layout_gravity="fill"
                 tools:text="13" />
 
 
-
             <ImageButton
+                android:gravity="center_horizontal"
                 android:id="@+id/button_station_detail_favorite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?android:attr/selectableItemBackground"
-                android:src="@drawable/ic_favorite_outline_grey600_48dp"
-                app:layout_columnSpan="2"
-                app:layout_gravity="fill_horizontal"
+                android:src="@drawable/ic_favorite_outline_grey600_48dp" />
+
+
+            <ImageButton
                 android:gravity="center_horizontal"
-                app:layout_columnWeight="1"/>
+                android:id="@+id/button_station_detail_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:src="@drawable/ic_map_black_48dp" />
+
 
             <android.support.v7.widget.Space
                 app:layout_columnSpan="2"
