@@ -13,6 +13,8 @@ import com.dmtaiwan.alexander.iloveyoubike.R;
 import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
 import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -130,18 +132,22 @@ public class Utilities {
         int bikesAvailable = cursor.getInt(StationListFragment.COL_BIKES_AVAILABLE);
         int spacesAvailable = cursor.getInt(StationListFragment.COL_SPACES_AVAILABLE);
         if (bikesAvailable > 0 && spacesAvailable > 0) {
-//            if (size == Utilities.ICON_SIZE_LARGE)
                 return R.drawable.ic_green96x96;
-//            else return R.drawable.green48x48;
-
         } else if (spacesAvailable == 0) {
-//            if (size == Utilities.ICON_SIZE_LARGE)
                 return R.drawable.ic_yellow96x96;
-//            else return R.drawable.yellow48x48;
         } else {
-//            if (size == Utilities.ICON_SIZE_LARGE)
                 return R.drawable.ic_red96x96;
-//            else return R.drawable.green48x48;
+        }
+    }
+
+    public static int getMarkerIconDrawable(int bikesAvailable, int spacesAvailable) {
+
+        if (bikesAvailable > 0 && spacesAvailable > 0) {
+            return R.drawable.ic_location_green;
+        } else if (spacesAvailable == 0) {
+            return R.drawable.ic_location_yellow;
+        } else {
+            return R.drawable.ic_location_red;
         }
     }
 
@@ -186,5 +192,12 @@ public class Utilities {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
+    }
+
+    public static boolean isGooglePlayAvailable(Context context) {
+        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
+        if (status != ConnectionResult.SUCCESS) {
+            return false;
+        }else return true;
     }
 }

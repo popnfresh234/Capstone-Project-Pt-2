@@ -1,5 +1,6 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
@@ -17,14 +18,19 @@ import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+import java.util.HashMap;
+
+public class MapsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, GoogleMap.OnInfoWindowClickListener {
 
     private static String LOG_TAG = MapsActivity.class.getSimpleName();
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private static int MAPS_LOADER = 100;
+    private HashMap<Marker, Integer> mIdMap;
 
     private static final String[] STATION_COLUMNS = {
             StationContract.StationEntry._ID,
@@ -62,8 +68,14 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        restartLoader();
         setUpMapIfNeeded();
     }
 
@@ -96,7 +108,6 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
 
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
@@ -113,36 +124,76 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i(LOG_TAG, String.valueOf(data.getCount()));
-        int count = 0;
-        while (data.moveToNext()) {
+        if (data != null && data.moveToFirst()) {
+            if (mMap != null && Utilities.isGooglePlayAvailable(this)) {
 
-            if (mMap != null) {
-                mMap.addMarker(new MarkerOptions().position(new LatLng(data.getDouble(COL_STATION_LAT), data.getDouble(COL_STATION_LONG))).title(data.getString(COL_STATION_NAME_EN)));
+                mMap.clear();
+                setUserLocation();
+                populateMap(data);
             }
-            data.moveToNext();
         }
-        data.close();
     }
+
+
+
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
     }
 
-    /**
-     * This is where we can add markers or lines, add listeners or move the camera. In this case, we
-     * just add a marker near Africa.
-     * <p/>
-            * This should only be called once and when we are sure that {@link #mMap} is not null.
-            */
     private void setUpMap() {
+        mMap.setOnInfoWindowClickListener(this);
+        mMap.setMyLocationEnabled(true);
+    }
+
+    private void restartLoader() {
+        getSupportLoaderManager().restartLoader(MAPS_LOADER, null, this);
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Log.i(LOG_TAG, marker.toString());
+        Log.i(LOG_TAG, String.valueOf(mIdMap.get(marker)));
+        int id = mIdMap.get(marker);
+        Intent intent = new Intent(this, StationDetailActivity.class);
+        intent.putExtra(Utilities.EXTRA_STATION_ID, id);
+        startActivity(intent);
+    }
+
+    private void setUserLocation() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         Location userLocation = Utilities.getUserLocation(sp);
         if (userLocation != null) {
-            mMap.addMarker(new MarkerOptions().position(new LatLng(userLocation.getLatitude(), userLocation.getLongitude())).title("Marker"));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 14.5f));
+            //Set marker and zoom map to user's location
+//            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(userLocation.getLatitude(), userLocation.getLongitude())).title(getString(R.string.marker_user_location));
+//            Marker marker = mMap.addMarker(markerOptions);
+//            marker.showInfoWindow();
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 14.5f), 1000, null);
+        } else {
+            //Default location
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 1000, null);
         }
-
     }
+
+    private void populateMap(Cursor data) {
+
+        //Create hashmap for associating stationId with marker
+        mIdMap = new HashMap<Marker, Integer>();
+            while (data.moveToNext()) {
+                    //Populate the map
+                    int stationId = data.getInt(COL_STATION_ID);
+                    int bikesAvailable = data.getInt(COL_BIKES_AVAILABLE);
+                    int spacesAvailable = data.getInt(COL_SPACES_AVAILABLE);
+                    int markerDrawable = Utilities.getMarkerIconDrawable(bikesAvailable, spacesAvailable);
+                    String snippet = getString(R.string.snippet_string_bikes) + String.valueOf(bikesAvailable) + " " + getString(R.string.snippet_string_spaces) + String.valueOf(spacesAvailable);
+                    MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(data.getDouble(COL_STATION_LAT), data.getDouble(COL_STATION_LONG))).title(data.getString(COL_STATION_NAME_EN));
+                    markerOptions.snippet(snippet);
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(markerDrawable));
+                    Marker marker = mMap.addMarker(markerOptions);
+                    mIdMap.put(marker, stationId);
+                data.moveToNext();
+            }
+    }
+
 }

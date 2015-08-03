@@ -39,6 +39,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     private static final String LOG_TAG = StationDetailFragment.class.getSimpleName();
     public static final int DETAIL_LOADER = 0;
     private boolean mUsingId;
+    private Cursor mCursor;
 
     private static final String[] STATION_COLUMNS = {
             StationContract.StationEntry._ID,
@@ -114,10 +115,11 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_station_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_detail_alias, container, false);
         ButterKnife.inject(this, rootView);
         return rootView;
     }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -150,59 +152,60 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        cursor.moveToFirst();
 
+        mCursor = cursor;
+        if (cursor != null && cursor.moveToFirst()) {
+            cursor.moveToFirst();
+            //Set status icon
+            mStatus.setImageResource(Utilities.getStatusIconDrawable(cursor, Utilities.ICON_SIZE_LARGE));
+            scheduleStartPostponedTransition(mStatus);
 
-        //Set status icon
-        mStatus.setImageResource(Utilities.getStatusIconDrawable(cursor, Utilities.ICON_SIZE_LARGE));
-        scheduleStartPostponedTransition(mStatus);
+            //Get the stationID and check for favorite
+            mStationId = cursor.getInt(COL_STATION_ID);
 
-        //Get the stationID and check for favorite
-        mStationId = cursor.getInt(COL_STATION_ID);
+            //Get the list of favorite stations from SharedPrefs
+            mFavoritesArray = Utilities.getFavoriteArray(mSharedPrefs);
 
-        //Get the list of favorite stations from SharedPrefs
-        mFavoritesArray = Utilities.getFavoriteArray(mSharedPrefs);
+            //If a list of favorites has been stored in SharedPrefs
+            if (mFavoritesArray != null) {
 
-        //If a list of favorites has been stored in SharedPrefs
-        if (mFavoritesArray != null) {
-
-            //Set the favorite button and flag
-            if (mFavoritesArray.contains(String.valueOf(mStationId))) {
-                mFavoriteButton.setImageResource(R.drawable.ic_favorite_black_48dp);
-                isFavorite = true;
+                //Set the favorite button and flag
+                if (mFavoritesArray.contains(String.valueOf(mStationId))) {
+                    mFavoriteButton.setImageResource(R.drawable.ic_favorite_black_48dp);
+                    isFavorite = true;
+                }
+                //Button already unfavorite state by default, set flag
+                else {
+                    isFavorite = false;
+                }
             }
-            //Button already unfavorite state by default, set flag
+            //If mFavoritesArray == null, no favorites have been stored, flag not favorite
             else {
                 isFavorite = false;
             }
-        }
-        //If mFavoritesArray == null, no favorites have been stored, flag not favorite
-        else {
-            isFavorite = false;
-        }
 
-        if (mLanguage.equals(getActivity().getString(R.string.pref_language_english))) {
-            mStationName.setText(cursor.getString(COL_STATION_NAME_EN));
-            mDistrict.setText(cursor.getString(COL_STATION_DISTRICT_EN));
-        } else {
-            mStationName.setText(cursor.getString(COL_STATION_NAME_ZH));
-            mDistrict.setText(cursor.getString(COL_STATION_DISTRICT_ZH));
+            if (mLanguage.equals(getActivity().getString(R.string.pref_language_english))) {
+                mStationName.setText(cursor.getString(COL_STATION_NAME_EN));
+                mDistrict.setText(cursor.getString(COL_STATION_DISTRICT_EN));
+            } else {
+                mStationName.setText(cursor.getString(COL_STATION_NAME_ZH));
+                mDistrict.setText(cursor.getString(COL_STATION_DISTRICT_ZH));
+            }
+
+            //Set the distance if we obtain one from the user's location.  If not, set to no data
+            if (mUserLocation != null) {
+                //calculate the distance from the user's last known location
+                double stationLat = cursor.getDouble(COL_STATION_LAT);
+                double stationLong = cursor.getDouble(COL_STATION_LONG);
+                float distance = Utilities.calculateDistance(stationLat, stationLong, mUserLocation);
+                mDistance.setText(Utilities.formatDistance(distance));
+            } else {
+                mDistance.setText(getActivity().getString(R.string.text_view_station_detail_no_data));
+            }
+
+            mBikesAvailable.setText(String.valueOf(cursor.getInt(COL_BIKES_AVAILABLE)));
+            mSpacesAvailable.setText(String.valueOf(cursor.getInt(COL_SPACES_AVAILABLE)));
         }
-
-        //Set the distance if we obtain one from the user's location.  If not, set to no data
-        if (mUserLocation != null) {
-            //calculate the distance from the user's last known location
-            double stationLat = cursor.getDouble(COL_STATION_LAT);
-            double stationLong = cursor.getDouble(COL_STATION_LONG);
-            float distance = Utilities.calculateDistance(stationLat, stationLong, mUserLocation);
-            mDistance.setText(Utilities.formatDistance(distance));
-        } else {
-            mDistance.setText(getActivity().getString(R.string.text_view_station_detail_no_data));
-        }
-
-        mBikesAvailable.setText(String.valueOf(cursor.getInt(COL_BIKES_AVAILABLE)));
-        mSpacesAvailable.setText(String.valueOf(cursor.getInt(COL_SPACES_AVAILABLE)));
-
     }
 
     @Override

@@ -49,6 +49,10 @@
     <string name="snackbar_action_list">ALL STATIONS</string>
     <string name="text_view_station_detail_district">District</string>
 
+    <!--Map Strings-->
+    <string name="marker_user_location">You are here!</string>
+    <string name="snippet_string_bikes">Bikes:</string>
+    <string name="snippet_string_spaces">Spaces:</string>
 
     <string-array name="main_list_items">
         <item>Favorite Stations</item>

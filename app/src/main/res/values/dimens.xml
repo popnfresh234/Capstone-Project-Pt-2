@@ -20,4 +20,7 @@
     <dimen name="detail_view_padding_vertical">@dimen/abc_list_item_padding_horizontal_material</dimen>
     <dimen name="detail_station_horizontal_padding">32dp</dimen>
     <dimen name="status_icon">96dp</dimen>
+
+    <!--Layout measurements-->
+    <dimen name="landscape_station_list_width">360dp</dimen>
 </resources>

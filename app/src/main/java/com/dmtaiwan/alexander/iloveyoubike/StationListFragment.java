@@ -232,6 +232,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public void restartLoader() {
         getLoaderManager().restartLoader(STATION_LOADER, null, this);
     }
+
     private void scheduleStartPostponedTransition(final View sharedElement) {
         sharedElement.getViewTreeObserver().addOnPreDrawListener(
                 new ViewTreeObserver.OnPreDrawListener() {

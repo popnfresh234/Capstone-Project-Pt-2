@@ -28,6 +28,9 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private LocationProvider mLocationProvider;
     private Context mContext;
+    private Cursor mCursor;
+    private SQLiteDatabase mDb;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         setContentView(R.layout.activity_main);
         //Initialize SyncAdapter, fills database if new account
         IloveyoubikeSyncAdapter.initializeSyncAdapter(this);
+        IloveyoubikeSyncAdapter.syncImmediately(this);
 
         //Create location provider to attempt to determine location
         mLocationProvider = new LocationProvider(this, this);
@@ -42,12 +46,14 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
 
         //If for some reason the account has already been created but the app's data has been cleared fill database
         StationDbHelper dbHelper = new StationDbHelper(this);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(StationContract.StationEntry.TABLE_NAME, null, null, null, null, null, null);
-        Log.i(LOG_TAG, String.valueOf(cursor.getCount()));
-        if (cursor.getCount() == 0) {
+        mDb = dbHelper.getReadableDatabase();
+        mCursor = mDb.query(StationContract.StationEntry.TABLE_NAME, null, null, null, null, null, null);
+        Log.i(LOG_TAG, String.valueOf(mCursor.getCount()));
+        if (mCursor.getCount() == 0) {
             IloveyoubikeSyncAdapter.syncImmediately(this);
         }
+        mCursor.close();
+        mDb.close();
     }
 
     @Override
@@ -59,6 +65,12 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     @Override
     protected void onPause() {
         super.onPause();
+        if(!mCursor.isClosed()){
+            mCursor.close();
+        }
+        if (mDb.isOpen()) {
+            mDb.close();
+        }
         mLocationProvider.disconnect();
     }
 
