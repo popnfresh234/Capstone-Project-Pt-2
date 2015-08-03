@@ -17,11 +17,22 @@ import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
  */
 public class StationListActivity extends AppCompatActivity implements StationListFragment.Callback{
     private static final String LOG_TAG = StationListActivity.class.getSimpleName();
+    private static final String DETAIL_FRAGMENT_TAG = "detail_frag_tag";
+    private boolean mTabletLayout = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station_list);
+        if(findViewById(R.id.detail_container)!=null){
+            mTabletLayout = true;
+            if (savedInstanceState == null) {
+                StationDetailFragment fragment = new StationDetailFragment();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.detail_container, fragment, DETAIL_FRAGMENT_TAG)
+                        .commit();
+            }
+        }
     }
 
     @Override

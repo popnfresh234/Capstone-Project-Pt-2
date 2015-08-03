@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/col"
         android:layout_width="match_parent"
@@ -29,6 +31,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v7.widget.RecyclerView
+        android:layout_gravity="center_horizontal"
         android:id="@+id/recycler_view_station_list"
         android:layout_width="@dimen/landscape_station_list_width"
         android:layout_height="match_parent"
@@ -50,4 +53,4 @@
         app:layout_anchorGravity="fill" />
     </android.support.design.widget.CoordinatorLayout>
 
-</FrameLayout>
+</LinearLayout>

@@ -7,7 +7,6 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.dmtaiwan.alexander.iloveyoubike.R;
 import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
@@ -64,7 +63,6 @@ public class Utilities {
     }
 
     public static String formatTime(String string) {
-        Log.i(LOG_TAG, string);
         DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
         String timeString = "";
         try {
@@ -149,6 +147,7 @@ public class Utilities {
         } else {
             return R.drawable.ic_location_red;
         }
+
     }
 
 
