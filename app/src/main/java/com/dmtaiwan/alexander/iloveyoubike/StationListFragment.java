@@ -11,10 +11,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,8 +44,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     private Boolean mSortDefaultOrder = false;
     private int mScrollPosition;
 
-    @InjectView(R.id.toolbar_station)
-    Toolbar mToolbar;
     @InjectView(R.id.recycler_view_station_list)
     RecyclerView mRecyclerView;
     @InjectView(R.id.station_list_empty_view)
@@ -108,7 +104,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         setRetainInstance(true);
         View rootView = inflater.inflate(R.layout.fragment_station_list, container, false);
         ButterKnife.inject(this, rootView);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);

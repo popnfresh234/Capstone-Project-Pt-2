@@ -124,14 +124,16 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.i(LOG_TAG, "Stations: " + String.valueOf(data.getCount()));
+
         if (data != null && data.moveToFirst()) {
             if (mMap != null && Utilities.isGooglePlayAvailable(this)) {
-
                 mMap.clear();
                 setUserLocation();
                 populateMap(data);
             }
         }
+
     }
 
 
@@ -177,11 +179,13 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void populateMap(Cursor data) {
-
+        int i = 0;
         //Create hashmap for associating stationId with marker
         mIdMap = new HashMap<Marker, Integer>();
-            while (data.moveToNext()) {
+            if(data.moveToFirst()) {
+                do {
                     //Populate the map
+                    i++;
                     int stationId = data.getInt(COL_STATION_ID);
                     int bikesAvailable = data.getInt(COL_BIKES_AVAILABLE);
                     int spacesAvailable = data.getInt(COL_SPACES_AVAILABLE);
@@ -192,8 +196,9 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(markerDrawable));
                     Marker marker = mMap.addMarker(markerOptions);
                     mIdMap.put(marker, stationId);
-                data.moveToNext();
+                }while(data.moveToNext());
             }
+        Log.i(LOG_TAG, "Stations added to map: " + String.valueOf(i));
     }
 
 }

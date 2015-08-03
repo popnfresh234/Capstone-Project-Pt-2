@@ -117,6 +117,11 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail_alias, container, false);
         ButterKnife.inject(this, rootView);
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mUsingId = true;
+            mStationId = getArguments().getInt(Utilities.EXTRA_STATION_ID);
+        }
         return rootView;
     }
 

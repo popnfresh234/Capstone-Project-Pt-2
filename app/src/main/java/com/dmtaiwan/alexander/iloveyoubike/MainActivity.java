@@ -19,6 +19,8 @@ import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationDbHelper;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private LocationProvider mLocationProvider;
     private Context mContext;
     private Cursor mCursor;
@@ -39,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         //Initialize SyncAdapter, fills database if new account
         IloveyoubikeSyncAdapter.initializeSyncAdapter(this);
         IloveyoubikeSyncAdapter.syncImmediately(this);
-
+        checkPlayServices();
         //Create location provider to attempt to determine location
         mLocationProvider = new LocationProvider(this, this);
         mContext = this;
@@ -154,5 +157,19 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(LOG_TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 }
