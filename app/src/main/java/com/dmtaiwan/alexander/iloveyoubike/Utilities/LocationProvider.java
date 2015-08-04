@@ -42,8 +42,8 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks, Go
         //Creating the LocationRequest object
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(10 * 1000) //10 seconds
-                .setFastestInterval(1 * 1000); //1 second
+                .setInterval(30 * 1000) //30 seconds
+                .setFastestInterval(10 * 1000); //10 second
 
         mContext = context;
     }
@@ -63,13 +63,13 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks, Go
     public void onConnected(Bundle bundle) {
         Log.i(LOG_TAG, "onConnected");
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (location == null) {
-            Log.i(LOG_TAG, "new location request");
+//        if (location == null) {
+
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }else {
-            Log.i(LOG_TAG, "handleNewLocation");
+//        }else {
+//            Log.i(LOG_TAG, "handleNewLocation");
             mLocationCallback.handleNewLocation(location);
-        }
+//        }
     }
 
     @Override

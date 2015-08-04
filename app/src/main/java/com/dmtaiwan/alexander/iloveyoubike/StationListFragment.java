@@ -24,9 +24,11 @@ import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -36,13 +38,14 @@ import butterknife.InjectView;
 /**
  * Created by Alexander on 7/28/2015.
  */
-public class StationListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class StationListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback {
     private static final String LOG_TAG = StationListFragment.class.getSimpleName();
     private static final int STATION_LOADER = 0;
     private RecyclerAdapterStation mAdapter;
     private Boolean mIsFavorites = false;
     private Boolean mSortDefaultOrder = false;
     private int mScrollPosition;
+    private LocationProvider mLocationProvider;
 
     @InjectView(R.id.recycler_view_station_list)
     RecyclerView mRecyclerView;
@@ -76,6 +79,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public static final int COL_LAST_UPDATED = 10;
 
 
+
     public interface Callback {
         /**
          * DetailFragmentCallback for when an item has been selected.
@@ -97,6 +101,9 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
         //Check if this is a favorites list
         mIsFavorites = getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_FAVORITES, false);
+
+        //Create a location provider to update position
+        mLocationProvider = new LocationProvider(getActivity(), this);
     }
 
     @Override
@@ -128,7 +135,16 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onResume() {
         super.onResume();
+        //Connect to play services
+        mLocationProvider.connect();
+        //Restart the loader in case items were unfavorited
         restartLoader();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mLocationProvider.disconnect();
     }
 
     @Override
@@ -262,4 +278,23 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
             }
         }
     }
+
+    @Override
+    public void handleNewLocation(Location location) {
+        Log.i(LOG_TAG, location.toString());
+        SharedPreferences settings;
+        SharedPreferences.Editor spe;
+        try {
+            settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            spe = settings.edit();
+            Gson gson = new Gson();
+            String json = gson.toJson(location);
+            spe.putString(Utilities.SHARED_PREFS_LOCATION_KEY, json);
+            spe.commit();
+            restartLoader();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
