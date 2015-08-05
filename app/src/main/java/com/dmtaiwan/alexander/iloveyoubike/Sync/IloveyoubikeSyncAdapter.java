@@ -115,14 +115,14 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void parseJson(String jsonData) {
 
-        getContext().getContentResolver().delete(StationContract.StationEntry.buildUriAllStations(), null, null);
+
 
         try {
             JSONObject result = new JSONObject(jsonData);
             JSONObject result1 = result.getJSONObject("result");
             JSONArray resultsArray = result1.getJSONArray("results");
             Vector<ContentValues> cVVector = new Vector<ContentValues>(resultsArray.length());
-            for (int i = 0; i < resultsArray.length(); i++) {
+            for (int i = 0; i < 363; i++) {
                 JSONObject stationObject = resultsArray.getJSONObject(i);
 
                 String stationId = stationObject.getString("_id");
@@ -152,6 +152,8 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
             }
 
             if (cVVector.size() > 0) {
+                //Remove old values
+                getContext().getContentResolver().delete(StationContract.StationEntry.buildUriAllStations(), null, null);
                 Log.i("SQLITE", "inserting values");
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
