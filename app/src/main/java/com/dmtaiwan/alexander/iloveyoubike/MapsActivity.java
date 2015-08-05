@@ -1,12 +1,10 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -162,8 +160,7 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void setUserLocation() {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        Location userLocation = Utilities.getUserLocation(sp);
+        Location userLocation = Utilities.getUserLocation(this);
 
         if (userLocation != null) {
             //Get the user's location and zoom the camera if less than 20km (20000meters) from Taipei, otherwise zoom to default location

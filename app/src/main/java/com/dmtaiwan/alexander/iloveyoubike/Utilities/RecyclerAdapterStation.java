@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.dmtaiwan.alexander.iloveyoubike.R;
 import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
-import com.google.gson.Gson;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -43,18 +42,9 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
         mEmptyView = emptyView;
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         mLanguage = preferences.getString(mContext.getString(R.string.pref_key_language), mContext.getString(R.string.pref_language_english));
-        String jsonString = preferences.getString(Utilities.SHARED_PREFS_LOCATION_KEY, "");
-        if (!jsonString.equals("")) {
-            try {
-                Gson gson = new Gson();
-                mUserLocation = gson.fromJson(jsonString, Location.class);
-            } catch (Exception e) {
-                e.printStackTrace();
-                mUserLocation = null;
-            }
-        }else{
-            mUserLocation = null;
-        }
+
+        //get location
+        mUserLocation = Utilities.getUserLocation(mContext);
     }
 
     public static interface StationAdapterOnClickHandler {

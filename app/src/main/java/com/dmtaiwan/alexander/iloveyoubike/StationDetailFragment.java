@@ -110,7 +110,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         mLanguage = mSharedPrefs.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
 
         //Fetch user location from shared prefs
-        mUserLocation = Utilities.getUserLocation(mSharedPrefs);
+        mUserLocation = Utilities.getUserLocation(getActivity());
     }
 
     @Nullable
@@ -169,7 +169,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             mStationId = cursor.getInt(COL_STATION_ID);
 
             //Get the list of favorite stations from SharedPrefs
-            mFavoritesArray = Utilities.getFavoriteArray(mSharedPrefs);
+            mFavoritesArray = Utilities.getFavoriteArray(getActivity());
 
             //If a list of favorites has been stored in SharedPrefs
             if (mFavoritesArray != null) {

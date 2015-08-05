@@ -38,7 +38,8 @@ public class Utilities {
     public static final String EXTRA_FAVORITES = "com.dmtaiwan.alexander.extra.favorites";
 
     //Constants for shared prefs
-    public static final String SHARED_PREFS_LOCATION_KEY = "com.dmtaiwan.alexander.key.location";
+    public static final String SHARED_PREFS_LOCATION_LAT_KEY = "com.dmtaiwan.alexander.key.location.lat";
+    public static final String SHARED_PREFS_LOCATION_LONG_KEY = "com.dmtaiwan.alexander.key.location.long";
     public static final String SHARED_PREFS_FAVORITE_KEY = "com.dmtaiwan.alexander.key.favorite";
     public static final String SHARED_PREFS_DATA_STATUS_KEY = "com.dmtaiwan.alexander.key.data";
 
@@ -89,23 +90,37 @@ public class Utilities {
 
     //Fetch Location object from shared prefs
 
-    public static Location getUserLocation(SharedPreferences prefs) {
-        String locationJson = prefs.getString(Utilities.SHARED_PREFS_LOCATION_KEY, "");
+    public static Location getUserLocation(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        double lat = Double.longBitsToDouble(prefs.getLong(Utilities.SHARED_PREFS_LOCATION_LAT_KEY, -1));
+        double longitude = Double.longBitsToDouble(prefs.getLong(Utilities.SHARED_PREFS_LOCATION_LONG_KEY, -1));
         //If a location has been stored in shared prefs, retrieve it and set the lat/long coordinates for the query
-        if (!locationJson.equals("")) {
-            try {
-                Gson gson = new Gson();
-                return gson.fromJson(locationJson, Location.class);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
+        if (lat != -1 && longitude != -1) {
+            Location userLocation = new Location("newLocation");
+            userLocation.setLatitude(lat);
+            userLocation.setLongitude(longitude);
+            return userLocation;
         } else {
             return null;
         }
     }
 
-    public static ArrayList<String> getFavoriteArray(SharedPreferences prefs) {
+    public static void setUserLocation(Location location, Context context) {
+        if(location!= null) {
+            SharedPreferences settings;
+            SharedPreferences.Editor spe;
+            double lat = location.getLatitude();
+            double longitude = location.getLongitude();
+            settings = PreferenceManager.getDefaultSharedPreferences(context);
+            spe = settings.edit();
+            spe.putLong(Utilities.SHARED_PREFS_LOCATION_LAT_KEY, Double.doubleToRawLongBits(lat));
+            spe.putLong(Utilities.SHARED_PREFS_LOCATION_LONG_KEY, Double.doubleToRawLongBits(longitude));
+            spe.commit();
+        }
+    }
+
+    public static ArrayList<String> getFavoriteArray(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String favoriteJson = prefs.getString(Utilities.SHARED_PREFS_FAVORITE_KEY, "");
         if (!favoriteJson.equals("")) {
             Gson gson = new Gson();

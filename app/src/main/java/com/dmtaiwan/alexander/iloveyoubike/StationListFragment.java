@@ -1,12 +1,10 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -28,7 +26,6 @@ import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -186,8 +183,8 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         String sortOrder;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        Location location = Utilities.getUserLocation(prefs);
+
+        Location location = Utilities.getUserLocation(getActivity());
 
         if (location == null) {
             sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
@@ -204,7 +201,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         String selection = null;
         String[] selectionArgs = null;
         if (mIsFavorites) {
-            ArrayList<String> favoritesArray = Utilities.getFavoriteArray(prefs);
+            ArrayList<String> favoritesArray = Utilities.getFavoriteArray(getActivity());
             if (favoritesArray != null) {
                 String[] strings = new String[favoritesArray.size()];
                 selectionArgs = favoritesArray.toArray(strings);
@@ -281,20 +278,9 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void handleNewLocation(Location location) {
-        Log.i(LOG_TAG, location.toString());
-        SharedPreferences settings;
-        SharedPreferences.Editor spe;
-        try {
-            settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            spe = settings.edit();
-            Gson gson = new Gson();
-            String json = gson.toJson(location);
-            spe.putString(Utilities.SHARED_PREFS_LOCATION_KEY, json);
-            spe.commit();
-            restartLoader();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Utilities.setUserLocation(location, getActivity());
+        restartLoader();
+
     }
 
 }

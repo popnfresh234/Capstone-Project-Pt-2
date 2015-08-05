@@ -2,12 +2,10 @@ package com.dmtaiwan.alexander.iloveyoubike;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +19,6 @@ import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationDbHelper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -68,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     @Override
     protected void onPause() {
         super.onPause();
-        if(!mCursor.isClosed()){
+        if (!mCursor.isClosed()) {
             mCursor.close();
         }
         if (mDb.isOpen()) {
@@ -81,8 +78,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         Intent intent;
         switch (position) {
             case 0:
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-                ArrayList<String> favoritesArray = Utilities.getFavoriteArray(prefs);
+                ArrayList<String> favoritesArray = Utilities.getFavoriteArray(this);
                 if (favoritesArray != null && favoritesArray.size() > 0) {
                     intent = new Intent(this, StationListActivity.class);
                     intent.putExtra(Utilities.EXTRA_FAVORITES, true);
@@ -104,8 +100,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
                 break;
             case 1:
                 //Check if the user has a location
-                SharedPreferences prefsLocation = PreferenceManager.getDefaultSharedPreferences(this);
-                Location location = Utilities.getUserLocation(prefsLocation);
+                Location location = Utilities.getUserLocation(this);
 
                 //If locatin is available, launch details activity
                 if (location != null) {
@@ -141,23 +136,9 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
 
     @Override
     public void handleNewLocation(Location location) {
-        Log.i(LOG_TAG, location.toString());
-        SharedPreferences settings;
-        SharedPreferences.Editor spe;
-
-        //Store user's last known location
-        try {
-            settings = PreferenceManager.getDefaultSharedPreferences(this);
-            spe = settings.edit();
-            Gson gson = new Gson();
-            String json = gson.toJson(location);
-            spe.putString(Utilities.SHARED_PREFS_LOCATION_KEY, json);
-            spe.commit();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Utilities.setUserLocation(location, this);
     }
+
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
