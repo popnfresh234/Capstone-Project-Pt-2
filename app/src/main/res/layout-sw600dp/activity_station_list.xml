@@ -33,7 +33,7 @@
 
 
         <fragment
-            android:id="@+id/fragment"
+            android:id="@+id/fragment_station_list"
             android:name="com.dmtaiwan.alexander.iloveyoubike.StationListFragment"
             android:layout_width="0dp"
             android:layout_height="match_parent"

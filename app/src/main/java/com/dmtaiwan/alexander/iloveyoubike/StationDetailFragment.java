@@ -1,5 +1,6 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
@@ -21,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
 import com.google.gson.Gson;
@@ -34,12 +36,11 @@ import butterknife.OnClick;
 /**
  * Created by lenovo on 7/29/2015.
  */
-public class StationDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class StationDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback {
 
     private static final String LOG_TAG = StationDetailFragment.class.getSimpleName();
     public static final int DETAIL_LOADER = 0;
     private boolean mUsingId;
-    private Cursor mCursor;
 
     private static final String[] STATION_COLUMNS = {
             StationContract.StationEntry._ID,
@@ -67,15 +68,24 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public static final int COL_SPACES_AVAILABLE = 9;
     public static final int COL_LAST_UPDATED = 10;
 
-    @InjectView(R.id.image_view_station_detail_status) ImageView mStatus;
-    @InjectView(R.id.text_view_station_detail_station_name) TextView mStationName;
-    @InjectView(R.id.text_view_station_detail_distance) TextView mDistance;
-    @InjectView(R.id.text_view_station_detail_district) TextView mDistrict;
-    @InjectView(R.id.text_view_station_detail_bikes) TextView mBikesAvailable;
-    @InjectView(R.id.text_view_station_detail_spaces) TextView mSpacesAvailable;
-    @InjectView(R.id.station_detail_container) LinearLayout mContainer;
-    @InjectView(R.id.text_view_station_detail_empty) TextView mEmptyView;
-    @InjectView(R.id.button_station_detail_favorite) ImageButton mFavoriteButton;
+    @InjectView(R.id.image_view_station_detail_status)
+    ImageView mStatus;
+    @InjectView(R.id.text_view_station_detail_station_name)
+    TextView mStationName;
+    @InjectView(R.id.text_view_station_detail_distance)
+    TextView mDistance;
+    @InjectView(R.id.text_view_station_detail_district)
+    TextView mDistrict;
+    @InjectView(R.id.text_view_station_detail_bikes)
+    TextView mBikesAvailable;
+    @InjectView(R.id.text_view_station_detail_spaces)
+    TextView mSpacesAvailable;
+    @InjectView(R.id.station_detail_container)
+    LinearLayout mContainer;
+    @InjectView(R.id.text_view_station_detail_empty)
+    TextView mEmptyView;
+    @InjectView(R.id.button_station_detail_favorite)
+    ImageButton mFavoriteButton;
 
     private int mStationId;
     private String mLanguage;
@@ -83,11 +93,33 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     private SharedPreferences mSharedPrefs;
     private boolean isFavorite;
     private ArrayList<String> mFavoritesArray;
+    private LocationProvider mLocationProvider;
+    private OnFavoriteListener mCallback;
+
+    public interface OnFavoriteListener {
+        public void onFavorited();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        //If this is a favorites fragment from tablet mode
+        if (getArguments() != null && getArguments().getBoolean(Utilities.EXTRA_FAVORITES, false)) {
+            try {
+                mCallback = (OnFavoriteListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement OnHeadlineSelectedListener");
+            }
+        }
+
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
 //        if (mUserLocation != null) {
-            getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
 //        }
 //        if (mUserLocation == null) {
 //            mContainer.setVisibility(View.GONE);
@@ -103,6 +135,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         if (getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1) != -1) {
             mStationId = getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1);
             mUsingId = true; //Set flag showing that ID is passed with intent
+            mLocationProvider = new LocationProvider(getActivity(), this);
         }
 
         //Fetch language preference
@@ -118,8 +151,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail_alias, container, false);
         ButterKnife.inject(this, rootView);
-        Bundle arguments = getArguments();
-        if (arguments != null) {
+        if (getArguments() != null) {
             mUsingId = true;
             mStationId = getArguments().getInt(Utilities.EXTRA_STATION_ID);
         }
@@ -129,7 +161,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         Log.i(LOG_TAG, "onCreateLoader");
-        String sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
 
         //If started from list of stations, ID passed in with intent, query for specific station
         if (mUsingId) {
@@ -158,7 +189,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 
-        mCursor = cursor;
         if (cursor != null && cursor.moveToFirst()) {
             cursor.moveToFirst();
             //Set status icon
@@ -244,6 +274,8 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                 Log.i(LOG_TAG, mFavoritesArray.toString());
 
             }
+            if (mCallback != null)
+                mCallback.onFavorited();
         } else if (isFavorite) {
             isFavorite = false;
             mFavoriteButton.setImageResource(R.drawable.ic_favorite_outline_grey600_48dp);
@@ -252,6 +284,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             Log.i(LOG_TAG, mFavoritesArray.toString());
             spe.putString(Utilities.SHARED_PREFS_FAVORITE_KEY, gson.toJson(mFavoritesArray));
             spe.commit();
+
+            if (mCallback != null)
+                mCallback.onFavorited();
         }
     }
 
@@ -265,5 +300,11 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                         return true;
                     }
                 });
+    }
+
+    @Override
+    public void handleNewLocation(Location location) {
+        Utilities.setUserLocation(location, getActivity());
+
     }
 }

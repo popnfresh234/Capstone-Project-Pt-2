@@ -13,6 +13,8 @@ import android.view.View;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 
+import java.util.ArrayList;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.Optional;
@@ -20,13 +22,15 @@ import butterknife.Optional;
 /**
  * Created by Alexander on 7/28/2015.
  */
-public class StationListActivity extends AppCompatActivity implements StationListFragment.Callback{
+public class StationListActivity extends AppCompatActivity implements StationListFragment.Callback, StationDetailFragment.OnFavoriteListener{
     private static final String LOG_TAG = StationListActivity.class.getSimpleName();
     private static final String DETAIL_FRAGMENT_TAG = "detail_frag_tag";
     private boolean mTabletLayout = false;
+    private boolean mIsFavorites;
 
     @Optional
-    @InjectView(R.id.toolbar_station)Toolbar toolbar;
+    @InjectView(R.id.toolbar_station)
+    Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,12 +38,28 @@ public class StationListActivity extends AppCompatActivity implements StationLis
         setContentView(R.layout.activity_station_list);
         ButterKnife.inject(this);
         setSupportActionBar(toolbar);
-        if(findViewById(R.id.detail_container)!=null){
+
+        if (findViewById(R.id.detail_container) != null) {
             mTabletLayout = true;
             if (savedInstanceState == null) {
+                int stationId = 1;
+                //Check if favorite4s
+                mIsFavorites = getIntent().getBooleanExtra(Utilities.EXTRA_FAVORITES, false);
+                if (mIsFavorites) {
+                    //Get the appropriate ID for the fragment
+                    ArrayList<String> favoritesArray = Utilities.getFavoriteArray(this);
+                    if (favoritesArray != null && favoritesArray.size() > 0) {
+                        stationId = Integer.parseInt(favoritesArray.get(0));
+                    }
+
+                }
                 StationDetailFragment fragment = new StationDetailFragment();
                 Bundle args = new Bundle();
-                args.putInt(Utilities.EXTRA_STATION_ID, 1);
+                args.putInt(Utilities.EXTRA_STATION_ID, stationId);
+                //If favorites view, pass boolean to fragment
+                if (mIsFavorites) {
+                    args.putBoolean(Utilities.EXTRA_FAVORITES, mIsFavorites);
+                }
                 fragment.setArguments(args);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.detail_container, fragment, DETAIL_FRAGMENT_TAG)
@@ -57,7 +77,7 @@ public class StationListActivity extends AppCompatActivity implements StationLis
             StationDetailFragment fragment = new StationDetailFragment();
             fragment.setArguments(args);
             getSupportFragmentManager().beginTransaction().replace(R.id.detail_container, fragment, DETAIL_FRAGMENT_TAG).commit();
-        }else {
+        } else {
 
             Log.i(LOG_TAG, "Starting station detail activity");
             Intent detailIntent = new Intent(this, StationDetailActivity.class);
@@ -73,4 +93,10 @@ public class StationListActivity extends AppCompatActivity implements StationLis
         }
     }
 
+    @Override
+    public void onFavorited() {
+        Log.i(LOG_TAG, "Favorited");
+        StationListFragment fragment = (StationListFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_station_list);
+        fragment.restartLoader();
+    }
 }

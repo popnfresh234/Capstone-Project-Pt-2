@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
                 Location location = Utilities.getUserLocation(this);
 
                 //If locatin is available, launch details activity
-                if (location != null) {
+                if (location != null && checkPlayServices()) {
                     intent = new Intent(this, StationDetailActivity.class);
                     startActivity(intent);
                 } else {
@@ -122,8 +123,13 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
 
                 break;
             case 2:
-                intent = new Intent(this, StationListActivity.class);
-                startActivity(intent);
+                if (checkPlayServices()) {
+                    intent = new Intent(this, StationListActivity.class);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(this, "Please install Google Play Services", Toast.LENGTH_LONG).show();
+                }
+
                 break;
             case 3:
                 intent = new Intent(this, MapsActivity.class);

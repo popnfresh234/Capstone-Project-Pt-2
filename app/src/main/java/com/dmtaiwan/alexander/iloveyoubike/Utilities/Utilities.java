@@ -92,10 +92,10 @@ public class Utilities {
 
     public static Location getUserLocation(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        double lat = Double.longBitsToDouble(prefs.getLong(Utilities.SHARED_PREFS_LOCATION_LAT_KEY, -1));
-        double longitude = Double.longBitsToDouble(prefs.getLong(Utilities.SHARED_PREFS_LOCATION_LONG_KEY, -1));
+        double lat = Double.longBitsToDouble(prefs.getLong(Utilities.SHARED_PREFS_LOCATION_LAT_KEY, 0));
+        double longitude = Double.longBitsToDouble(prefs.getLong(Utilities.SHARED_PREFS_LOCATION_LONG_KEY, 0));
         //If a location has been stored in shared prefs, retrieve it and set the lat/long coordinates for the query
-        if (lat != -1 && longitude != -1) {
+        if (lat != 0 && longitude != 0) {
             Location userLocation = new Location("newLocation");
             userLocation.setLatitude(lat);
             userLocation.setLongitude(longitude);
