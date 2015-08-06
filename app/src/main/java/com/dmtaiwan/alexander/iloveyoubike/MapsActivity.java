@@ -9,7 +9,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
@@ -122,7 +121,6 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i(LOG_TAG, "Stations: " + String.valueOf(data.getCount()));
 
         if (data != null && data.moveToFirst()) {
             if (mMap != null && Utilities.isGooglePlayAvailable(this)) {
@@ -151,8 +149,6 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        Log.i(LOG_TAG, marker.toString());
-        Log.i(LOG_TAG, String.valueOf(mIdMap.get(marker)));
         int id = mIdMap.get(marker);
         Intent intent = new Intent(this, StationDetailActivity.class);
         intent.putExtra(Utilities.EXTRA_STATION_ID, id);
@@ -196,7 +192,6 @@ public class MapsActivity extends AppCompatActivity implements LoaderManager.Loa
                 mIdMap.put(marker, stationId);
             } while (data.moveToNext());
         }
-        Log.i(LOG_TAG, "Stations added to map: " + String.valueOf(i));
     }
 
 }

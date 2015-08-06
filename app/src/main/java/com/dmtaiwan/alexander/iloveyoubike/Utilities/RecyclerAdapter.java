@@ -2,7 +2,6 @@ package com.dmtaiwan.alexander.iloveyoubike.Utilities;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +51,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         }
         holder.imageView.setImageResource(imageId);
         holder.textView.setText(mContext.getResources().getStringArray(R.array.main_list_items)[position]);
-        Log.i("TEST", holder.textView.getText().toString());
     }
 
     @Override

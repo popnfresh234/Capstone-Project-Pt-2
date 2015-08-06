@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -160,7 +159,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        Log.i(LOG_TAG, "onCreateLoader");
 
         //If started from list of stations, ID passed in with intent, query for specific station
         if (mUsingId) {
@@ -262,7 +260,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             if (mFavoritesArray == null) {
                 mFavoritesArray = new ArrayList<String>();
                 mFavoritesArray.add(String.valueOf(mStationId));
-                Log.i(LOG_TAG, mFavoritesArray.toString());
+
                 spe.putString(Utilities.SHARED_PREFS_FAVORITE_KEY, gson.toJson(mFavoritesArray));
                 spe.commit();
             }
@@ -271,7 +269,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                 mFavoritesArray.add(String.valueOf(mStationId));
                 spe.putString(Utilities.SHARED_PREFS_FAVORITE_KEY, gson.toJson(mFavoritesArray));
                 spe.commit();
-                Log.i(LOG_TAG, mFavoritesArray.toString());
+
 
             }
             if (mCallback != null)
@@ -281,7 +279,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             mFavoriteButton.setImageResource(R.drawable.ic_favorite_outline_grey600_48dp);
             int index = mFavoritesArray.indexOf(String.valueOf(mStationId));
             mFavoritesArray.remove(index);
-            Log.i(LOG_TAG, mFavoritesArray.toString());
+
             spe.putString(Utilities.SHARED_PREFS_FAVORITE_KEY, gson.toJson(mFavoritesArray));
             spe.commit();
 

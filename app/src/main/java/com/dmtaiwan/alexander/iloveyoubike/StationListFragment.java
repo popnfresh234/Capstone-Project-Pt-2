@@ -11,7 +11,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -121,8 +120,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
         //Returning to fragment
         if (savedInstanceState != null) {
-            Log.i(LOG_TAG, "savedInstanceRestore");
-            Log.i(LOG_TAG, String.valueOf(mScrollPosition));
             mScrollPosition = savedInstanceState.getInt(Utilities.OUTSTATE_SCROLL_POSITION);
             mRecyclerView.smoothScrollToPosition(mScrollPosition);
         }
@@ -173,7 +170,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
         if (layoutManager != null && layoutManager instanceof LinearLayoutManager) {
             mScrollPosition = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
-            Log.i(LOG_TAG, String.valueOf(mScrollPosition));
             outState.putInt(Utilities.OUTSTATE_SCROLL_POSITION, mScrollPosition);
         }
         super.onSaveInstanceState(outState);
@@ -222,7 +218,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i(LOG_TAG, "onLoadFinished");
         mAdapter.swapCursor(data);
         updateEmptyView();
         scheduleStartPostponedTransition(mRecyclerView);

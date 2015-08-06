@@ -6,7 +6,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 /**
  * Created by Alexander on 7/29/2015.
@@ -47,10 +46,8 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if ( key.equals(getString(R.string.pref_key_language)) ) {
             //Language has been changed
-            Log.i(LOG_TAG, "language changed");
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            String language = prefs.getString(getString(R.string.pref_key_language), "wtf");
-            Log.i(LOG_TAG, language);
+            String language = prefs.getString(getString(R.string.pref_key_language),getString(R.string.pref_language_english));
         }
     }
 

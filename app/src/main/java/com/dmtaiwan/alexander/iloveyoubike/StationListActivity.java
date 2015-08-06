@@ -7,7 +7,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
@@ -79,7 +78,6 @@ public class StationListActivity extends AppCompatActivity implements StationLis
             getSupportFragmentManager().beginTransaction().replace(R.id.detail_container, fragment, DETAIL_FRAGMENT_TAG).commit();
         } else {
 
-            Log.i(LOG_TAG, "Starting station detail activity");
             Intent detailIntent = new Intent(this, StationDetailActivity.class);
             detailIntent.putExtra(Utilities.EXTRA_STATION_ID, stationId);
             Pair<View, String> p1 = Pair.create((View) vh.stationStatus, getString(R.string.transition_status_iamge_view));
@@ -95,7 +93,6 @@ public class StationListActivity extends AppCompatActivity implements StationLis
 
     @Override
     public void onFavorited() {
-        Log.i(LOG_TAG, "Favorited");
         StationListFragment fragment = (StationListFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_station_list);
         fragment.restartLoader();
     }

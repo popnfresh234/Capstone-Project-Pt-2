@@ -61,7 +61,6 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks, Go
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.i(LOG_TAG, "onConnected");
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 //        if (location == null) {
 
@@ -74,7 +73,6 @@ public class LocationProvider implements GoogleApiClient.ConnectionCallbacks, Go
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.i(LOG_TAG, "onConnectionSuspended");
     }
 
     @Override

@@ -54,7 +54,6 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        Log.i(LOG_TAG, "onPerformSync");
         URL url;
         HttpURLConnection urlConnection = null;
         String responseString = null;
@@ -155,7 +154,6 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
             if (cVVector.size() > 0) {
                 //Remove old values
                 getContext().getContentResolver().delete(StationContract.StationEntry.buildUriAllStations(), null, null);
-                Log.i("SQLITE", "inserting values");
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
                 getContext().getContentResolver().bulkInsert(StationContract.StationEntry.CONTENT_URI, cvArray);
@@ -172,7 +170,6 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
                     cVVector.add(cv);
                 } while (cur.moveToNext());
             }
-            Log.i(LOG_TAG, cVVector.size() + " inserted");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -260,5 +257,6 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor spe = sp.edit();
         spe.putInt(Utilities.SHARED_PREFS_DATA_STATUS_KEY, locationStatus);
+        spe.commit();
     }
 }
