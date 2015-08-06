@@ -79,6 +79,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            setStatus(getContext(), STATUS_SERVER_DOWN);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

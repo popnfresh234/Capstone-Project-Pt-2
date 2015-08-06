@@ -30,12 +30,17 @@
 
     </android.support.design.widget.AppBarLayout>
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
     <android.support.v7.widget.RecyclerView
         android:layout_gravity="center_horizontal"
         android:id="@+id/recycler_view_station_list"
         android:layout_width="@dimen/landscape_station_list_width"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        />
+        </FrameLayout>
 
     <TextView
         android:id="@+id/station_list_empty_view"
