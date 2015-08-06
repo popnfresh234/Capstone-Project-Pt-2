@@ -1,6 +1,7 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 
@@ -26,9 +28,10 @@ import butterknife.InjectView;
 /**
  * Created by lenovo on 8/6/2015.
  */
-public class MainActivityViewPager extends AppCompatActivity implements StationListFragmentClean.Callback, StationDetailFragmentPager.OnFavoriteListener {
+public class MainActivityViewPager extends AppCompatActivity implements StationListFragmentClean.Callback, StationDetailFragmentPager.OnFavoriteListener, LocationProvider.LocationCallback {
     private boolean mTabletLayout = false;
     ViewPagerAdaper mAdapter;
+    private LocationProvider mLocationProvider;
 
     @InjectView(R.id.toolbar)
     Toolbar mToolbar;
@@ -45,6 +48,10 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_pager);
         ButterKnife.inject(this);
+
+        //Setup a location provider
+        mLocationProvider = new LocationProvider(this, this);
+
         setSupportActionBar(mToolbar);
         setupViewPager(mViewPager);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -53,7 +60,7 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
 
                 if (position == 0) {
                     StationListFragmentClean fragmentClean = (StationListFragmentClean) mAdapter.getItem(0);
-                    if(fragmentClean.isAdded()) {
+                    if (fragmentClean.isAdded()) {
                         fragmentClean.restartLoader();
                     }
                 }
@@ -71,6 +78,18 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mLocationProvider.connect();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mLocationProvider.disconnect();
+    }
+
     public void setupViewPager(ViewPager viewPager) {
         mAdapter = new ViewPagerAdaper(getSupportFragmentManager());
 
@@ -80,7 +99,6 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
         args.putBoolean(Utilities.EXTRA_FAVORITES, true);
         favoritesFragment.setArguments(args);
         mAdapter.addFragment(favoritesFragment);
-
         //Set up nearest station fragment
         StationDetailFragmentPager nearestStationFragment = new StationDetailFragmentPager();
         mAdapter.addFragment(nearestStationFragment);
@@ -96,6 +114,24 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
     public void onFavorited() {
         StationListFragmentClean fragment = (StationListFragmentClean) mAdapter.getItem(0);
         fragment.restartLoader();
+    }
+
+    @Override
+    public void handleNewLocation(Location location) {
+        Utilities.setUserLocation(location, this);
+        int currentFragment = mViewPager.getCurrentItem();
+        Fragment fragment = mAdapter.getItem(currentFragment);
+
+        if (fragment instanceof StationDetailFragmentPager) {
+            StationDetailFragmentPager stationDetailFragmentPager = (StationDetailFragmentPager) fragment;
+            stationDetailFragmentPager.restartLoader();
+        }
+
+        if (fragment instanceof StationListFragmentClean) {
+            StationListFragmentClean stationListFragmentClean = (StationListFragmentClean) fragment;
+            stationListFragmentClean.restartLoader();
+        }
+
     }
 
     public class ViewPagerAdaper extends FragmentPagerAdapter {

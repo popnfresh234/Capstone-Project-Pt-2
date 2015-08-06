@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,9 +139,9 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
         //Fetch language preference
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mLanguage = mSharedPrefs.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
-
         //Fetch user location from shared prefs
         mUserLocation = Utilities.getUserLocation(getActivity());
+
     }
 
     @Nullable
@@ -156,7 +157,19 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
     }
 
     @Override
+    public void onResume() {
+
+        //TODO this doesn't do what you think
+        super.onResume();
+        Log.i(LOG_TAG, "onResume");
+        //Fetch user location from shared prefs
+        mUserLocation = Utilities.getUserLocation(getActivity());
+        restartLoader();
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        String sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
 
         //If started from list of stations, ID passed in with intent, query for specific station
         if (mUsingId) {
@@ -168,7 +181,7 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
                     null,
                     null,
                     null);
-        } else {
+        } else if(mUserLocation!= null){
             //Coming from Nearest Station, query for nearest station
             Uri nearestStatonUri = StationContract.StationEntry.buildUriAllStations();
             return new CursorLoader(
@@ -178,6 +191,17 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
                     null,
                     null,
                     Utilities.getSortOrderDistanceString(mUserLocation.getLatitude(), mUserLocation.getLongitude()) + "LIMIT 1"
+            );
+        }
+        else {
+            Uri allStationUri = StationContract.StationEntry.buildUriAllStations();
+            return new CursorLoader(
+                    getActivity(),
+                    allStationUri,
+                    STATION_COLUMNS,
+                    null,
+                    null,
+                    sortOrder
             );
         }
     }
@@ -290,6 +314,16 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
     @Override
     public void handleNewLocation(Location location) {
         Utilities.setUserLocation(location, getActivity());
+
+    }
+
+    public void restartLoader() {
+        //Reset the user's location
+        mUserLocation = Utilities.getUserLocation(getActivity());
+
+        if (getLoaderManager().getLoader(DETAIL_LOADER) != null) {
+            getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
+        }
 
     }
 }

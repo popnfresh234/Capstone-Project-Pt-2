@@ -142,7 +142,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+         public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_station_list, menu);
     }
 

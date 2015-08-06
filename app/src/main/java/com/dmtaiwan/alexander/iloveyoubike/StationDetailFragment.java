@@ -305,4 +305,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         Utilities.setUserLocation(location, getActivity());
 
     }
+
+
 }
