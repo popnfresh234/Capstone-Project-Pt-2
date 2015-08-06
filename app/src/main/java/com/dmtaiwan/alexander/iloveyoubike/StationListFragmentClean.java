@@ -1,6 +1,7 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
 
+import android.app.Activity;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
@@ -11,13 +12,13 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
@@ -34,7 +35,7 @@ import butterknife.InjectView;
 /**
  * Created by Alexander on 7/28/2015.
  */
-public class StationListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback {
+public class StationListFragmentClean extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback {
     private static final String LOG_TAG = StationListFragment.class.getSimpleName();
     private static final int STATION_LOADER = 0;
     private RecyclerAdapterStation mAdapter;
@@ -75,7 +76,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public static final int COL_LAST_UPDATED = 10;
 
 
-
     public interface Callback {
         /**
          * DetailFragmentCallback for when an item has been selected.
@@ -83,12 +83,21 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         public void onItemSelected(int stationId, RecyclerAdapterStation.ViewHolder vh);
     }
 
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getActivity().supportPostponeEnterTransition();
-        getLoaderManager().initLoader(STATION_LOADER, null, this);
+        Log.i(LOG_TAG, "activityCreated");
+        if (savedInstanceState == null) {
+            getLoaderManager().initLoader(STATION_LOADER, null, this);
+        }
         super.onActivityCreated(savedInstanceState);
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,7 +105,9 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         setHasOptionsMenu(true);
 
         //Check if this is a favorites list
-        mIsFavorites = getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_FAVORITES, false);
+        if (getArguments() != null) {
+            mIsFavorites = getArguments().getBoolean(Utilities.EXTRA_FAVORITES);
+        }
 
         //Create a location provider to update position
         mLocationProvider = new LocationProvider(getActivity(), this);
@@ -131,8 +142,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         super.onResume();
         //Connect to play services
         mLocationProvider.connect();
-        //Restart the loader in case items were unfavorited
-        restartLoader();
     }
 
     @Override
@@ -220,7 +229,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mAdapter.swapCursor(data);
         updateEmptyView();
-        scheduleStartPostponedTransition(mRecyclerView);
     }
 
     @Override
@@ -236,17 +244,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         getLoaderManager().restartLoader(STATION_LOADER, null, this);
     }
 
-    private void scheduleStartPostponedTransition(final View sharedElement) {
-        sharedElement.getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
-                        getActivity().supportStartPostponedEnterTransition();
-                        return true;
-                    }
-                });
-    }
 
     private void updateEmptyView() {
         if (mAdapter.getItemCount() == 0) {
@@ -275,7 +272,5 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public void handleNewLocation(Location location) {
         Utilities.setUserLocation(location, getActivity());
         restartLoader();
-
     }
-
 }

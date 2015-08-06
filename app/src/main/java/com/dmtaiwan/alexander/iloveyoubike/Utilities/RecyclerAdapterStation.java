@@ -138,7 +138,6 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
             int stationId = mCursor.getInt(StationListFragment.COL_STATION_ID);
             mClickHandler.onClick(stationId, this);
         }
-
     }
 
     public Cursor getCursor() {
@@ -146,9 +145,12 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
     }
 
     public void swapCursor(Cursor newCursor) {
+        //Update the user locatoin
+        mUserLocation = Utilities.getUserLocation(mContext);
         mCursor = newCursor;
         notifyDataSetChanged();
         mEmptyView.setVisibility(getItemCount() == 0 ? View.VISIBLE : View.GONE);
+
     }
 
 
