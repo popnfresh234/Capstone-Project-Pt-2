@@ -54,7 +54,11 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
         mLocationProvider = new LocationProvider(this, this);
 
         setSupportActionBar(mToolbar);
+
         setupViewPager(mViewPager);
+
+        //Set up tab layout
+        mTabLayout.setupWithViewPager(mViewPager);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

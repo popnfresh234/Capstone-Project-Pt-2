@@ -7,9 +7,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/station_detail_container"
@@ -21,7 +18,7 @@
                 layout="@layout/station_detail_title"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="3" />
+                android:layout_weight="3"/>
 
             <include
                 layout="@layout/station_detail_body"
@@ -31,7 +28,7 @@
 
         </LinearLayout>
 
-    </android.support.v4.widget.NestedScrollView>
+
 
 
     <TextView
