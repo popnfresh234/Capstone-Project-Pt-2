@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
     <LinearLayout
         android:id="@+id/station_detail_container"
         android:layout_width="match_parent"
@@ -115,7 +120,10 @@
 
         </android.support.v7.widget.GridLayout>
 
+
     </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
     <TextView
         android:id="@+id/text_view_station_detail_empty"

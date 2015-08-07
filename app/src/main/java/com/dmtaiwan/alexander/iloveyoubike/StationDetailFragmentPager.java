@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.FragmentCallback;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
@@ -35,7 +35,7 @@ import butterknife.OnClick;
 /**
  * Created by lenovo on 7/29/2015.
  */
-public class StationDetailFragmentPager extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback {
+public class StationDetailFragmentPager extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback, FragmentCallback {
 
     private static final String LOG_TAG = StationDetailFragmentPager.class.getSimpleName();
     public static final int DETAIL_LOADER = 0;
@@ -88,12 +88,12 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
 
     private int mStationId;
     private String mLanguage;
-    private Location mUserLocation;
     private SharedPreferences mSharedPrefs;
     private boolean isFavorite;
     private ArrayList<String> mFavoritesArray;
     private LocationProvider mLocationProvider;
     private OnFavoriteListener mCallback;
+
 
     public interface OnFavoriteListener {
         public void onFavorited();
@@ -113,6 +113,8 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
         }
 
     }
+
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -139,9 +141,6 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
         //Fetch language preference
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mLanguage = mSharedPrefs.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
-        //Fetch user location from shared prefs
-        mUserLocation = Utilities.getUserLocation(getActivity());
-
     }
 
     @Nullable
@@ -156,20 +155,11 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-
-        //TODO this doesn't do what you think
-        super.onResume();
-        Log.i(LOG_TAG, "onResume");
-        //Fetch user location from shared prefs
-        mUserLocation = Utilities.getUserLocation(getActivity());
-        restartLoader();
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
+        Location userLocation = Utilities.getUserLocation(getActivity());
 
         //If started from list of stations, ID passed in with intent, query for specific station
         if (mUsingId) {
@@ -181,7 +171,7 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
                     null,
                     null,
                     null);
-        } else if(mUserLocation!= null){
+        } else if (userLocation != null) {
             //Coming from Nearest Station, query for nearest station
             Uri nearestStatonUri = StationContract.StationEntry.buildUriAllStations();
             return new CursorLoader(
@@ -190,10 +180,9 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
                     STATION_COLUMNS,
                     null,
                     null,
-                    Utilities.getSortOrderDistanceString(mUserLocation.getLatitude(), mUserLocation.getLongitude()) + "LIMIT 1"
+                    Utilities.getSortOrderDistanceString(userLocation.getLatitude(), userLocation.getLongitude()) + "LIMIT 1"
             );
-        }
-        else {
+        } else {
             Uri allStationUri = StationContract.StationEntry.buildUriAllStations();
             return new CursorLoader(
                     getActivity(),
@@ -247,11 +236,12 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
             }
 
             //Set the distance if we obtain one from the user's location.  If not, set to no data
-            if (mUserLocation != null) {
+            Location userLocation = Utilities.getUserLocation(getActivity());
+            if (userLocation != null) {
                 //calculate the distance from the user's last known location
                 double stationLat = cursor.getDouble(COL_STATION_LAT);
                 double stationLong = cursor.getDouble(COL_STATION_LONG);
-                float distance = Utilities.calculateDistance(stationLat, stationLong, mUserLocation);
+                float distance = Utilities.calculateDistance(stationLat, stationLong, userLocation);
                 mDistance.setText(Utilities.formatDistance(distance));
             } else {
                 mDistance.setText(getActivity().getString(R.string.text_view_station_detail_no_data));
@@ -310,7 +300,6 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
     }
 
 
-
     @Override
     public void handleNewLocation(Location location) {
         Utilities.setUserLocation(location, getActivity());
@@ -318,12 +307,11 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
     }
 
     public void restartLoader() {
-        //Reset the user's location
-        mUserLocation = Utilities.getUserLocation(getActivity());
+        getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
+    }
 
-        if (getLoaderManager().getLoader(DETAIL_LOADER) != null) {
-            getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
-        }
-
+    @Override
+    public void onFragmentShown() {
+        restartLoader();
     }
 }

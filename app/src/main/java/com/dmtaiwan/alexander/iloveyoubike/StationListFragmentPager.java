@@ -11,7 +11,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.FragmentCallback;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
@@ -33,15 +33,13 @@ import butterknife.InjectView;
 /**
  * Created by Alexander on 7/28/2015.
  */
-public class StationListFragmentClean extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class StationListFragmentPager extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback {
     private static final String LOG_TAG = StationListFragment.class.getSimpleName();
     private static final int STATION_LOADER = 0;
     private RecyclerAdapterStation mAdapter;
 
     private Boolean mIsFavorites = false;
     private Boolean mSortDefaultOrder = false;
-
-    private Location mUserLocation;
 
 
     @InjectView(R.id.recycler_view_station_list)
@@ -91,12 +89,11 @@ public class StationListFragmentClean extends Fragment implements LoaderManager.
     }
 
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //Get the user's location on creation
-        mUserLocation = Utilities.getUserLocation(getActivity());
         setHasOptionsMenu(true);
         //Create a location provider to update position
 
@@ -109,7 +106,7 @@ public class StationListFragmentClean extends Fragment implements LoaderManager.
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_station_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_station_list_pager, container, false);
         ButterKnife.inject(this, rootView);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -148,27 +145,19 @@ public class StationListFragmentClean extends Fragment implements LoaderManager.
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    public void onResume() {
-        //This doesn't do what you think
-        super.onResume();
-        Log.i(LOG_TAG, "onResume");
-        restartLoader();
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         String sortOrder;
+        Location userLocation = Utilities.getUserLocation(getActivity());
 
 
-        if (mUserLocation == null) {
+        if (userLocation == null) {
             sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
         } else if (mSortDefaultOrder) {
             sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
         } else {
-            sortOrder = Utilities.getSortOrderDistanceString(mUserLocation.getLatitude(), mUserLocation.getLongitude());
+            sortOrder = Utilities.getSortOrderDistanceString(userLocation.getLatitude(), userLocation.getLongitude());
         }
         //Create a URI for querying all stations
         Uri allStationsUri = StationContract.StationEntry.buildUriAllStations();
@@ -205,26 +194,6 @@ public class StationListFragmentClean extends Fragment implements LoaderManager.
         updateEmptyView();
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mAdapter.swapCursor(null);
-    }
-
-    private void updateStationData() {
-        IloveyoubikeSyncAdapter.syncImmediately(getActivity());
-    }
-
-    public void restartLoader() {
-        mUserLocation = Utilities.getUserLocation(getActivity());
-        Log.i(LOG_TAG, String.valueOf(mUserLocation.getLatitude()));
-        Log.i(LOG_TAG, String.valueOf(mUserLocation.getLongitude()));
-        if (getLoaderManager().getLoader(STATION_LOADER) != null) {
-            getLoaderManager().restartLoader(STATION_LOADER, null, this);
-        }
-
-    }
-
-
     private void updateEmptyView() {
         if (mAdapter.getItemCount() == 0) {
             if (mEmptyView != null) {
@@ -247,4 +216,24 @@ public class StationListFragmentClean extends Fragment implements LoaderManager.
             }
         }
     }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
+    }
+
+    private void updateStationData() {
+        IloveyoubikeSyncAdapter.syncImmediately(getActivity());
+    }
+
+    public void restartLoader() {
+        getLoaderManager().restartLoader(STATION_LOADER, null, this);
+    }
+
+    @Override
+    public void onFragmentShown() {
+            restartLoader();
+    }
+
+
 }

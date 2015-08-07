@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:orientation="vertical">
+    android:paddingRight="@dimen/activity_horizontal_margin">
 
 
     <android.support.v7.widget.Space
@@ -17,37 +17,35 @@
 
     <TextView
         android:id="@+id/text_view_station_detail_station_name"
-        android:layout_marginTop="@dimen/abc_list_item_padding_horizontal_material"
-        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:layout_marginTop="@dimen/abc_list_item_padding_horizontal_material"
+        android:gravity="center_horizontal"
         android:textSize="@dimen/station_detail_station_text_size"
         android:transitionName="@string/transitoin_station_name_text"
-        tools:text="station name"
-/>
-
-
+        tools:text="station name" />
 
 
     <ImageView
         android:id="@+id/image_view_station_detail_status"
-        android:layout_gravity="center_horizontal"
-        android:adjustViewBounds="true"
         android:layout_width="@dimen/status_icon"
         android:layout_height="@dimen/status_icon"
+        android:layout_gravity="center_horizontal"
+        android:adjustViewBounds="true"
         android:src="@drawable/ic_my_location_black_48dp"
         android:transitionName="@string/transition_status_iamge_view" />
 
     <TextView
         android:id="@+id/text_view_station_detail_district"
-        android:layout_marginTop="@dimen/abc_list_item_padding_horizontal_material"
-        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
+        android:layout_marginTop="@dimen/abc_list_item_padding_horizontal_material"
+        android:gravity="center_horizontal"
+        android:textSize="@dimen/station_detail_district_text_size"
         tools:text="station district" />
 
 

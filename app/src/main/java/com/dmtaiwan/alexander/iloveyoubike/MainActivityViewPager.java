@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.FragmentCallback;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
@@ -28,7 +29,7 @@ import butterknife.InjectView;
 /**
  * Created by lenovo on 8/6/2015.
  */
-public class MainActivityViewPager extends AppCompatActivity implements StationListFragmentClean.Callback, StationDetailFragmentPager.OnFavoriteListener, LocationProvider.LocationCallback {
+public class MainActivityViewPager extends AppCompatActivity implements StationListFragmentPager.Callback, StationDetailFragmentPager.OnFavoriteListener, LocationProvider.LocationCallback {
     private boolean mTabletLayout = false;
     ViewPagerAdaper mAdapter;
     private LocationProvider mLocationProvider;
@@ -57,18 +58,12 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-                if (position == 0) {
-                    StationListFragmentClean fragmentClean = (StationListFragmentClean) mAdapter.getItem(0);
-                    if (fragmentClean.isAdded()) {
-                        fragmentClean.restartLoader();
-                    }
-                }
             }
 
             @Override
             public void onPageSelected(int position) {
-
+                FragmentCallback fragmentToShow = (FragmentCallback) mAdapter.instantiateItem(mViewPager, position);
+                fragmentToShow.onFragmentShown();
             }
 
             @Override
@@ -94,7 +89,7 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
         mAdapter = new ViewPagerAdaper(getSupportFragmentManager());
 
         //Set up favorites fragment
-        StationListFragmentClean favoritesFragment = new StationListFragmentClean();
+        StationListFragmentPager favoritesFragment = new StationListFragmentPager();
         Bundle args = new Bundle();
         args.putBoolean(Utilities.EXTRA_FAVORITES, true);
         favoritesFragment.setArguments(args);
@@ -104,7 +99,7 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
         mAdapter.addFragment(nearestStationFragment);
 
         //Set up all stations fragment
-        StationListFragmentClean allStations = new StationListFragmentClean();
+        StationListFragmentPager allStations = new StationListFragmentPager();
         mAdapter.addFragment(allStations);
 
         viewPager.setAdapter(mAdapter);
@@ -112,7 +107,7 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
 
     @Override
     public void onFavorited() {
-        StationListFragmentClean fragment = (StationListFragmentClean) mAdapter.getItem(0);
+        StationListFragmentPager fragment = (StationListFragmentPager) mAdapter.getItem(0);
         fragment.restartLoader();
     }
 
@@ -120,17 +115,19 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
     public void handleNewLocation(Location location) {
         Utilities.setUserLocation(location, this);
         int currentFragment = mViewPager.getCurrentItem();
-        Fragment fragment = mAdapter.getItem(currentFragment);
+        Fragment fragment = (Fragment) mAdapter.instantiateItem(mViewPager, currentFragment);
+
 
         if (fragment instanceof StationDetailFragmentPager) {
             StationDetailFragmentPager stationDetailFragmentPager = (StationDetailFragmentPager) fragment;
             stationDetailFragmentPager.restartLoader();
         }
 
-        if (fragment instanceof StationListFragmentClean) {
-            StationListFragmentClean stationListFragmentClean = (StationListFragmentClean) fragment;
-            stationListFragmentClean.restartLoader();
+        if (fragment instanceof StationListFragmentPager) {
+            StationListFragmentPager stationListFragmentPager = (StationListFragmentPager) fragment;
+            stationListFragmentPager.restartLoader();
         }
+
 
     }
 
