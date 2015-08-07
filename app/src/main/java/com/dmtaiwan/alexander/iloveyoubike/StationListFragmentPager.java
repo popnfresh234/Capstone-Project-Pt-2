@@ -41,6 +41,8 @@ public class StationListFragmentPager extends Fragment implements LoaderManager.
     private Boolean mIsFavorites = false;
     private Boolean mSortDefaultOrder = false;
 
+    private Boolean mIsTablet = false;
+
 
     @InjectView(R.id.recycler_view_station_list)
     RecyclerView mRecyclerView;
@@ -107,6 +109,31 @@ public class StationListFragmentPager extends Fragment implements LoaderManager.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_station_list_pager, container, false);
+
+
+        //Check for tablet
+        if (rootView.findViewById(R.id.detail_container)!= null) {
+            mIsTablet = true;
+
+            int stationId = 1;
+            //Check if favorite4s
+
+            if (mIsFavorites) {
+                //Get the appropriate ID for the fragment
+                ArrayList<String> favoritesArray = Utilities.getFavoriteArray(getActivity());
+                if (favoritesArray != null && favoritesArray.size() > 0) {
+                    stationId = Integer.parseInt(favoritesArray.get(0));
+                }
+
+            }
+            StationDetailFragmentPager detailFragment = new StationDetailFragmentPager();
+            Bundle args = new Bundle();
+            args.putInt(Utilities.EXTRA_STATION_ID, stationId);
+            detailFragment.setArguments(args);
+            getChildFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, detailFragment).commit();
+        }
+
         ButterKnife.inject(this, rootView);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -173,6 +200,10 @@ public class StationListFragmentPager extends Fragment implements LoaderManager.
                 String[] strings = new String[favoritesArray.size()];
                 selectionArgs = favoritesArray.toArray(strings);
                 selection = Utilities.generateFavoritesWhereString(favoritesArray);
+            }else {
+                String[] fakeArgs = {"999"};
+                selectionArgs = fakeArgs;
+                selection = StationContract.StationEntry.COLUMN_STATION_ID + " in (?)";
             }
         }
 
@@ -200,19 +231,28 @@ public class StationListFragmentPager extends Fragment implements LoaderManager.
 
                 int emptyViewText = R.string.text_view_empty_view;
                 int status = Utilities.getServerStatus(getActivity());
-                switch (status) {
-                    case IloveyoubikeSyncAdapter.STATUS_SERVER_DOWN:
-                        emptyViewText = R.string.text_view_empty_view_server_down;
-                        break;
-                    case IloveyoubikeSyncAdapter.STATUS_SERVER_INVALID:
-                        emptyViewText = R.string.text_view_empty_view_server_invalid;
-                        break;
-                    default:
-                        if (!Utilities.isNetworkAvailable(getActivity())) {
-                            emptyViewText = R.string.text_view_empty_view_network;
-                        }
+                if (mIsFavorites) {
+                    mEmptyView.setText(R.string.text_view_empty_view_favorites);
+                }else {
+
+                    switch (status) {
+                        case IloveyoubikeSyncAdapter.STATUS_SERVER_DOWN:
+                            emptyViewText = R.string.text_view_empty_view_server_down;
+                            break;
+                        case IloveyoubikeSyncAdapter.STATUS_SERVER_INVALID:
+                            emptyViewText = R.string.text_view_empty_view_server_invalid;
+                            break;
+                        case IloveyoubikeSyncAdapter.STATUS_FAVORITES_EMPTY:
+                            emptyViewText = R.string.text_view_empty_view_favorites;
+                            break;
+                        default:
+                            if (!Utilities.isNetworkAvailable(getActivity())) {
+                                emptyViewText = R.string.text_view_empty_view_network;
+                            }
+                    }
+                    mEmptyView.setText(emptyViewText);
                 }
-                mEmptyView.setText(emptyViewText);
+
             }
         }
     }

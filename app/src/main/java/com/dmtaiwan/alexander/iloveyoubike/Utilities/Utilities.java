@@ -195,6 +195,13 @@ public class Utilities {
         return front + "." + back;
     }
 
+    public static void setServerStatus(Context context, int locationStatus) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor spe = sp.edit();
+        spe.putInt(Utilities.SHARED_PREFS_DATA_STATUS_KEY, locationStatus);
+        spe.commit();
+    }
+
     public static int getServerStatus(Context c) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
         return sp.getInt(Utilities.SHARED_PREFS_DATA_STATUS_KEY, IloveyoubikeSyncAdapter.STATUS_SERVER_UNKNOWN);

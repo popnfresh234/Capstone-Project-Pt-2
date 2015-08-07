@@ -25,6 +25,7 @@
     <string name="text_view_empty_view_server_down">No data available.  The server is not responding.</string>
     <string name="text_view_empty_view_server_invalid">No data available.  The server is returning invalid data.</string>
     <string name="text_view_empty_view_network">No data available.  The network is not available.</string>
+    <string name="text_view_empty_view_favorites">No favorites have been selected yet!</string>
 
 
     <!--Shared Prefs -->
@@ -60,6 +61,15 @@
         <item>All Stations</item>
         <item>View Stations on Map</item>
     </string-array>
+
+    <string-array name="tab_titles">
+        <item>Favorites</item>
+        <item>Nearest</item>
+        <item>All Stations</item>
+        <item>Map</item>
+    </string-array>
+
+
     <string name="title_activity_maps">Station Map</string>
     <string name="action_map">View on Map</string>
 </resources>

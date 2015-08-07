@@ -18,7 +18,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:background="@android:color/holo_red_dark">
+            android:background="@android:color/white">
 
             <android.support.v7.widget.Space
                 android:layout_width="match_parent"
@@ -70,8 +70,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/holo_blue_dark">
+            android:layout_weight="1">
 
             <android.support.v7.widget.GridLayout
                 android:id="@+id/detail_additional_pane"
@@ -183,14 +182,13 @@
             android:layout_height="56dp"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:background="@color/theme_primary"
-            />
+            android:background="@android:color/white"/>
 
         <FrameLayout
             android:layout_height="56dp"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:background="@color/theme_primary_dark" />
+             />
     </LinearLayout>
 
     <TextView

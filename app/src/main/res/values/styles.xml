@@ -9,4 +9,12 @@
 
     </style>
 
+    <style name="CustomTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/CustomTabTextAppearance</item>
+    </style>
+
+    <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+    </style>
+
 </resources>

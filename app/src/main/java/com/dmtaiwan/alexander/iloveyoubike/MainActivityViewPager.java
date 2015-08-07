@@ -1,5 +1,6 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
@@ -90,7 +91,7 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
     }
 
     public void setupViewPager(ViewPager viewPager) {
-        mAdapter = new ViewPagerAdaper(getSupportFragmentManager());
+        mAdapter = new ViewPagerAdaper(getSupportFragmentManager(), this);
 
         //Set up favorites fragment
         StationListFragmentPager favoritesFragment = new StationListFragmentPager();
@@ -137,9 +138,11 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
 
     public class ViewPagerAdaper extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
+        private Context mContext;
 
-        public ViewPagerAdaper(FragmentManager fm) {
+        public ViewPagerAdaper(FragmentManager fm, Context context) {
             super(fm);
+            mContext = context;
         }
 
         @Override
@@ -155,7 +158,14 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
         public void addFragment(Fragment fragment) {
             mFragmentList.add(fragment);
         }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            String[] titleArray = mContext.getResources().getStringArray(R.array.tab_titles);
+            return titleArray[position];
+        }
     }
+
 
     @Override
     public void onItemSelected(int stationId, RecyclerAdapterStation.ViewHolder vh) {
@@ -163,7 +173,8 @@ public class MainActivityViewPager extends AppCompatActivity implements StationL
         if (mTabletLayout) {
             Bundle args = new Bundle();
             args.putInt(Utilities.EXTRA_STATION_ID, stationId);
-            StationDetailFragment fragment = new StationDetailFragment();
+            args.putBoolean(Utilities.EXTRA_DETAIL_ACTIVITY, true);
+            StationDetailFragmentPager fragment = new StationDetailFragmentPager();
             fragment.setArguments(args);
             getSupportFragmentManager().beginTransaction().replace(R.id.detail_container, fragment).commit();
         } else {

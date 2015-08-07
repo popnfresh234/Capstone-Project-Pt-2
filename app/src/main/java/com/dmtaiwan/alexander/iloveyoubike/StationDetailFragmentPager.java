@@ -314,8 +314,21 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
         getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
     }
 
+    private void checkFavorite() {
+        //In case the nearest station was unfavorited from favorite or all station list
+        ArrayList<String> favoritesArray = Utilities.getFavoriteArray(getActivity());
+        if (favoritesArray!= null && favoritesArray.contains(String.valueOf(mStationId))) {
+            isFavorite = true;
+            mFavoriteButton.setImageResource(R.drawable.ic_favorite_black_48dp);
+        }else{
+            isFavorite = false;
+            mFavoriteButton.setImageResource(R.drawable.ic_favorite_outline_grey600_48dp);
+        }
+    }
+
     @Override
     public void onFragmentShown() {
         restartLoader();
+        checkFavorite();
     }
 }

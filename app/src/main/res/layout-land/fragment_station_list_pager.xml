@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+
+
+
+
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view_station_list"
+                android:layout_width="@dimen/landscape_station_list_width"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal" />
+
+
+        <TextView
+            android:id="@+id/station_list_empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal|center_vertical"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:text="@string/text_view_empty_view"
+            app:layout_anchor="@+id/recycler_view_station_list"
+            app:layout_anchorGravity="fill" />
+
+
+</FrameLayout>

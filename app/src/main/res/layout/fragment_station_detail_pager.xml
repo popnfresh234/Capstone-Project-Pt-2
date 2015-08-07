@@ -79,6 +79,7 @@
             android:paddingRight="@dimen/detail_station_horizontal_padding"
             android:paddingStart="@dimen/detail_station_horizontal_padding"
             android:paddingTop="@dimen/abc_list_item_padding_horizontal_material"
+            android:paddingBottom="@dimen/abc_list_item_padding_horizontal_material"
             app:columnCount="2">
 
 
@@ -86,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:text="@string/text_view_station_detail_distance"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textSize="@dimen/station_detail_details_text_size"
                 android:textColor="@color/secondary_text_light_bg"
                 app:layout_columnWeight="1"
                 app:layout_gravity="fill"
@@ -95,7 +96,7 @@
             <TextView
                 android:id="@+id/text_view_station_detail_distance"
                 android:gravity="center_vertical|right"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textSize="@dimen/station_detail_details_text_size"
                 android:textColor="@color/theme_accent"
                 app:layout_gravity="fill"
                 tools:text="4.4km" />
@@ -105,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:text="@string/text_view_station_detail_bikes_available"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textSize="@dimen/station_detail_details_text_size"
                 android:textColor="@color/secondary_text_light_bg"
                 app:layout_gravity="fill"
                 app:layout_rowWeight="1" />
@@ -113,7 +114,7 @@
             <TextView
                 android:id="@+id/text_view_station_detail_bikes"
                 android:gravity="center_vertical|right"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textSize="@dimen/station_detail_details_text_size"
                 android:textColor="@color/theme_accent"
                 app:layout_gravity="fill"
                 tools:text="124" />
@@ -123,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:text="@string/text_view_station_detail_spaces_available"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:textSize="@dimen/station_detail_details_text_size"
                 android:textColor="@color/secondary_text_light_bg"
                 app:layout_gravity="fill"
                 app:layout_rowWeight="1" />
@@ -131,7 +132,7 @@
             <TextView
                 android:id="@+id/text_view_station_detail_spaces"
                 android:gravity="center_vertical|right"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textSize="@dimen/station_detail_details_text_size"
                 android:textColor="@color/theme_accent"
                 app:layout_gravity="fill"
                 tools:text="13" />

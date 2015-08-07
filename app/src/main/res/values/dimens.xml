@@ -16,6 +16,7 @@
 
     <dimen name="station_detail_station_text_size">28sp</dimen>
     <dimen name="station_detail_district_text_size">20sp</dimen>
+    <dimen name="station_detail_details_text_size">20sp</dimen>
 
     <dimen name="detail_view_padding_vertical">@dimen/abc_list_item_padding_horizontal_material</dimen>
     <dimen name="detail_station_horizontal_padding">32dp</dimen>
