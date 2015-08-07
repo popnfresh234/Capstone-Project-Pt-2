@@ -93,6 +93,7 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
     private ArrayList<String> mFavoritesArray;
     private LocationProvider mLocationProvider;
     private OnFavoriteListener mCallback;
+    private Boolean mIsFromDetailActivity;
 
 
     public interface OnFavoriteListener {
@@ -138,6 +139,8 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
             mLocationProvider = new LocationProvider(getActivity(), this);
         }
 
+        mIsFromDetailActivity = getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_DETAIL_ACTIVITY, false);
+
         //Fetch language preference
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mLanguage = mSharedPrefs.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
@@ -146,12 +149,13 @@ public class StationDetailFragmentPager extends Fragment implements LoaderManage
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_detail_alias, container, false);
-        ButterKnife.inject(this, rootView);
-        if (getArguments() != null) {
-            mUsingId = true;
-            mStationId = getArguments().getInt(Utilities.EXTRA_STATION_ID);
+        View rootView;
+        if(mIsFromDetailActivity) {
+            rootView = inflater.inflate(R.layout.fragment_detail_alias, container, false);
         }
+        else rootView = inflater.inflate(R.layout.fragment_dtail_pager_alias, container, false);
+        ButterKnife.inject(this, rootView);
+
         return rootView;
     }
 
