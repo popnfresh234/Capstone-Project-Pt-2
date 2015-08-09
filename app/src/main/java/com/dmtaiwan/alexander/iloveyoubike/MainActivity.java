@@ -78,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
 
             @Override
             public void onPageSelected(int position) {
+
+                //Callback to restart the loader to reflect changes
                 FragmentCallback fragmentToShow = (FragmentCallback) mAdapter.instantiateItem(mViewPager, position);
                 fragmentToShow.onFragmentShown();
             }

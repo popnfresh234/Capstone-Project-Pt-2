@@ -1,6 +1,7 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
@@ -12,7 +13,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -87,13 +92,11 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     ImageButton mFavoriteButton;
 
     private int mStationId;
-    private String mLanguage;
-    private SharedPreferences mSharedPrefs;
     private boolean isFavorite;
     private ArrayList<String> mFavoritesArray;
-    private LocationProvider mLocationProvider;
     private OnFavoriteListener mCallback;
     private Boolean mIsFromDetailActivity;
+    private String mLanguage;
 
 
     public interface OnFavoriteListener {
@@ -116,7 +119,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     }
 
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
 //        if (mUserLocation != null) {
@@ -133,38 +135,74 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //Check if creating a detail fragment for a specific station
         if (getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1) != -1) {
             mStationId = getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1);
             mUsingId = true; //Set flag showing that ID is passed with intent
-            mLocationProvider = new LocationProvider(getActivity(), this);
         }
 
-
-        if (getArguments()!= null && getArguments().getInt(Utilities.EXTRA_STATION_ID, -1) != -1) {
+        //Check if creating a detail fragment for a specific station
+        if (getArguments() != null && getArguments().getInt(Utilities.EXTRA_STATION_ID, -1) != -1) {
             mStationId = getArguments().getInt(Utilities.EXTRA_STATION_ID);
             mUsingId = true;
         }
 
+        //Check if the fragment is created from a detail activity meaning it was created in phone mode
         mIsFromDetailActivity = getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_DETAIL_ACTIVITY, false);
 
-        //Fetch language preference
-        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        mLanguage = mSharedPrefs.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
+        //If from detail activity, ie phone mode, show options menu
+        if (mIsFromDetailActivity) {
+            setHasOptionsMenu(true);
+        }
+
+        //Get the preferred language
+        mLanguage = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString(getString(R.string.pref_key_language), getString(R.string.pref_language_english));
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView;
-        if(mIsFromDetailActivity) {
+        if (mIsFromDetailActivity) {
             rootView = inflater.inflate(R.layout.fragment_detail_alias, container, false);
-        }
-        else rootView = inflater.inflate(R.layout.fragment_detail_pager_alias, container, false);
+        } else rootView = inflater.inflate(R.layout.fragment_detail_pager_alias, container, false);
         ButterKnife.inject(this, rootView);
 
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        //Fetch the current language
+        String language = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString(getString(R.string.pref_key_language), getString(R.string.pref_language_english));
+
+        //Check if it has changed since the fragment was created
+        if (!language.equals(mLanguage)) {
+            //Set the language to current language and restart the loader
+            mLanguage = language;
+            restartLoader();
+
+            Log.i(LOG_TAG, "restarting loader");
+        }
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_station_detail, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(settingsIntent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -237,7 +275,11 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                 isFavorite = false;
             }
 
-            if (mLanguage.equals(getActivity().getString(R.string.pref_language_english))) {
+            //Get the preferred language
+            String language = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
+
+            if (language.equals(getActivity().getString(R.string.pref_language_english))) {
                 mStationName.setText(cursor.getString(COL_STATION_NAME_EN));
                 mDistrict.setText(cursor.getString(COL_STATION_DISTRICT_EN));
             } else {
@@ -269,7 +311,8 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
     @OnClick(R.id.button_station_detail_favorite)
     public void onFavoriteClicked() {
-        SharedPreferences.Editor spe = mSharedPrefs.edit();
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences.Editor spe = sharedPrefs.edit();
         Gson gson = new Gson();
 
         //If not a favorite station
@@ -281,7 +324,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             if (mFavoritesArray == null) {
                 mFavoritesArray = new ArrayList<String>();
                 mFavoritesArray.add(String.valueOf(mStationId));
-
+                //Convert to json and store in shared prefs
                 spe.putString(Utilities.SHARED_PREFS_FAVORITE_KEY, gson.toJson(mFavoritesArray));
                 spe.commit();
             }
@@ -290,20 +333,21 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                 mFavoritesArray.add(String.valueOf(mStationId));
                 spe.putString(Utilities.SHARED_PREFS_FAVORITE_KEY, gson.toJson(mFavoritesArray));
                 spe.commit();
-
-
             }
+            //If in tablet mode, call back to activity to update the list of stations
             if (mCallback != null)
                 mCallback.onFavorited();
-        } else if (isFavorite) {
+        }
+        //If it is already a favorite station
+        else if (isFavorite) {
             isFavorite = false;
             mFavoriteButton.setImageResource(R.drawable.ic_favorite_outline_grey600_48dp);
             int index = mFavoritesArray.indexOf(String.valueOf(mStationId));
             mFavoritesArray.remove(index);
-
+            //Convert array to json string and store in shared prefs
             spe.putString(Utilities.SHARED_PREFS_FAVORITE_KEY, gson.toJson(mFavoritesArray));
             spe.commit();
-
+            //Call back to activity to notify list of stations
             if (mCallback != null)
                 mCallback.onFavorited();
         }
@@ -313,7 +357,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void handleNewLocation(Location location) {
         Utilities.setUserLocation(location, getActivity());
-
     }
 
     public void restartLoader() {
@@ -322,11 +365,12 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
     private void checkFavorite() {
         //In case the nearest station was unfavorited from favorite or all station list
+        //Check if station is contained in the list of favorites, if so make sure button is in the proper state
         ArrayList<String> favoritesArray = Utilities.getFavoriteArray(getActivity());
-        if (favoritesArray!= null && favoritesArray.contains(String.valueOf(mStationId))) {
+        if (favoritesArray != null && favoritesArray.contains(String.valueOf(mStationId))) {
             isFavorite = true;
             mFavoriteButton.setImageResource(R.drawable.ic_favorite_black_48dp);
-        }else{
+        } else {
             isFavorite = false;
             mFavoriteButton.setImageResource(R.drawable.ic_favorite_outline_grey600_48dp);
         }

@@ -1,10 +1,12 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -42,8 +44,9 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     private Boolean mIsFavorites = false;
     private Boolean mSortDefaultOrder = false;
-
     private Boolean mIsTablet = false;
+
+    private String mLanguage;
 
 
     @InjectView(R.id.recycler_view_station_list)
@@ -95,19 +98,36 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         super.onActivityCreated(savedInstanceState);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        //Fetch the current language
+        String language = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString(getString(R.string.pref_key_language), getString(R.string.pref_language_english));
+
+        //Check if it has changed since the fragment was created
+        if (!language.equals(mLanguage)) {
+            //Set the language to current language and restart the loader
+            mLanguage = language;
+            restartLoader();
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
-        //Create a location provider to update position
 
         //Check if this is a favorites list
         if (getArguments() != null) {
             mIsFavorites = getArguments().getBoolean(Utilities.EXTRA_FAVORITES);
 
         }
+
+        //Get the language setting
+        mLanguage = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString(getString(R.string.pref_key_language), getString(R.string.pref_language_english));
     }
 
     @Override
@@ -168,6 +188,11 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         if (id == R.id.action_sort_proximity) {
             mSortDefaultOrder = false;
             restartLoader();
+        }
+
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(settingsIntent);
         }
         return super.onOptionsItemSelected(item);
     }

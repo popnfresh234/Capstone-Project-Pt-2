@@ -9,14 +9,20 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_sort_default"
+        android:orderInCategory="101"
+        android:title="Sort by Default Order"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_sort_proximity"
-        android:orderInCategory="100"
+        android:orderInCategory="102"
         android:title="Sort by Location"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_sort_default"
-        android:orderInCategory="100"
-        android:title="Sort by Default Order"
+        android:id="@+id/action_settings"
+        android:orderInCategory="103"
+        android:title="@string/action_settings"
         app:showAsAction="never" />
 </menu>

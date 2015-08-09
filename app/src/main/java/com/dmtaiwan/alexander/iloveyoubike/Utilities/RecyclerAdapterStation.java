@@ -31,8 +31,6 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
     final private Context mContext;
     final private StationAdapterOnClickHandler mClickHandler;
     final private View mEmptyView;
-    final String mLanguage;
-    private Location mUserLocation;
     private boolean mIsTablet;
 
 
@@ -41,10 +39,9 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
         mClickHandler = clickHandler;
         mEmptyView = emptyView;
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        mLanguage = preferences.getString(mContext.getString(R.string.pref_key_language), mContext.getString(R.string.pref_language_english));
 
-        //get location
-        mUserLocation = Utilities.getUserLocation(mContext);
+
+
 
         mIsTablet = isTablet;
     }
@@ -67,8 +64,9 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
 
 
         mCursor.moveToPosition(position);
-
-        if (mLanguage.equals(mContext.getString(R.string.pref_language_english))) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String language = preferences.getString(mContext.getString(R.string.pref_key_language), mContext.getString(R.string.pref_language_english));
+        if (language.equals(mContext.getString(R.string.pref_language_english))) {
             holder.stationName.setText(mCursor.getString(StationListFragment.COL_STATION_NAME_EN));
         }else{
             holder.stationName.setText(mCursor.getString(StationListFragment.COL_STATION_NAME_ZH));
@@ -85,8 +83,10 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
         double stationLat = mCursor.getDouble(StationListFragment.COL_STATION_LAT);
         double stationLong = mCursor.getDouble(StationListFragment.COL_STATION_LONG);
 
-        if (mUserLocation != null) {
-            float distance = Utilities.calculateDistance(stationLat, stationLong, mUserLocation);
+        Location userLocation = Utilities.getUserLocation(mContext);
+
+        if (userLocation != null) {
+            float distance = Utilities.calculateDistance(stationLat, stationLong, userLocation);
             holder.distance.setText(Utilities.formatDistance(distance));
         }
 
@@ -149,11 +149,9 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
 
     public void swapCursor(Cursor newCursor) {
         //Update the user locatoin
-        mUserLocation = Utilities.getUserLocation(mContext);
         mCursor = newCursor;
         notifyDataSetChanged();
         mEmptyView.setVisibility(getItemCount() == 0 ? View.VISIBLE : View.GONE);
-
     }
 
 
