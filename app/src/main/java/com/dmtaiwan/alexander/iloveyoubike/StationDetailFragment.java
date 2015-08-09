@@ -15,12 +15,12 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.FragmentCallback;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
@@ -35,7 +35,7 @@ import butterknife.OnClick;
 /**
  * Created by lenovo on 7/29/2015.
  */
-public class StationDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback {
+public class StationDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback, FragmentCallback {
 
     private static final String LOG_TAG = StationDetailFragment.class.getSimpleName();
     public static final int DETAIL_LOADER = 0;
@@ -88,12 +88,13 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
     private int mStationId;
     private String mLanguage;
-    private Location mUserLocation;
     private SharedPreferences mSharedPrefs;
     private boolean isFavorite;
     private ArrayList<String> mFavoritesArray;
     private LocationProvider mLocationProvider;
     private OnFavoriteListener mCallback;
+    private Boolean mIsFromDetailActivity;
+
 
     public interface OnFavoriteListener {
         public void onFavorited();
@@ -102,7 +103,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
         //If this is a favorites fragment from tablet mode
         if (getArguments() != null && getArguments().getBoolean(Utilities.EXTRA_FAVORITES, false)) {
             try {
@@ -114,6 +114,8 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         }
 
     }
+
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -137,28 +139,37 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             mLocationProvider = new LocationProvider(getActivity(), this);
         }
 
+
+        if (getArguments()!= null && getArguments().getInt(Utilities.EXTRA_STATION_ID, -1) != -1) {
+            mStationId = getArguments().getInt(Utilities.EXTRA_STATION_ID);
+            mUsingId = true;
+        }
+
+        mIsFromDetailActivity = getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_DETAIL_ACTIVITY, false);
+
         //Fetch language preference
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mLanguage = mSharedPrefs.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
-
-        //Fetch user location from shared prefs
-        mUserLocation = Utilities.getUserLocation(getActivity());
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_detail_alias, container, false);
-        ButterKnife.inject(this, rootView);
-        if (getArguments() != null) {
-            mUsingId = true;
-            mStationId = getArguments().getInt(Utilities.EXTRA_STATION_ID);
+        View rootView;
+        if(mIsFromDetailActivity) {
+            rootView = inflater.inflate(R.layout.fragment_detail_alias, container, false);
         }
+        else rootView = inflater.inflate(R.layout.fragment_detail_pager_alias, container, false);
+        ButterKnife.inject(this, rootView);
+
         return rootView;
     }
 
+
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        String sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
+        Location userLocation = Utilities.getUserLocation(getActivity());
 
         //If started from list of stations, ID passed in with intent, query for specific station
         if (mUsingId) {
@@ -170,7 +181,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                     null,
                     null,
                     null);
-        } else {
+        } else if (userLocation != null) {
             //Coming from Nearest Station, query for nearest station
             Uri nearestStatonUri = StationContract.StationEntry.buildUriAllStations();
             return new CursorLoader(
@@ -179,7 +190,17 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                     STATION_COLUMNS,
                     null,
                     null,
-                    Utilities.getSortOrderDistanceString(mUserLocation.getLatitude(), mUserLocation.getLongitude()) + "LIMIT 1"
+                    Utilities.getSortOrderDistanceString(userLocation.getLatitude(), userLocation.getLongitude()) + "LIMIT 1"
+            );
+        } else {
+            Uri allStationUri = StationContract.StationEntry.buildUriAllStations();
+            return new CursorLoader(
+                    getActivity(),
+                    allStationUri,
+                    STATION_COLUMNS,
+                    null,
+                    null,
+                    sortOrder
             );
         }
     }
@@ -191,7 +212,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             cursor.moveToFirst();
             //Set status icon
             mStatus.setImageResource(Utilities.getStatusIconDrawable(cursor, Utilities.ICON_SIZE_LARGE));
-            scheduleStartPostponedTransition(mStatus);
 
             //Get the stationID and check for favorite
             mStationId = cursor.getInt(COL_STATION_ID);
@@ -226,11 +246,12 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             }
 
             //Set the distance if we obtain one from the user's location.  If not, set to no data
-            if (mUserLocation != null) {
+            Location userLocation = Utilities.getUserLocation(getActivity());
+            if (userLocation != null) {
                 //calculate the distance from the user's last known location
                 double stationLat = cursor.getDouble(COL_STATION_LAT);
                 double stationLong = cursor.getDouble(COL_STATION_LONG);
-                float distance = Utilities.calculateDistance(stationLat, stationLong, mUserLocation);
+                float distance = Utilities.calculateDistance(stationLat, stationLong, userLocation);
                 mDistance.setText(Utilities.formatDistance(distance));
             } else {
                 mDistance.setText(getActivity().getString(R.string.text_view_station_detail_no_data));
@@ -288,17 +309,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         }
     }
 
-    private void scheduleStartPostponedTransition(final View sharedElement) {
-        sharedElement.getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
-                        getActivity().supportStartPostponedEnterTransition();
-                        return true;
-                    }
-                });
-    }
 
     @Override
     public void handleNewLocation(Location location) {
@@ -306,5 +316,25 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
     }
 
+    public void restartLoader() {
+        getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
+    }
 
+    private void checkFavorite() {
+        //In case the nearest station was unfavorited from favorite or all station list
+        ArrayList<String> favoritesArray = Utilities.getFavoriteArray(getActivity());
+        if (favoritesArray!= null && favoritesArray.contains(String.valueOf(mStationId))) {
+            isFavorite = true;
+            mFavoriteButton.setImageResource(R.drawable.ic_favorite_black_48dp);
+        }else{
+            isFavorite = false;
+            mFavoriteButton.setImageResource(R.drawable.ic_favorite_outline_grey600_48dp);
+        }
+    }
+
+    @Override
+    public void onFragmentShown() {
+        restartLoader();
+        checkFavorite();
+    }
 }

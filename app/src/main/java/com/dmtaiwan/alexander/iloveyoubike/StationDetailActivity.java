@@ -13,7 +13,6 @@ public class StationDetailActivity extends AppCompatActivity{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        supportPostponeEnterTransition();
         setContentView(R.layout.activity_detail);
         ButterKnife.inject(this);
         if (savedInstanceState == null) {
@@ -22,14 +21,9 @@ public class StationDetailActivity extends AppCompatActivity{
 
 
             StationDetailFragment fragment = new StationDetailFragment();
-
-
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.station_detail_container, fragment)
                     .commit();
-
-            // Being here means we are in animation mode
-            supportPostponeEnterTransition();
         }
     }
 }

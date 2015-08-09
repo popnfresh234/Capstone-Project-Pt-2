@@ -33,9 +33,10 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
     final private View mEmptyView;
     final String mLanguage;
     private Location mUserLocation;
+    private boolean mIsTablet;
 
 
-    public RecyclerAdapterStation(Context context, StationAdapterOnClickHandler clickHandler, View emptyView) {
+    public RecyclerAdapterStation(Context context, StationAdapterOnClickHandler clickHandler, View emptyView, boolean isTablet) {
         mContext = context;
         mClickHandler = clickHandler;
         mEmptyView = emptyView;
@@ -44,10 +45,12 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
 
         //get location
         mUserLocation = Utilities.getUserLocation(mContext);
+
+        mIsTablet = isTablet;
     }
 
     public static interface StationAdapterOnClickHandler {
-        void onClick(int stationId, RecyclerAdapterStation.ViewHolder vh);
+        void onClick(int stationId, RecyclerAdapterStation.ViewHolder vh, boolean isTablet);
     }
 
 
@@ -136,7 +139,7 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
             int stationId = mCursor.getInt(StationListFragment.COL_STATION_ID);
-            mClickHandler.onClick(stationId, this);
+            mClickHandler.onClick(stationId, this, mIsTablet);
         }
     }
 

@@ -17,11 +17,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
-import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.FragmentCallback;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
@@ -30,23 +30,29 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.Optional;
 
 /**
  * Created by Alexander on 7/28/2015.
  */
-public class StationListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback {
+public class StationListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback {
     private static final String LOG_TAG = StationListFragment.class.getSimpleName();
     private static final int STATION_LOADER = 0;
     private RecyclerAdapterStation mAdapter;
+
     private Boolean mIsFavorites = false;
     private Boolean mSortDefaultOrder = false;
-    private int mScrollPosition;
-    private LocationProvider mLocationProvider;
+
+    private Boolean mIsTablet = false;
+
 
     @InjectView(R.id.recycler_view_station_list)
     RecyclerView mRecyclerView;
     @InjectView(R.id.station_list_empty_view)
     TextView mEmptyView;
+    @Optional
+    @InjectView(R.id.detail_container)
+    FrameLayout mDetailContainer;
 
     private static final String[] STATION_COLUMNS = {
             StationContract.StationEntry._ID,
@@ -75,74 +81,75 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public static final int COL_LAST_UPDATED = 10;
 
 
-
     public interface Callback {
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(int stationId, RecyclerAdapterStation.ViewHolder vh);
+        public void onItemSelected(int stationId, RecyclerAdapterStation.ViewHolder vh, boolean isTablet);
     }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getActivity().supportPostponeEnterTransition();
         getLoaderManager().initLoader(STATION_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
+        //Create a location provider to update position
 
         //Check if this is a favorites list
-        mIsFavorites = getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_FAVORITES, false);
+        if (getArguments() != null) {
+            mIsFavorites = getArguments().getBoolean(Utilities.EXTRA_FAVORITES);
 
-        //Create a location provider to update position
-        mLocationProvider = new LocationProvider(getActivity(), this);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setRetainInstance(true);
-        View rootView = inflater.inflate(R.layout.fragment_station_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_station_list_pager, container, false);
+
+
+        //Check for tablet
+        if (rootView.findViewById(R.id.detail_container) != null) {
+            mIsTablet = true;
+        }
+
         ButterKnife.inject(this, rootView);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
+
+
         mAdapter = new RecyclerAdapterStation(getActivity(), new RecyclerAdapterStation.StationAdapterOnClickHandler() {
             @Override
-            public void onClick(int stationId, RecyclerAdapterStation.ViewHolder vh) {
-                ((Callback) getActivity()).onItemSelected(stationId, vh);
-            }
-        }, mEmptyView);
-        mRecyclerView.setAdapter(mAdapter);
+            public void onClick(int stationId, RecyclerAdapterStation.ViewHolder vh, boolean isTablet) {
 
-        //Returning to fragment
-        if (savedInstanceState != null) {
-            mScrollPosition = savedInstanceState.getInt(Utilities.OUTSTATE_SCROLL_POSITION);
-            mRecyclerView.smoothScrollToPosition(mScrollPosition);
-        }
+                //Deal with clicks in recycler adapter here
+                if (mIsTablet) {
+                    Bundle args = new Bundle();
+                    args.putInt(Utilities.EXTRA_STATION_ID, stationId);
+                    args.putBoolean(Utilities.EXTRA_DETAIL_ACTIVITY, true);
+                    StationDetailFragment fragment = new StationDetailFragment();
+                    fragment.setArguments(args);
+                    getChildFragmentManager().beginTransaction().replace(R.id.detail_container, fragment).commit();
+                } else {
+                    ((Callback) getActivity()).onItemSelected(stationId, vh, mIsTablet);
+                }
+
+            }
+        }, mEmptyView, mIsTablet);
+        mRecyclerView.setAdapter(mAdapter);
         return rootView;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        //Connect to play services
-        mLocationProvider.connect();
-        //Restart the loader in case items were unfavorited
-        restartLoader();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mLocationProvider.disconnect();
-    }
-
-    @Override
-         public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_station_list, menu);
     }
 
@@ -166,44 +173,41 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
-        if (layoutManager != null && layoutManager instanceof LinearLayoutManager) {
-            mScrollPosition = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
-            outState.putInt(Utilities.OUTSTATE_SCROLL_POSITION, mScrollPosition);
-        }
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         String sortOrder;
+        Location userLocation = Utilities.getUserLocation(getActivity());
 
-        Location location = Utilities.getUserLocation(getActivity());
 
-        if (location == null) {
+        if (userLocation == null) {
             sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
         } else if (mSortDefaultOrder) {
             sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
         } else {
-            sortOrder = Utilities.getSortOrderDistanceString(location.getLatitude(), location.getLongitude());
+            sortOrder = Utilities.getSortOrderDistanceString(userLocation.getLatitude(), userLocation.getLongitude());
         }
-
         //Create a URI for querying all stations
         Uri allStationsUri = StationContract.StationEntry.buildUriAllStations();
 
 
         String selection = null;
         String[] selectionArgs = null;
+
+        //If favorites view, load the favorites array and set the selection args
         if (mIsFavorites) {
             ArrayList<String> favoritesArray = Utilities.getFavoriteArray(getActivity());
             if (favoritesArray != null) {
                 String[] strings = new String[favoritesArray.size()];
                 selectionArgs = favoritesArray.toArray(strings);
                 selection = Utilities.generateFavoritesWhereString(favoritesArray);
+            } else {
+                //fake args to return empty cursor and trigger empty view
+                String[] fakeArgs = {"999"};
+                selectionArgs = fakeArgs;
+                selection = StationContract.StationEntry.COLUMN_STATION_ID + " in (?)";
             }
         }
+
 
         //Otherwise view all stations
 
@@ -218,9 +222,58 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        //If tablet mode, populate detail fragment
+        if (mIsTablet && data.getCount() > 0) {
+            mDetailContainer.setVisibility(View.VISIBLE);
+            data.moveToFirst();
+            int stationId = data.getInt(COL_STATION_ID);
+            StationDetailFragment detailFragment = new StationDetailFragment();
+            Bundle args = new Bundle();
+            //pass on favorites flag
+            args.putBoolean(Utilities.EXTRA_FAVORITES, mIsFavorites);
+            args.putInt(Utilities.EXTRA_STATION_ID, stationId);
+            detailFragment.setArguments(args);
+            getChildFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, detailFragment).commit();
+        }
+
+
         mAdapter.swapCursor(data);
         updateEmptyView();
-        scheduleStartPostponedTransition(mRecyclerView);
+    }
+
+    private void updateEmptyView() {
+        if (mAdapter.getItemCount() == 0) {
+            if (mDetailContainer != null)
+                mDetailContainer.setVisibility(View.GONE);
+            if (mEmptyView != null) {
+
+                int emptyViewText = R.string.text_view_empty_view;
+                int status = Utilities.getServerStatus(getActivity());
+                if (mIsFavorites) {
+                    mEmptyView.setText(R.string.text_view_empty_view_favorites);
+                } else {
+
+                    switch (status) {
+                        case IloveyoubikeSyncAdapter.STATUS_SERVER_DOWN:
+                            emptyViewText = R.string.text_view_empty_view_server_down;
+                            break;
+                        case IloveyoubikeSyncAdapter.STATUS_SERVER_INVALID:
+                            emptyViewText = R.string.text_view_empty_view_server_invalid;
+                            break;
+                        case IloveyoubikeSyncAdapter.STATUS_FAVORITES_EMPTY:
+                            emptyViewText = R.string.text_view_empty_view_favorites;
+                            break;
+                        default:
+                            if (!Utilities.isNetworkAvailable(getActivity())) {
+                                emptyViewText = R.string.text_view_empty_view_network;
+                            }
+                    }
+                    mEmptyView.setText(emptyViewText);
+                }
+
+            }
+        }
     }
 
     @Override
@@ -236,46 +289,8 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         getLoaderManager().restartLoader(STATION_LOADER, null, this);
     }
 
-    private void scheduleStartPostponedTransition(final View sharedElement) {
-        sharedElement.getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-                    @Override
-                    public boolean onPreDraw() {
-                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
-                        getActivity().supportStartPostponedEnterTransition();
-                        return true;
-                    }
-                });
-    }
-
-    private void updateEmptyView() {
-        if (mAdapter.getItemCount() == 0) {
-            if (mEmptyView != null) {
-
-                int emptyViewText = R.string.text_view_empty_view;
-                int status = Utilities.getServerStatus(getActivity());
-                switch (status) {
-                    case IloveyoubikeSyncAdapter.STATUS_SERVER_DOWN:
-                        emptyViewText = R.string.text_view_empty_view_server_down;
-                        break;
-                    case IloveyoubikeSyncAdapter.STATUS_SERVER_INVALID:
-                        emptyViewText = R.string.text_view_empty_view_server_invalid;
-                        break;
-                    default:
-                        if (!Utilities.isNetworkAvailable(getActivity())) {
-                            emptyViewText = R.string.text_view_empty_view_network;
-                        }
-                }
-                mEmptyView.setText(emptyViewText);
-            }
-        }
-    }
-
     @Override
-    public void handleNewLocation(Location location) {
-        Utilities.setUserLocation(location, getActivity());
+    public void onFragmentShown() {
         restartLoader();
-
     }
-
 }

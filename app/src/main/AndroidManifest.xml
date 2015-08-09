@@ -25,7 +25,7 @@
 
         <!-- Main Activity -->
         <activity
-            android:name=".MainActivityViewPager"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
