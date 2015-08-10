@@ -95,8 +95,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     private boolean isFavorite;
     private ArrayList<String> mFavoritesArray;
     private OnFavoriteListener mCallback;
-    private Boolean mIsFromDetailActivity;
+    private Boolean mIsTablet = false;
     private String mLanguage;
+    private Boolean mIsFromDetailActivity = false;
 
 
     public interface OnFavoriteListener {
@@ -147,11 +148,16 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             mUsingId = true;
         }
 
-        //Check if the fragment is created from a detail activity meaning it was created in phone mode
+        //Check if tablet mode
+        if (getArguments() != null) {
+            mIsTablet = getArguments().getBoolean(Utilities.EXTRA_DETAIL_TABLET, false);
+        }
+
+        //Check if created from activity
         mIsFromDetailActivity = getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_DETAIL_ACTIVITY, false);
 
         //If from detail activity, ie phone mode, show options menu
-        if (mIsFromDetailActivity) {
+        if (!mIsTablet) {
             setHasOptionsMenu(true);
         }
 
@@ -168,7 +174,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             rootView = inflater.inflate(R.layout.fragment_detail_alias, container, false);
         } else rootView = inflater.inflate(R.layout.fragment_detail_pager_alias, container, false);
         ButterKnife.inject(this, rootView);
-
         return rootView;
     }
 

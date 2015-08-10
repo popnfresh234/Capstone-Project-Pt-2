@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         args.putBoolean(Utilities.EXTRA_FAVORITES, true);
         favoritesFragment.setArguments(args);
         mAdapter.addFragment(favoritesFragment);
+
         //Set up nearest station fragment
         StationDetailFragment nearestStationFragment = new StationDetailFragment();
         mAdapter.addFragment(nearestStationFragment);

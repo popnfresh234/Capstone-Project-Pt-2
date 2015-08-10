@@ -31,12 +31,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="@dimen/abc_list_item_padding_horizontal_material"
+                android:layout_marginRight="@dimen/abc_list_item_padding_horizontal_material"
                 android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
                 android:layout_marginTop="@dimen/abc_list_item_padding_horizontal_material"
                 android:gravity="center_horizontal"
                 android:textSize="@dimen/station_detail_station_text_size"
                 android:transitionName="@string/transitoin_station_name_text"
-                tools:text="station name" />
+                tools:text="Taipei City Hall Station (Exit 3)-3" />
 
 
             <ImageView

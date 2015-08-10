@@ -37,6 +37,7 @@ public class Utilities {
     public static final String EXTRA_STATION_ID = "com.dmtaiwan.alexander.extra.stationid";
     public static final String EXTRA_FAVORITES = "com.dmtaiwan.alexander.extra.favorites";
     public static final String EXTRA_DETAIL_ACTIVITY = "com.dmtaiwan.alexander.extra.detail";
+    public static final String EXTRA_DETAIL_TABLET = "com.dmtaiwan.alexander.extra.tablet";
 
     //Constants for shared prefs
     public static final String SHARED_PREFS_LOCATION_LAT_KEY = "com.dmtaiwan.alexander.key.location.lat";

@@ -154,7 +154,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
                 if (mIsTablet) {
                     Bundle args = new Bundle();
                     args.putInt(Utilities.EXTRA_STATION_ID, stationId);
-                    args.putBoolean(Utilities.EXTRA_DETAIL_ACTIVITY, true);
+                    args.putBoolean(Utilities.EXTRA_DETAIL_TABLET, true);
                     StationDetailFragment fragment = new StationDetailFragment();
                     fragment.setArguments(args);
                     getChildFragmentManager().beginTransaction().replace(R.id.detail_container, fragment).commit();

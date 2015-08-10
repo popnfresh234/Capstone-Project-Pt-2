@@ -25,7 +25,7 @@
         android:gravity="center_horizontal"
         android:textSize="@dimen/station_detail_station_text_size"
         android:transitionName="@string/transitoin_station_name_text"
-        tools:text="station name" />
+        tools:text="Taipei City Hall Station (Exit 3)-3" />
 
 
     <ImageView
