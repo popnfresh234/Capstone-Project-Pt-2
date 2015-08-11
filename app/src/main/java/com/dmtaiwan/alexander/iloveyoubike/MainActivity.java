@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private boolean mTabletLayout = false;
+    private boolean mFavoriteChanged = false;
+    private boolean mLocationChanged = false;
     ViewPagerAdaper mAdapter;
     private LocationProvider mLocationProvider;
 
@@ -80,8 +82,13 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
             public void onPageSelected(int position) {
 
                 //Callback to restart the loader to reflect changes
-                FragmentCallback fragmentToShow = (FragmentCallback) mAdapter.instantiateItem(mViewPager, position);
-                fragmentToShow.onFragmentShown();
+                if (mLocationChanged || mFavoriteChanged) {
+                    FragmentCallback fragmentToShow = (FragmentCallback) mAdapter.instantiateItem(mViewPager, position);
+                    fragmentToShow.onFragmentShown();
+                    mLocationChanged = false;
+                    mFavoriteChanged = false;
+                }
+
             }
 
             @Override
@@ -121,11 +128,20 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         StationListFragment allStations = new StationListFragment();
         mAdapter.addFragment(allStations);
 
+
+        //Maps Fragment
+        MapFragment mapFragment = new MapFragment();
+        mAdapter.addFragment(mapFragment);
+
         viewPager.setAdapter(mAdapter);
+
     }
 
     @Override
     public void onFavorited() {
+        //Set favoriteChanged flag
+        mFavoriteChanged = true;
+
         //For tablet mode, if item is favorited restart loader in station list fragment to show changes
         Fragment fragment = getCurrentFragment();
         if (fragment instanceof StationListFragment) {
@@ -138,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
 
     @Override
     public void handleNewLocation(Location location) {
+        mLocationChanged = true;
         Utilities.setUserLocation(location, this);
         Fragment fragment = getCurrentFragment();
 

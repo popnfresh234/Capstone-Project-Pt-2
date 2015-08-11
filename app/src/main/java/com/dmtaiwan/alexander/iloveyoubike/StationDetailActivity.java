@@ -8,7 +8,7 @@ import butterknife.ButterKnife;
 /**
  * Created by lenovo on 7/29/2015.
  */
-public class StationDetailActivity extends AppCompatActivity{
+public class StationDetailActivity extends AppCompatActivity implements StationDetailFragment.OnFavoriteListener{
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,5 +25,10 @@ public class StationDetailActivity extends AppCompatActivity{
                     .add(R.id.station_detail_container, fragment)
                     .commit();
         }
+    }
+
+    @Override
+    public void onFavorited() {
+
     }
 }

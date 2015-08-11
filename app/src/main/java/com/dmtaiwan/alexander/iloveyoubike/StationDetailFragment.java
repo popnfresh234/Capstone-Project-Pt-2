@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -107,15 +106,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        //If this is a favorites fragment from tablet mode
-        if (getArguments() != null && getArguments().getBoolean(Utilities.EXTRA_FAVORITES, false)) {
-            try {
-                mCallback = (OnFavoriteListener) activity;
-            } catch (ClassCastException e) {
-                throw new ClassCastException(activity.toString()
-                        + " must implement OnHeadlineSelectedListener");
-            }
-        }
+
+        mCallback = (OnFavoriteListener) activity;
+
 
     }
 
@@ -189,8 +182,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             //Set the language to current language and restart the loader
             mLanguage = language;
             restartLoader();
-
-            Log.i(LOG_TAG, "restarting loader");
         }
     }
 
