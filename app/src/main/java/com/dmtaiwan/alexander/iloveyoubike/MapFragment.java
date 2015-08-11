@@ -1,5 +1,6 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
@@ -29,7 +30,7 @@ import java.util.HashMap;
 /**
  * Created by Alexander on 8/11/2015.
  */
-public class MapFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback{
+public class MapFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback, GoogleMap.OnInfoWindowClickListener{
 
     MapView mMapView;
     private GoogleMap googleMap;
@@ -86,12 +87,16 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
         }
 
         googleMap = mMapView.getMap();
+        if (googleMap != null) {
+            setupMap();
+        }
         return v;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        restartLoader();
         mMapView.onResume();
     }
 
@@ -165,13 +170,11 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     }
 
     private void populateMap(Cursor data) {
-        int i = 0;
         //Create hashmap for associating stationId with marker
         mIdMap = new HashMap<Marker, Integer>();
         if (data.moveToFirst()) {
             do {
                 //Populate the map
-                i++;
                 int stationId = data.getInt(COL_STATION_ID);
                 int bikesAvailable = data.getInt(COL_BIKES_AVAILABLE);
                 int spacesAvailable = data.getInt(COL_SPACES_AVAILABLE);
@@ -187,5 +190,18 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     }
     private void restartLoader() {
         getActivity().getSupportLoaderManager().restartLoader(MAPS_LOADER, null, this);
+    }
+
+    private void setupMap() {
+        googleMap.setOnInfoWindowClickListener(this);
+        googleMap.setMyLocationEnabled(true);
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        int id = mIdMap.get(marker);
+        Intent intent = new Intent(getActivity(), StationDetailActivity.class);
+        intent.putExtra(Utilities.EXTRA_STATION_ID, id);
+        startActivity(intent);
     }
 }
