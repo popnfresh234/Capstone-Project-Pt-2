@@ -103,8 +103,8 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     @Override
     public void onResume() {
         super.onResume();
-        restartLoader();
         mMapView.onResume();
+        restartLoader();
     }
 
     @Override
@@ -212,7 +212,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
             }
         }
     }
-    private void restartLoader() {
+    public void restartLoader() {
         getActivity().getSupportLoaderManager().restartLoader(MAPS_LOADER, null, this);
     }
 

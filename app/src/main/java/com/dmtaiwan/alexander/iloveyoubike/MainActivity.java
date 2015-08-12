@@ -64,8 +64,6 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
 
         //Setup syncadapter
         IloveyoubikeSyncAdapter.initializeSyncAdapter(this);
-        IloveyoubikeSyncAdapter.syncImmediately(this);
-        checkPlayServices();
 
         setSupportActionBar(mToolbar);
 
@@ -102,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     protected void onResume() {
         super.onResume();
         mLocationProvider.connect();
+        IloveyoubikeSyncAdapter.syncImmediately(this);
+        checkPlayServices();
     }
 
     @Override
@@ -168,8 +168,6 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
             StationListFragment stationListFragment = (StationListFragment) fragment;
             stationListFragment.restartLoader();
         }
-
-
     }
 
     public class ViewPagerAdaper extends FragmentPagerAdapter {
