@@ -21,7 +21,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -30,12 +32,13 @@ import java.util.HashMap;
 /**
  * Created by Alexander on 8/11/2015.
  */
-public class MapFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback, GoogleMap.OnInfoWindowClickListener{
+public class MapFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnCameraChangeListener{
 
     MapView mMapView;
     private GoogleMap googleMap;
     private HashMap<Marker, Integer> mIdMap;
     private static int MAPS_LOADER = 100;
+    private Cursor mData;
 
     private static final String[] STATION_COLUMNS = {
             StationContract.StationEntry._ID,
@@ -67,6 +70,9 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().getSupportLoaderManager().initLoader(MAPS_LOADER, null, this);
+
+        //Create hashmap for associating stationId with marker
+        mIdMap = new HashMap<Marker, Integer>();
     }
 
     @Override
@@ -88,6 +94,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
         googleMap = mMapView.getMap();
         if (googleMap != null) {
+            googleMap.setOnCameraChangeListener(this);
             setupMap();
         }
         return v;
@@ -142,7 +149,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
             if (googleMap != null && Utilities.isGooglePlayAvailable(getActivity())) {
                 googleMap.clear();
                 setUserLocation();
-                populateMap(data);
+                mData = data;
             }
         }
     }
@@ -159,33 +166,50 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
             //Get the user's location and zoom the camera if less than 20km (20000meters) from Taipei, otherwise zoom to default location
             float distanceFromTaipei = Utilities.calculateDistance(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG, userLocation);
             if (distanceFromTaipei <= 20000) {
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 14.5f), 1000, null);
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 14.5f), 10, null);
             }else{
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 1000, null);
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 10, null);
             }
         } else {
             //Default location
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 1000, null);
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 10, null);
         }
     }
 
     private void populateMap(Cursor data) {
-        //Create hashmap for associating stationId with marker
-        mIdMap = new HashMap<Marker, Integer>();
-        if (data.moveToFirst()) {
-            do {
-                //Populate the map
-                int stationId = data.getInt(COL_STATION_ID);
-                int bikesAvailable = data.getInt(COL_BIKES_AVAILABLE);
-                int spacesAvailable = data.getInt(COL_SPACES_AVAILABLE);
-                int markerDrawable = Utilities.getMarkerIconDrawable(bikesAvailable, spacesAvailable);
-                String snippet = getString(R.string.snippet_string_bikes) + String.valueOf(bikesAvailable) + " " + getString(R.string.snippet_string_spaces) + String.valueOf(spacesAvailable);
-                MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(data.getDouble(COL_STATION_LAT), data.getDouble(COL_STATION_LONG))).title(data.getString(COL_STATION_NAME_EN));
-                markerOptions.snippet(snippet);
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(markerDrawable));
-                Marker marker = googleMap.addMarker(markerOptions);
-                mIdMap.put(marker, stationId);
-            } while (data.moveToNext());
+        //This method adds markers only to the visible section of the map.  Otherwise adding too many markers blocks the UI thread.
+       //Create hashmap to store markers for lookup by ID
+       HashMap<Integer, Marker> markerList = new HashMap<Integer, Marker>();
+        if (googleMap != null) {
+            //Get visibile bounds of map
+            LatLngBounds bounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
+            if (data.moveToFirst()) {
+                do {
+                    int stationId = data.getInt(COL_STATION_ID);
+                    if (bounds.contains(new LatLng(data.getDouble(COL_STATION_LAT), data.getDouble(COL_STATION_LONG)))) {
+
+                        if (!markerList.containsKey(stationId)) {
+                            int bikesAvailable = data.getInt(COL_BIKES_AVAILABLE);
+                            int spacesAvailable = data.getInt(COL_SPACES_AVAILABLE);
+                            int markerDrawable = Utilities.getMarkerIconDrawable(bikesAvailable, spacesAvailable);
+                            String snippet = getString(R.string.snippet_string_bikes) + String.valueOf(bikesAvailable) + " " + getString(R.string.snippet_string_spaces) + String.valueOf(spacesAvailable);
+                            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(data.getDouble(COL_STATION_LAT), data.getDouble(COL_STATION_LONG))).title(data.getString(COL_STATION_NAME_EN));
+                            markerOptions.snippet(snippet);
+                            markerOptions.icon(BitmapDescriptorFactory.fromResource(markerDrawable));
+                            Marker marker = googleMap.addMarker(markerOptions);
+                            mIdMap.put(marker, stationId);
+                            markerList.put(stationId, marker);
+                        }
+                    }else {
+                        //If the marker was previously on screen, remove it from the map and hashmap
+                        if (markerList.containsKey(stationId)) {
+                            markerList.get(stationId).remove();
+                            markerList.remove(stationId);
+                        }
+                    }
+
+                } while (data.moveToNext());
+            }
         }
     }
     private void restartLoader() {
@@ -203,5 +227,10 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
         Intent intent = new Intent(getActivity(), StationDetailActivity.class);
         intent.putExtra(Utilities.EXTRA_STATION_ID, id);
         startActivity(intent);
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        populateMap(mData);
     }
 }
