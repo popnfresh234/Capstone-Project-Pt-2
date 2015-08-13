@@ -1,6 +1,7 @@
 package com.dmtaiwan.alexander.iloveyoubike.Utilities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
@@ -223,4 +224,10 @@ public class Utilities {
             return false;
         }else return true;
     }
+
+    public static void updateWidgets(Context context) {;
+        Intent dataUpdatedIntent = new Intent(IloveyoubikeSyncAdapter.ACTION_DATA_UPDATED).setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
+    }
+
 }

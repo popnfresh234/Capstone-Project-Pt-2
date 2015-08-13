@@ -188,7 +188,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_station_detail, menu);
+        inflater.inflate(R.menu.menu_generic_settings, menu);
     }
 
     @Override

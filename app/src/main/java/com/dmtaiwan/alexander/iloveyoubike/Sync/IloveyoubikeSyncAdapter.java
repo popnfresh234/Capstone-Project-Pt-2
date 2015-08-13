@@ -39,6 +39,8 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String LOG_TAG = IloveyoubikeSyncAdapter.class.getSimpleName();
     private static final String APIUrl = "http://data.taipei/opendata/datalist/apiAccess?scope=resourceAquire&rid=ddb80380-f1b3-4f8e-8016-7ed9cba571d5";
 
+    public static final String ACTION_DATA_UPDATED = "com.dmtaiwan.alexander.iloveyoubike.app.ACTION_DATA_UPDATED";
+
     public static final int SYNC_INTERVAL = 60*60;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
 
@@ -151,6 +153,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
             }
 
             if (cVVector.size() > 0) {
+                Utilities.updateWidgets(getContext());
                 //Remove old values
                 getContext().getContentResolver().delete(StationContract.StationEntry.buildUriAllStations(), null, null);
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
@@ -251,6 +254,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
     public static void initializeSyncAdapter(Context context) {
         getSyncAccount(context);
     }
+
 
 
 }

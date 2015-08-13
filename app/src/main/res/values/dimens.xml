@@ -24,4 +24,10 @@
 
     <!--Layout measurements-->
     <dimen name="landscape_station_list_width">360dp</dimen>
+
+    <!--Widget dimensions-->
+    <dimen name="widget_default_width">250dp</dimen>
+    <dimen name="widget_default_height">180dp</dimen>
+    <dimen name="widget_min_resize_width">220dp</dimen>
+    <dimen name="widget_min_resize_height">@dimen/widget_default_height</dimen>
 </resources>

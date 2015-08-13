@@ -15,4 +15,11 @@
     <color name="pastel_orange">#ffa726</color>
     <color name="pastel_green">#aed581</color>
 
+    <!-- the activated state color -->
+    <color name="activated">#E0E0E0</color>
+
+    <!--Default highlight color-->
+    <color name="ripple_material_dark">#4dffffff</color>
+    <color name="ripple_material_light">#1f000000</color>
+
 </resources>

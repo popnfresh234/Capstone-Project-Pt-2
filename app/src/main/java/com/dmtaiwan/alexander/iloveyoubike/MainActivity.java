@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_pager);
+        setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
         //Setup a location provider
@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         //Maps Fragment
         MapFragment mapFragment = new MapFragment();
         mAdapter.addFragment(mapFragment);
-
         viewPager.setAdapter(mAdapter);
 
     }

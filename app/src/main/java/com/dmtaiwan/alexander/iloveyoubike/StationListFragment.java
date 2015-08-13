@@ -132,7 +132,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_station_list_pager, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_station_list, container, false);
 
 
         //Check for tablet

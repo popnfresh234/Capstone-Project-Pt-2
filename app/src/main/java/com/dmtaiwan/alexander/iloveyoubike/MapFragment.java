@@ -1,15 +1,20 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -73,6 +78,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
         //Create hashmap for associating stationId with marker
         mIdMap = new HashMap<Marker, Integer>();
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -127,6 +133,20 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
     @Override
     public void onFragmentShown() {
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_generic_settings, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(settingsIntent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -193,7 +213,18 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
                             int spacesAvailable = data.getInt(COL_SPACES_AVAILABLE);
                             int markerDrawable = Utilities.getMarkerIconDrawable(bikesAvailable, spacesAvailable);
                             String snippet = getString(R.string.snippet_string_bikes) + String.valueOf(bikesAvailable) + " " + getString(R.string.snippet_string_spaces) + String.valueOf(spacesAvailable);
-                            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(data.getDouble(COL_STATION_LAT), data.getDouble(COL_STATION_LONG))).title(data.getString(COL_STATION_NAME_EN));
+
+                            //Check language and get string for snippet title accordingly
+                            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                            String title;
+                            String language = preferences.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
+                            if (language.equals(getActivity().getString(R.string.pref_language_english))) {
+                                title = data.getString(COL_STATION_NAME_EN);
+                            }else {
+                                title = data.getString(COL_STATION_NAME_ZH);
+                            }
+
+                            MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(data.getDouble(COL_STATION_LAT), data.getDouble(COL_STATION_LONG))).title(title);
                             markerOptions.snippet(snippet);
                             markerOptions.icon(BitmapDescriptorFactory.fromResource(markerDrawable));
                             Marker marker = googleMap.addMarker(markerOptions);
