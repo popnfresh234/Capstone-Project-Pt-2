@@ -11,13 +11,13 @@
     <item
         android:id="@+id/action_sort_default"
         android:orderInCategory="101"
-        android:title="Sort by Default Order"
+        android:title="@string/menu_sort_default"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_sort_proximity"
         android:orderInCategory="102"
-        android:title="Sort by Location"
+        android:title="@string/menu_sort_location"
         app:showAsAction="never" />
 
     <item

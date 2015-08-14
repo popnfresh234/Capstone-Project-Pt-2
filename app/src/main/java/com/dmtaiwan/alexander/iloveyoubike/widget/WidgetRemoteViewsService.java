@@ -19,6 +19,8 @@ import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
 
+import java.util.ArrayList;
+
 /**
  * Created by Alexander on 8/13/2015.
  */
@@ -83,6 +85,20 @@ public class WidgetRemoteViewsService extends RemoteViewsService {
                 } else {
                     sortOrder = Utilities.getSortOrderDistanceString(userLocation.getLatitude(), userLocation.getLongitude());
                 }
+
+
+                //set up query
+                String selection = null;
+                String[] selectionArgs = null;
+
+                //get favorites array
+                    ArrayList<String> favoritesArray = Utilities.getFavoriteArray(getApplicationContext());
+                    if (favoritesArray != null) {
+                        String[] strings = new String[favoritesArray.size()];
+                        selectionArgs = favoritesArray.toArray(strings);
+                        selection = Utilities.generateFavoritesWhereString(favoritesArray);
+                    }
+
                 //Create a URI for querying all stations
                 Uri allStationsUri = StationContract.StationEntry.buildUriAllStations();
 
@@ -91,8 +107,8 @@ public class WidgetRemoteViewsService extends RemoteViewsService {
                 data = getContentResolver().query(
                         allStationsUri,
                         STATION_COLUMNS,
-                        null,
-                        null,
+                        selection,
+                        selectionArgs,
                         sortOrder);
                 Binder.restoreCallingIdentity(identityToken);
             }

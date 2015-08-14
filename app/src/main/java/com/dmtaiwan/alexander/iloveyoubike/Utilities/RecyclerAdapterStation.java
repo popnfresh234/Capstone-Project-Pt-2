@@ -90,22 +90,11 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
             holder.distance.setText(Utilities.formatDistance(distance));
         }
 
-//        Set the icon based on bike availability
-//        int bikesAvailable = mCursor.getInt(StationListFragment.COL_BIKES_AVAILABLE);
-//        int spacesAvailable = mCursor.getInt(StationListFragment.COL_SPACES_AVAILABLE);
-//        Log.i(LOG_TAG, String.valueOf(bikesAvailable));
-//        Log.i(LOG_TAG, String.valueOf(spacesAvailable));
-//        if (bikesAvailable > 0 && spacesAvailable > 0) {
-//            holder.stationStatus.setImageResource(R.drawable.green48x48);
-//        }
-//        else if (spacesAvailable == 0) {
-//            holder.stationStatus.setImageResource(R.drawable.yellow48x48);
-//        }
-//        else if (bikesAvailable == 0) {
-//            holder.stationStatus.setImageResource(R.drawable.red48x48);
-//        }
+        //Set the status icon
         holder.stationStatus.setImageResource(Utilities.getStatusIconDrawable(mCursor, Utilities.ICON_SIZE_SMALL));
 
+        //set the content description
+        holder.stationStatus.setContentDescription(Utilities.getContentDescription(mCursor, mContext));
     }
 
 

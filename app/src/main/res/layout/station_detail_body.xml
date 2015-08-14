@@ -45,7 +45,7 @@
 
     <TextView
         android:id="@+id/text_view_station_detail_bikes"
-        android:gravity="center_vertical|right"
+        android:gravity="center_vertical|end"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textColor="@color/theme_accent"
         app:layout_gravity="fill"
@@ -84,7 +84,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_favorite_outline_grey600_48dp" />
+            android:src="@drawable/ic_favorite_outline_grey600_48dp"
+            android:contentDescription="@string/a11y_button_favorite"/>
 
         <android.support.v4.widget.Space
             android:layout_width="0dp"
@@ -97,7 +98,8 @@
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center_horizontal"
-            android:src="@drawable/ic_map_black_48dp" />
+            android:src="@drawable/ic_map_black_48dp"
+            android:contentDescription="@string/a11y_button_map"/>
 
         <android.support.v4.widget.Space
             android:layout_width="0dp"

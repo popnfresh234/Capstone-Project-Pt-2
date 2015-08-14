@@ -156,6 +156,18 @@ public class Utilities {
         }
     }
 
+    public static String getContentDescription(Cursor cursor, Context context) {
+        int bikesAvailable = cursor.getInt(StationListFragment.COL_BIKES_AVAILABLE);
+        int spacesAvailable = cursor.getInt(StationListFragment.COL_SPACES_AVAILABLE);
+        if (bikesAvailable > 0 && spacesAvailable > 0) {
+            return context.getString(R.string.a11y_status_bikes);
+        } else if (spacesAvailable == 0) {
+            return context.getString(R.string.a11y_status_no_spaces);
+        } else {
+            return context.getString(R.string.a11y_status_no_bikes);
+        }
+    }
+
     public static int getMarkerIconDrawable(int bikesAvailable, int spacesAvailable) {
 
         if (bikesAvailable > 0 && spacesAvailable > 0) {

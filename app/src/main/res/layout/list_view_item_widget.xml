@@ -20,7 +20,8 @@
             android:maxHeight="48dp"
             android:maxWidth="48dp"
             android:src="@drawable/ic_my_location_black_48dp"
-            android:transitionName="@string/transition_status_iamge_view" />
+            android:transitionName="@string/transition_status_iamge_view"
+            android:contentDescription="@string/a11y_status_icon"/>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -65,6 +66,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="@dimen/recycler_spacing_horizontal"
+            android:layout_marginStart="@dimen/recycler_spacing_horizontal"
             android:layout_marginRight="@dimen/item_spacing_horizontal"
+            android:layout_marginEnd="@dimen/item_spacing_horizontal"
             tools:text="4.4km" />
     </LinearLayout>

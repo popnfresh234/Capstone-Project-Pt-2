@@ -6,7 +6,9 @@
     android:background="@android:color/white"
     android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin">
+    android:paddingStart="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingEnd="@dimen/activity_horizontal_margin">
 
 
     <android.support.v7.widget.Space
@@ -35,7 +37,8 @@
         android:layout_gravity="center_horizontal"
         android:adjustViewBounds="true"
         android:src="@drawable/ic_my_location_black_48dp"
-        android:transitionName="@string/transition_status_iamge_view" />
+        android:transitionName="@string/transition_status_iamge_view"
+        android:contentDescription="@string/a11y_status_icon"/>
 
     <TextView
         android:id="@+id/text_view_station_detail_district"

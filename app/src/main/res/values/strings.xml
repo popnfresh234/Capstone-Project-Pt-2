@@ -73,4 +73,15 @@
     <string name="title_activity_maps">Station Map</string>
     <string name="action_map">View on Map</string>
     <string name="title_widget">I Love Youbike Widget</string>
+    <string name="menu_sort_default">Sort by Default Order</string>
+    <string name="menu_sort_location">Sort by Location</string>
+
+
+    <!--A11y strings-->
+    <string name="a11y_status_icon">Status Icon</string>
+    <string name="a11y_status_bikes">Status Icon Bikes Available</string>
+    <string name="a11y_status_no_bikes">Status Icon No Bikes Available</string>
+    <string name="a11y_status_no_spaces">Status Icon No Spaces Available</string>
+    <string name="a11y_button_favorite">Favorite Button</string>
+    <string name="a11y_button_map">View On Map Button</string>
 </resources>

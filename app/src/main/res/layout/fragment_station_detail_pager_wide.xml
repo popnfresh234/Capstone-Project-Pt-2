@@ -32,7 +32,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="@dimen/abc_list_item_padding_horizontal_material"
+                android:layout_marginStart="@dimen/abc_list_item_padding_horizontal_material"
                 android:layout_marginRight="@dimen/abc_list_item_padding_horizontal_material"
+                android:layout_marginEnd="@dimen/abc_list_item_padding_horizontal_material"
                 android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
                 android:layout_marginTop="@dimen/abc_list_item_padding_horizontal_material"
                 android:gravity="center_horizontal"
@@ -48,7 +50,8 @@
                 android:layout_gravity="center_horizontal"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_my_location_black_48dp"
-                android:transitionName="@string/transition_status_iamge_view" />
+                android:transitionName="@string/transition_status_iamge_view"
+                android:contentDescription="@string/a11y_status_icon"/>
 
             <TextView
                 android:id="@+id/text_view_station_detail_district"
@@ -155,7 +158,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="?android:attr/selectableItemBackground"
-                    android:src="@drawable/ic_favorite_outline_grey600_48dp" />
+                    android:src="@drawable/ic_favorite_outline_grey600_48dp"
+                    android:contentDescription="@string/a11y_button_favorite"/>
 
 
                 <ImageButton
@@ -164,7 +168,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="?android:attr/selectableItemBackground"
-                    android:src="@drawable/ic_map_black_48dp" />
+                    android:src="@drawable/ic_map_black_48dp"
+                    android:contentDescription="@string/a11y_button_map"/>
 
 
                 <android.support.v7.widget.Space
