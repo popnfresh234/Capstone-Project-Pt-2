@@ -56,7 +56,7 @@ public class WidgetRemoteViewsService extends RemoteViewsService {
     public static final int COL_LAST_UPDATED = 10;
 
     @Override
-    public RemoteViewsFactory onGetViewFactory(Intent intent) {
+    public RemoteViewsFactory onGetViewFactory(final Intent intent) {
         return new RemoteViewsFactory() {
             private Cursor data = null;
 
@@ -143,6 +143,9 @@ public class WidgetRemoteViewsService extends RemoteViewsService {
                 //Get preferred language
                 String language = prefs.getString(getString(R.string.pref_key_language), getString(R.string.pref_language_english));
 
+                //Get station ID
+                int stationId = data.getInt(COL_STATION_ID);
+
                 //Get station name
                 String stationName;
                 if (language.equals(getString(R.string.pref_language_chinese))) {
@@ -173,22 +176,18 @@ public class WidgetRemoteViewsService extends RemoteViewsService {
                 views.setTextViewText(R.id.text_view_station_list_time, time);
                 views.setTextViewText(R.id.text_view_station_list_distance, distanceString);
                 views.setImageViewResource(R.id.image_view_station_list_status, Utilities.getStatusIconDrawable(data, Utilities.ICON_SIZE_SMALL));
+                setRemoteContentDescription(views, Utilities.getContentDescription(data, getApplicationContext()));
 
 
-//                final Intent fillInIntent = new Intent();
-//                String locationSetting =
-//                        Utility.getPreferredLocation(DetailWidgetRemoteViewsService.this);
-//                Uri weatherUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
-//                        locationSetting,
-//                        dateInMillis);
-//                fillInIntent.setData(weatherUri);
-//                views.setOnClickFillInIntent(R.id.widget_list_item, fillInIntent);
+                final Intent fillInIntent = new Intent();
+                fillInIntent.putExtra(Utilities.EXTRA_STATION_ID,stationId);
+                views.setOnClickFillInIntent(R.id.list_view_item_widget, fillInIntent);
                 return views;
             }
 
             @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)
             private void setRemoteContentDescription(RemoteViews views, String description) {
-//                views.setContentDescription(R.id.widget_icon, description);
+                views.setContentDescription(R.id.image_view_station_list_status, description);
             }
 
             @Override
