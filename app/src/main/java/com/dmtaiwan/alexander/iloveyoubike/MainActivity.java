@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         super.onResume();
         mLocationProvider.connect();
         IloveyoubikeSyncAdapter.syncImmediately(this);
+        Utilities.updateWidgets(this);
         checkPlayServices();
     }
 

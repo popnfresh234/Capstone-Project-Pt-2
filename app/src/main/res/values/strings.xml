@@ -72,6 +72,7 @@
 
     <string name="title_activity_maps">Station Map</string>
     <string name="action_map">View on Map</string>
+    <string name="action_share">Share</string>
     <string name="title_widget">I Love Youbike Widget</string>
     <string name="menu_sort_default">Sort by Default Order</string>
     <string name="menu_sort_location">Sort by Location</string>

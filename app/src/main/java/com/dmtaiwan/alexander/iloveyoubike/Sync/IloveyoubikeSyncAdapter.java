@@ -159,6 +159,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
                 getContext().getContentResolver().bulkInsert(StationContract.StationEntry.CONTENT_URI, cvArray);
+                Utilities.updateWidgets(getContext());
             }
 
             String sortOrder = StationContract.StationEntry.COLUMN_STATION_NAME_EN + " ASC";

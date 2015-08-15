@@ -13,6 +13,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,6 +38,7 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import butterknife.Optional;
 
 /**
  * Created by lenovo on 7/29/2015.
@@ -89,6 +93,10 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     TextView mEmptyView;
     @InjectView(R.id.button_station_detail_favorite)
     ImageButton mFavoriteButton;
+
+    @Optional
+    @InjectView(R.id.toolbar_detail)
+    Toolbar mToolbar;
 
     private int mStationId;
     private boolean isFavorite;
@@ -151,8 +159,10 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
         //If from detail activity, ie phone mode, show options menu
         if (!mIsTablet) {
+            Log.i(LOG_TAG, "where's my menu");
             setHasOptionsMenu(true);
         }
+
 
         //Get the preferred language
         mLanguage = PreferenceManager.getDefaultSharedPreferences(getActivity())
@@ -165,6 +175,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         View rootView;
         if (mIsFromDetailActivity) {
             rootView = inflater.inflate(R.layout.fragment_detail_alias, container, false);
+
         } else rootView = inflater.inflate(R.layout.fragment_detail_pager_alias, container, false);
         ButterKnife.inject(this, rootView);
         return rootView;
@@ -183,12 +194,16 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             mLanguage = language;
             restartLoader();
         }
+
+        if (mIsFromDetailActivity) {
+            ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
+        }
     }
 
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_generic_settings, menu);
+        inflater.inflate(R.menu.menu_detail_fragment, menu);
     }
 
     @Override
