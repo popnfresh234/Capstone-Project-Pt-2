@@ -13,7 +13,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,6 +50,20 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     private static final String LOG_TAG = StationDetailFragment.class.getSimpleName();
     public static final int DETAIL_LOADER = 0;
     private boolean mUsingId;
+    private int mStationId;
+    private boolean isFavorite;
+    private ArrayList<String> mFavoritesArray;
+    private OnFavoriteListener mCallback;
+    private Boolean mIsTablet = false;
+    private String mLanguage;
+    private Boolean mIsFromDetailActivity = false;
+
+    //Share provider
+    private ShareActionProvider mShareActionProvider;
+    private String mStationName;
+    private String mBikesAvailable;
+    private String mSpacesAvailable;
+    private String mLastUpdate;
 
     private static final String[] STATION_COLUMNS = {
             StationContract.StationEntry._ID,
@@ -78,15 +94,15 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @InjectView(R.id.image_view_station_detail_status)
     ImageView mStatus;
     @InjectView(R.id.text_view_station_detail_station_name)
-    TextView mStationName;
+    TextView mStationNameTextView;
     @InjectView(R.id.text_view_station_detail_distance)
-    TextView mDistance;
+    TextView mDistanceTextView;
     @InjectView(R.id.text_view_station_detail_district)
-    TextView mDistrict;
+    TextView mDistrictTextView;
     @InjectView(R.id.text_view_station_detail_bikes)
-    TextView mBikesAvailable;
+    TextView mBikesAvailableTextView;
     @InjectView(R.id.text_view_station_detail_spaces)
-    TextView mSpacesAvailable;
+    TextView mSpacesAvailableTextView;
     @InjectView(R.id.station_detail_container)
     LinearLayout mContainer;
     @InjectView(R.id.text_view_station_detail_empty)
@@ -98,13 +114,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @InjectView(R.id.toolbar_detail)
     Toolbar mToolbar;
 
-    private int mStationId;
-    private boolean isFavorite;
-    private ArrayList<String> mFavoritesArray;
-    private OnFavoriteListener mCallback;
-    private Boolean mIsTablet = false;
-    private String mLanguage;
-    private Boolean mIsFromDetailActivity = false;
+
 
 
     public interface OnFavoriteListener {
@@ -204,6 +214,13 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_detail_fragment, menu);
+
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        if (mStationName != null) {
+            mShareActionProvider.setShareIntent(createShareIntent());
+        }
     }
 
     @Override
@@ -291,11 +308,13 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                     .getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
 
             if (language.equals(getActivity().getString(R.string.pref_language_english))) {
-                mStationName.setText(cursor.getString(COL_STATION_NAME_EN));
-                mDistrict.setText(cursor.getString(COL_STATION_DISTRICT_EN));
+                mStationName = cursor.getString(COL_STATION_NAME_EN);
+                mStationNameTextView.setText(mStationName);
+                mDistrictTextView.setText(cursor.getString(COL_STATION_DISTRICT_EN));
             } else {
-                mStationName.setText(cursor.getString(COL_STATION_NAME_ZH));
-                mDistrict.setText(cursor.getString(COL_STATION_DISTRICT_ZH));
+                mStationName = cursor.getString(COL_STATION_NAME_ZH);
+                mStationNameTextView.setText(mStationName);
+                mDistrictTextView.setText(cursor.getString(COL_STATION_DISTRICT_ZH));
             }
 
             //Set the distance if we obtain one from the user's location.  If not, set to no data
@@ -305,13 +324,23 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                 double stationLat = cursor.getDouble(COL_STATION_LAT);
                 double stationLong = cursor.getDouble(COL_STATION_LONG);
                 float distance = Utilities.calculateDistance(stationLat, stationLong, userLocation);
-                mDistance.setText(Utilities.formatDistance(distance));
+                mDistanceTextView.setText(Utilities.formatDistance(distance));
             } else {
-                mDistance.setText(getActivity().getString(R.string.text_view_station_detail_no_data));
+                mDistanceTextView.setText(getActivity().getString(R.string.text_view_station_detail_no_data));
             }
 
-            mBikesAvailable.setText(String.valueOf(cursor.getInt(COL_BIKES_AVAILABLE)));
-            mSpacesAvailable.setText(String.valueOf(cursor.getInt(COL_SPACES_AVAILABLE)));
+            mBikesAvailable = String.valueOf(cursor.getInt(COL_BIKES_AVAILABLE));
+            mBikesAvailableTextView.setText(mBikesAvailable);
+
+            mSpacesAvailable = String.valueOf(cursor.getInt(COL_SPACES_AVAILABLE));
+            mSpacesAvailableTextView.setText(mSpacesAvailable);
+
+            mLastUpdate = Utilities.formatTime(cursor.getString(StationListFragment.COL_LAST_UPDATED));
+        }
+
+        //Set the share intent
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(createShareIntent());
         }
     }
 
@@ -391,5 +420,15 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public void onFragmentShown() {
         restartLoader();
         checkFavorite();
+    }
+
+    private Intent createShareIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        String shareText = "There are " + mBikesAvailable + " bikes available and " + mSpacesAvailable + " spaces available at " + mStationName + " station as of " + mLastUpdate;
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+
+        return shareIntent;
     }
 }
