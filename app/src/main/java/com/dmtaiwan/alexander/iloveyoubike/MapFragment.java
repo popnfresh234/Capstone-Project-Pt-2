@@ -196,6 +196,10 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
         }
     }
 
+    public void zoomToStation(LatLng stationLatLng) {
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(stationLatLng, 14f), 10, null);
+    }
+
     private void populateMap(Cursor data) {
         //This method adds markers only to the visible section of the map.  Otherwise adding too many markers blocks the UI thread.
        //Create hashmap to store markers for lookup by ID

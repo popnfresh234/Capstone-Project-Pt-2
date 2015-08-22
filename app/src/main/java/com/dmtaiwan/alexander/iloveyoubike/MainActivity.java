@@ -24,6 +24,7 @@ import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,6 +95,15 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
 
             }
         });
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.i(LOG_TAG, "new intent");
+        Bundle bundle = intent.getParcelableExtra(Utilities.EXTRA_LATLNG);
+        LatLng stationLatLng = bundle.getParcelable(Utilities.EXTRA_LATLNG);
+        gotoMap(stationLatLng);
     }
 
     @Override
@@ -241,5 +251,11 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     private Fragment getCurrentFragment() {
         int currentFragment = mViewPager.getCurrentItem();
         return (Fragment) mAdapter.instantiateItem(mViewPager, currentFragment);
+    }
+
+    public void gotoMap(LatLng stationLatLng) {
+        mViewPager.setCurrentItem(3);
+        MapFragment mapFragment = (MapFragment) getCurrentFragment();
+        mapFragment.zoomToStation(stationLatLng);
     }
 }

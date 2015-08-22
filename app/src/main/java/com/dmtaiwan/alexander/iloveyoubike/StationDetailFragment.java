@@ -33,6 +33,7 @@ import com.dmtaiwan.alexander.iloveyoubike.Utilities.FragmentCallback;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -57,6 +58,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     private Boolean mIsTablet = false;
     private String mLanguage;
     private Boolean mIsFromDetailActivity = false;
+
+    private double mStationLat;
+    private double mStationLong;
 
     //Share provider
     private ShareActionProvider mShareActionProvider;
@@ -109,6 +113,8 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     TextView mEmptyView;
     @InjectView(R.id.button_station_detail_favorite)
     ImageButton mFavoriteButton;
+    @InjectView(R.id.button_station_detail_map)
+    ImageButton mMapButton;
 
     @Optional
     @InjectView(R.id.toolbar_detail)
@@ -133,13 +139,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-//        if (mUserLocation != null) {
         getLoaderManager().initLoader(DETAIL_LOADER, null, this);
-//        }
-//        if (mUserLocation == null) {
-//            mContainer.setVisibility(View.GONE);
-//            mEmptyView.setVisibility(View.VISIBLE);
-//        }
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -321,9 +321,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             Location userLocation = Utilities.getUserLocation(getActivity());
             if (userLocation != null) {
                 //calculate the distance from the user's last known location
-                double stationLat = cursor.getDouble(COL_STATION_LAT);
-                double stationLong = cursor.getDouble(COL_STATION_LONG);
-                float distance = Utilities.calculateDistance(stationLat, stationLong, userLocation);
+                mStationLat = cursor.getDouble(COL_STATION_LAT);
+                mStationLong = cursor.getDouble(COL_STATION_LONG);
+                float distance = Utilities.calculateDistance(mStationLat, mStationLong, userLocation);
                 mDistanceTextView.setText(Utilities.formatDistance(distance));
             } else {
                 mDistanceTextView.setText(getActivity().getString(R.string.text_view_station_detail_no_data));
@@ -390,6 +390,20 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             //Call back to activity to notify list of stations
             if (mCallback != null)
                 mCallback.onFavorited();
+        }
+    }
+
+    @OnClick(R.id.button_station_detail_map)
+    public void onMapButtonCLicked() {
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity)getActivity()).gotoMap(new LatLng(mStationLat, mStationLong));
+        }else {
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Bundle args = new Bundle();
+            args.putParcelable(Utilities.EXTRA_LATLNG, new LatLng(mStationLat, mStationLong));
+            intent.putExtra(Utilities.EXTRA_LATLNG, args);
+            startActivity(intent);
         }
     }
 
