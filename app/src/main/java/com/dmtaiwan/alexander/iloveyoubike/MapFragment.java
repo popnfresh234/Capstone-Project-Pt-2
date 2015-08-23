@@ -44,6 +44,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     private HashMap<Marker, Integer> mIdMap;
     private static int MAPS_LOADER = 100;
     private Cursor mData;
+    private Boolean mIsGotoStation = false;
 
     private static final String[] STATION_COLUMNS = {
             StationContract.StationEntry._ID,
@@ -116,6 +117,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     @Override
     public void onPause() {
         super.onPause();
+        setIsGotoStation(false);
         mMapView.onPause();
     }
 
@@ -167,8 +169,11 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null && data.moveToFirst()) {
             if (googleMap != null && Utilities.isGooglePlayAvailable(getActivity())) {
-                googleMap.clear();
-                setUserLocation();
+
+                if(!mIsGotoStation) {
+                    googleMap.clear();
+                    setUserLocation();
+                }
                 mData = data;
             }
         }
@@ -267,5 +272,9 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
         populateMap(mData);
+    }
+
+    public void setIsGotoStation(Boolean isGotoStation) {
+        mIsGotoStation = isGotoStation;
     }
 }

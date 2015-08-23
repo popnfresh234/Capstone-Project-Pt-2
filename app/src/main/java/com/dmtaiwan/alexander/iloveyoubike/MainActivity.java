@@ -87,12 +87,10 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
                     mLocationChanged = false;
                     mFavoriteChanged = false;
                 }
-
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
     }
@@ -101,9 +99,11 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Log.i(LOG_TAG, "new intent");
-        Bundle bundle = intent.getParcelableExtra(Utilities.EXTRA_LATLNG);
-        LatLng stationLatLng = bundle.getParcelable(Utilities.EXTRA_LATLNG);
-        gotoMap(stationLatLng);
+        if (intent.getParcelableExtra(Utilities.EXTRA_LATLNG) != null) {
+            Bundle bundle = intent.getParcelableExtra(Utilities.EXTRA_LATLNG);
+            LatLng stationLatLng = bundle.getParcelable(Utilities.EXTRA_LATLNG);
+            gotoMap(stationLatLng);
+        }
     }
 
     @Override
@@ -133,6 +133,13 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
 
         //Set up nearest station fragment
         StationDetailFragment nearestStationFragment = new StationDetailFragment();
+        Bundle detailArgs = new Bundle();
+
+        //Check if tablet
+        mTabletLayout = getResources().getBoolean(R.bool.isTablet);
+        Log.i(LOG_TAG, String.valueOf(mTabletLayout));
+        detailArgs.putBoolean(Utilities.EXTRA_DETAIL_TABLET, mTabletLayout);
+        nearestStationFragment.setArguments(detailArgs);
         mAdapter.addFragment(nearestStationFragment);
 
         //Set up all stations fragment
@@ -256,6 +263,9 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     public void gotoMap(LatLng stationLatLng) {
         mViewPager.setCurrentItem(3);
         MapFragment mapFragment = (MapFragment) getCurrentFragment();
+        mapFragment.setIsGotoStation(true);
         mapFragment.zoomToStation(stationLatLng);
     }
+
+
 }

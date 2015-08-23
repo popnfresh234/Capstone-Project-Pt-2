@@ -158,6 +158,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
                     StationDetailFragment fragment = new StationDetailFragment();
                     fragment.setArguments(args);
                     getChildFragmentManager().beginTransaction().replace(R.id.detail_container, fragment).commit();
+
                 } else {
                     ((Callback) getActivity()).onItemSelected(stationId, vh, mIsTablet);
                 }
@@ -170,7 +171,9 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
         inflater.inflate(R.menu.menu_station_list, menu);
+
     }
 
     @Override
@@ -257,6 +260,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
             //pass on favorites flag
             args.putBoolean(Utilities.EXTRA_FAVORITES, mIsFavorites);
             args.putInt(Utilities.EXTRA_STATION_ID, stationId);
+            args.putBoolean("TEST", true);
             detailFragment.setArguments(args);
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.detail_container, detailFragment).commit();

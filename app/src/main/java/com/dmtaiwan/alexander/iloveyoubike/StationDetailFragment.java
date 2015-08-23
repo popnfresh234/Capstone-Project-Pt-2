@@ -121,8 +121,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     Toolbar mToolbar;
 
 
-
-
     public interface OnFavoriteListener {
         public void onFavorited();
     }
@@ -146,7 +144,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         //Check if creating a detail fragment for a specific station
         if (getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1) != -1) {
             mStationId = getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1);
@@ -159,19 +156,14 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             mUsingId = true;
         }
 
-        //Check if tablet mode
-        if (getArguments() != null) {
-            mIsTablet = getArguments().getBoolean(Utilities.EXTRA_DETAIL_TABLET, false);
-        }
 
         //Check if created from activity
         mIsFromDetailActivity = getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_DETAIL_ACTIVITY, false);
-
-        //If from detail activity, ie phone mode, show options menu
-        if (!mIsTablet) {
-            Log.i(LOG_TAG, "where's my menu");
+        if (mIsFromDetailActivity) {
             setHasOptionsMenu(true);
         }
+
+
 
 
         //Get the preferred language
@@ -206,15 +198,16 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         }
 
         if (mIsFromDetailActivity) {
-            ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
+            ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
         }
+
     }
 
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.i(LOG_TAG, "Station Detail onCreatOptions");
         inflater.inflate(R.menu.menu_detail_fragment, menu);
-
         MenuItem menuItem = menu.findItem(R.id.action_share);
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
 
@@ -396,8 +389,8 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @OnClick(R.id.button_station_detail_map)
     public void onMapButtonCLicked() {
         if (getActivity() instanceof MainActivity) {
-            ((MainActivity)getActivity()).gotoMap(new LatLng(mStationLat, mStationLong));
-        }else {
+            ((MainActivity) getActivity()).gotoMap(new LatLng(mStationLat, mStationLong));
+        } else {
             Intent intent = new Intent(getActivity(), MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             Bundle args = new Bundle();
@@ -434,6 +427,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public void onFragmentShown() {
         restartLoader();
         checkFavorite();
+        setHasOptionsMenu(true);
     }
 
     private Intent createShareIntent() {
@@ -444,5 +438,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
 
         return shareIntent;
+    }
+
+    public void setShareIntent() {
+        mShareActionProvider.setShareIntent(createShareIntent());
     }
 }
