@@ -86,7 +86,10 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
                     fragmentToShow.onFragmentShown();
                     mLocationChanged = false;
                     mFavoriteChanged = false;
+
                 }
+
+
             }
 
             @Override

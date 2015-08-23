@@ -37,7 +37,7 @@ import butterknife.Optional;
 /**
  * Created by Alexander on 7/28/2015.
  */
-public class StationListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback {
+public class StationListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback{
     private static final String LOG_TAG = StationListFragment.class.getSimpleName();
     private static final int STATION_LOADER = 0;
     private RecyclerAdapterStation mAdapter;
@@ -82,6 +82,8 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public static final int COL_BIKES_AVAILABLE = 8;
     public static final int COL_SPACES_AVAILABLE = 9;
     public static final int COL_LAST_UPDATED = 10;
+
+
 
 
     public interface Callback {
@@ -172,7 +174,11 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-        inflater.inflate(R.menu.menu_station_list, menu);
+
+
+            inflater.inflate(R.menu.menu_station_list, menu);
+
+
 
     }
 
@@ -269,6 +275,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
         mAdapter.swapCursor(data);
         updateEmptyView();
+
     }
 
     private void updateEmptyView() {
@@ -320,6 +327,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onFragmentShown() {
+
         restartLoader();
     }
 }

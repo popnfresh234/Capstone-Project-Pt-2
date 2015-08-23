@@ -144,6 +144,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Check if tablet
+        mIsTablet = getResources().getBoolean(R.bool.isTablet);
+
         //Check if creating a detail fragment for a specific station
         if (getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1) != -1) {
             mStationId = getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1);
@@ -156,15 +159,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             mUsingId = true;
         }
 
-
-        //Check if created from activity
-        mIsFromDetailActivity = getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_DETAIL_ACTIVITY, false);
-        if (mIsFromDetailActivity) {
-            setHasOptionsMenu(true);
-        }
-
-
-
+        setHasOptionsMenu(true);
 
         //Get the preferred language
         mLanguage = PreferenceManager.getDefaultSharedPreferences(getActivity())
@@ -331,6 +326,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             mLastUpdate = Utilities.formatTime(cursor.getString(StationListFragment.COL_LAST_UPDATED));
         }
 
+
         //Set the share intent
         if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(createShareIntent());
@@ -427,7 +423,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public void onFragmentShown() {
         restartLoader();
         checkFavorite();
-        setHasOptionsMenu(true);
     }
 
     private Intent createShareIntent() {
@@ -443,4 +438,5 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public void setShareIntent() {
         mShareActionProvider.setShareIntent(createShareIntent());
     }
+
 }
