@@ -159,7 +159,11 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             mUsingId = true;
         }
 
-        setHasOptionsMenu(true);
+        if (!mIsTablet) {
+            setHasOptionsMenu(true);
+        }
+
+        ((MainActivity)getActivity()).checkFragmentForNearest();
 
         //Get the preferred language
         mLanguage = PreferenceManager.getDefaultSharedPreferences(getActivity())
@@ -206,9 +210,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         MenuItem menuItem = menu.findItem(R.id.action_share);
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
 
-        if (mStationName != null) {
-            mShareActionProvider.setShareIntent(createShareIntent());
-        }
+       setShareIntent();
     }
 
     @Override
@@ -331,6 +333,11 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(createShareIntent());
         }
+
+        //if tablet, set stationList shareIntent
+        if (mIsTablet) {
+            ((MainActivity)getActivity()).passShareIntentToFragment(createShareIntent());
+        }
     }
 
     @Override
@@ -425,7 +432,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         checkFavorite();
     }
 
-    private Intent createShareIntent() {
+    public Intent createShareIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
@@ -436,7 +443,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     }
 
     public void setShareIntent() {
-        mShareActionProvider.setShareIntent(createShareIntent());
+        if(mStationName!= null) {
+            mShareActionProvider.setShareIntent(createShareIntent());
+        }
     }
 
 }

@@ -11,8 +11,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,7 +39,7 @@ import butterknife.Optional;
 /**
  * Created by Alexander on 7/28/2015.
  */
-public class StationListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback{
+public class StationListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback {
     private static final String LOG_TAG = StationListFragment.class.getSimpleName();
     private static final int STATION_LOADER = 0;
     private RecyclerAdapterStation mAdapter;
@@ -47,7 +49,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     private Boolean mIsTablet = false;
 
     private String mLanguage;
-
+    private ShareActionProvider mShareActionProvider;
 
     @InjectView(R.id.recycler_view_station_list)
     RecyclerView mRecyclerView;
@@ -82,8 +84,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public static final int COL_BIKES_AVAILABLE = 8;
     public static final int COL_SPACES_AVAILABLE = 9;
     public static final int COL_LAST_UPDATED = 10;
-
-
 
 
     public interface Callback {
@@ -173,13 +173,21 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (mIsTablet) {
+            inflater.inflate(R.menu.men_super, menu);
+            MenuItem menuItem = menu.findItem(R.id.action_share);
+            mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
 
+            //Get detail activity
+            StationDetailFragment detailFragment = (StationDetailFragment) getChildFragmentManager().findFragmentById(R.id.detail_container);
+            if (detailFragment != null) {
+                Intent shareIntent = detailFragment.createShareIntent();
+                mShareActionProvider.setShareIntent(shareIntent);
+            }
 
-
+        } else {
             inflater.inflate(R.menu.menu_station_list, menu);
-
-
-
+        }
     }
 
     @Override
@@ -329,5 +337,9 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public void onFragmentShown() {
 
         restartLoader();
+    }
+
+    public void setShareIntent(Intent shareIntent) {
+        mShareActionProvider.setShareIntent(shareIntent);
     }
 }

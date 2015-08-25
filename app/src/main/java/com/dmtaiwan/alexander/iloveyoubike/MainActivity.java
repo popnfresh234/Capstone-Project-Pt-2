@@ -171,7 +171,6 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     }
 
 
-
     @Override
     public void handleNewLocation(Location location) {
         mLocationChanged = true;
@@ -270,5 +269,25 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         mapFragment.zoomToStation(stationLatLng);
     }
 
+    public void passShareIntentToFragment(Intent shareIntent) {
+        if (getCurrentFragment() instanceof StationListFragment) {
+            StationListFragment stationListFragment = (StationListFragment) getCurrentFragment();
+            stationListFragment.setShareIntent(shareIntent);
+        }
+    }
+
+    public boolean isStationListFragment() {
+        if (getCurrentFragment() instanceof StationListFragment) {
+            return true;
+        } else
+            return false;
+    }
+
+    public void checkFragmentForNearest() {
+        if (getCurrentFragment() instanceof StationDetailFragment) {
+            StationDetailFragment detailFragment = (StationDetailFragment) getCurrentFragment();
+            detailFragment.setHasOptionsMenu(true);
+        }
+    }
 
 }
