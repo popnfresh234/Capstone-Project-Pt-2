@@ -28,7 +28,7 @@ public class StationDetailActivity extends AppCompatActivity implements StationD
     }
 
     @Override
-    public void onFavorited() {
+    public void onFavorited(int stationId) {
 
     }
 }

@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     }
 
     @Override
-    public void onFavorited() {
+    public void onFavorited(int stationPosition) {
         //Set favoriteChanged flag
         mFavoriteChanged = true;
 
@@ -166,6 +166,10 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         Fragment fragment = getCurrentFragment();
         if (fragment instanceof StationListFragment) {
             StationListFragment stationListFragment = (StationListFragment) fragment;
+            //If not favorite station list then save the ID of the favorite position
+            if(mViewPager.getCurrentItem()!=0) {
+                stationListFragment.setStationId(stationPosition);
+            }
             stationListFragment.restartLoader();
         }
     }

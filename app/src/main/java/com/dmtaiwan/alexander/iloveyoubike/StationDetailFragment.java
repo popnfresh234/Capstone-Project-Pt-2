@@ -122,7 +122,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
 
     public interface OnFavoriteListener {
-        public void onFavorited();
+        public void onFavorited(int stationId);
     }
 
     @Override
@@ -375,7 +375,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             }
             //If in tablet mode, call back to activity to update the list of stations
             if (mCallback != null)
-                mCallback.onFavorited();
+                mCallback.onFavorited(mStationId);
         }
         //If it is already a favorite station
         else if (isFavorite) {
@@ -388,7 +388,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             spe.commit();
             //Call back to activity to notify list of stations
             if (mCallback != null)
-                mCallback.onFavorited();
+                mCallback.onFavorited(mStationId);
         }
     }
 

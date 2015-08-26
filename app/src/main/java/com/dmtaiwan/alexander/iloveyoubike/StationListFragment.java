@@ -51,6 +51,8 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     private String mLanguage;
     private ShareActionProvider mShareActionProvider;
 
+    private int mCurrentStation =0;
+
     @InjectView(R.id.recycler_view_station_list)
     RecyclerView mRecyclerView;
     @InjectView(R.id.station_list_empty_view)
@@ -265,7 +267,24 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         //If tablet mode, populate detail fragment
-        if (mIsTablet && data.getCount() > 0) {
+
+        if (mIsTablet && data.getCount() > 0 && mCurrentStation != 0) {
+            mDetailContainer.setVisibility(View.VISIBLE);
+            data.moveToPosition(mCurrentStation);
+            int stationId = mCurrentStation;
+            StationDetailFragment detailFragment = new StationDetailFragment();
+            Bundle args = new Bundle();
+            //pass on favorites flag
+            args.putBoolean(Utilities.EXTRA_FAVORITES, mIsFavorites);
+            args.putInt(Utilities.EXTRA_STATION_ID, stationId);
+            args.putBoolean("TEST", true);
+            detailFragment.setArguments(args);
+            getChildFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, detailFragment).commit();
+            mCurrentStation = 0;
+        }
+
+        else if (mIsTablet && data.getCount() > 0) {
             mDetailContainer.setVisibility(View.VISIBLE);
             data.moveToFirst();
             int stationId = data.getInt(COL_STATION_ID);
@@ -341,5 +360,9 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     public void setShareIntent(Intent shareIntent) {
         mShareActionProvider.setShareIntent(shareIntent);
+    }
+
+    public void setStationId(int stationId) {
+        mCurrentStation = stationId;
     }
 }

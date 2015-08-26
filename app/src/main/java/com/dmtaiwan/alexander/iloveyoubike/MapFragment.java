@@ -202,7 +202,9 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     }
 
     public void zoomToStation(LatLng stationLatLng) {
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(stationLatLng, 14f), 10, null);
+        if(googleMap!=null) {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(stationLatLng, 14f), 10, null);
+        }
     }
 
     private void populateMap(Cursor data) {
