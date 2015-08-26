@@ -395,12 +395,13 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @OnClick(R.id.button_station_detail_map)
     public void onMapButtonCLicked() {
         if (getActivity() instanceof MainActivity) {
-            ((MainActivity) getActivity()).gotoMap(new LatLng(mStationLat, mStationLong));
+            ((MainActivity) getActivity()).gotoMap(new LatLng(mStationLat, mStationLong), mStationId);
         } else {
             Intent intent = new Intent(getActivity(), MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             Bundle args = new Bundle();
             args.putParcelable(Utilities.EXTRA_LATLNG, new LatLng(mStationLat, mStationLong));
+            args.putInt(Utilities.EXTRA_STATION_ID, mStationId);
             intent.putExtra(Utilities.EXTRA_LATLNG, args);
             startActivity(intent);
         }

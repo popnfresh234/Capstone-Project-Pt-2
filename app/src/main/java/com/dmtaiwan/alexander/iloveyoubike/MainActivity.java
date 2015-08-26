@@ -86,10 +86,7 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
                     fragmentToShow.onFragmentShown();
                     mLocationChanged = false;
                     mFavoriteChanged = false;
-
                 }
-
-
             }
 
             @Override
@@ -105,7 +102,8 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         if (intent.getParcelableExtra(Utilities.EXTRA_LATLNG) != null) {
             Bundle bundle = intent.getParcelableExtra(Utilities.EXTRA_LATLNG);
             LatLng stationLatLng = bundle.getParcelable(Utilities.EXTRA_LATLNG);
-            gotoMap(stationLatLng);
+            int stationId = bundle.getInt(Utilities.EXTRA_STATION_ID);
+            gotoMap(stationLatLng, stationId);
         }
     }
 
@@ -262,15 +260,21 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     }
 
     private Fragment getCurrentFragment() {
-        int currentFragment = mViewPager.getCurrentItem();
-        return (Fragment) mAdapter.instantiateItem(mViewPager, currentFragment);
+        if (mViewPager != null) {
+            int currentFragment = mViewPager.getCurrentItem();
+            return (Fragment) mAdapter.instantiateItem(mViewPager, currentFragment);
+        }else {
+            return null;
+        }
+
     }
 
-    public void gotoMap(LatLng stationLatLng) {
+    public void gotoMap(LatLng stationLatLng, int stationId) {
         mViewPager.setCurrentItem(3);
         MapFragment mapFragment = (MapFragment) getCurrentFragment();
         mapFragment.setIsGotoStation(true);
         mapFragment.zoomToStation(stationLatLng);
+        mapFragment.setStationId(stationId);
     }
 
     public void passShareIntentToFragment(Intent shareIntent) {
@@ -278,13 +282,6 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
             StationListFragment stationListFragment = (StationListFragment) getCurrentFragment();
             stationListFragment.setShareIntent(shareIntent);
         }
-    }
-
-    public boolean isStationListFragment() {
-        if (getCurrentFragment() instanceof StationListFragment) {
-            return true;
-        } else
-            return false;
     }
 
     public void checkFragmentForNearest() {
