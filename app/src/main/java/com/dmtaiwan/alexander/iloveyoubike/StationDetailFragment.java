@@ -163,7 +163,10 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             setHasOptionsMenu(true);
         }
 
-        ((MainActivity)getActivity()).checkFragmentForNearest();
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity)getActivity()).checkFragmentForNearest();
+        }
+
 
         //Get the preferred language
         mLanguage = PreferenceManager.getDefaultSharedPreferences(getActivity())
@@ -335,7 +338,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         }
 
         //if tablet, set stationList shareIntent
-        if (mIsTablet) {
+        if (mIsTablet && getActivity() instanceof MainActivity) {
             ((MainActivity)getActivity()).passShareIntentToFragment(createShareIntent());
         }
     }
@@ -436,7 +439,8 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
-        String shareText = "There are " + mBikesAvailable + " bikes available and " + mSpacesAvailable + " spaces available at " + mStationName + " station as of " + mLastUpdate;
+//        String shareText = "There are " + mBikesAvailable + " bikes available and " + mSpacesAvailable + " spaces available at " + mStationName + " station as of " + mLastUpdate;
+        String shareText = Utilities.buildShareText(getActivity(), mBikesAvailable, mSpacesAvailable, mStationName, mLastUpdate);
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
 
         return shareIntent;

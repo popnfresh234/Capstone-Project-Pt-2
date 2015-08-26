@@ -76,7 +76,14 @@ public class Utilities {
             calendar.setTime(date);
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int minute = calendar.get(Calendar.MINUTE);
-            String hourString = String.valueOf(hour);
+
+            String hourString;
+
+            if (hour < 10) {
+                hourString = "0" + String.valueOf(hour);
+            } else {
+                hourString = String.valueOf(hour);
+            }
             String minuteString = String.valueOf(minute);
             if (minute >= 10) {
                 timeString = hourString + ":" + minuteString;
@@ -110,7 +117,7 @@ public class Utilities {
     }
 
     public static void setUserLocation(Location location, Context context) {
-        if(location!= null) {
+        if (location != null) {
             SharedPreferences settings;
             SharedPreferences.Editor spe;
             double lat = location.getLatitude();
@@ -149,11 +156,11 @@ public class Utilities {
         int bikesAvailable = cursor.getInt(StationListFragment.COL_BIKES_AVAILABLE);
         int spacesAvailable = cursor.getInt(StationListFragment.COL_SPACES_AVAILABLE);
         if (bikesAvailable > 0 && spacesAvailable > 0) {
-                return R.drawable.ic_green96x96;
+            return R.drawable.ic_green96x96;
         } else if (spacesAvailable == 0) {
-                return R.drawable.ic_yellow96x96;
+            return R.drawable.ic_yellow96x96;
         } else {
-                return R.drawable.ic_red96x96;
+            return R.drawable.ic_red96x96;
         }
     }
 
@@ -235,12 +242,21 @@ public class Utilities {
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
         if (status != ConnectionResult.SUCCESS) {
             return false;
-        }else return true;
+        } else return true;
     }
 
-    public static void updateWidgets(Context context) {;
+    public static void updateWidgets(Context context) {
+        ;
         Intent dataUpdatedIntent = new Intent(IloveyoubikeSyncAdapter.ACTION_DATA_UPDATED).setPackage(context.getPackageName());
         context.sendBroadcast(dataUpdatedIntent);
+    }
+
+    public static String buildShareText(Context context, String bikesAvailable, String spacesAvailable, String stationName, String lastUpdate) {
+        String shareText = context.getResources().getString(R.string.shareTextOne) + " " + bikesAvailable + " "
+                + context.getResources().getString(R.string.shareTextTwo) + " " + spacesAvailable + " "
+                + context.getResources().getString(R.string.shareTextThree) + " " + stationName + " "
+                + context.getString(R.string.shareTextFour) + " " + lastUpdate;
+        return shareText;
     }
 
 }

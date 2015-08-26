@@ -69,6 +69,11 @@
         <item>Map</item>
     </string-array>
 
+    <string name="shareTextOne">There are</string>
+    <string name="shareTextTwo">bikes available and</string>
+    <string name="shareTextThree">sapces available at</string>
+    <string name="shareTextFour">station as of</string>
+
 
     <string name="title_activity_maps">Station Map</string>
     <string name="action_map">View on Map</string>
