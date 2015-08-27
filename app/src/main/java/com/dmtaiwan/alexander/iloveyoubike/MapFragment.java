@@ -38,7 +38,7 @@ import java.util.HashMap;
 /**
  * Created by Alexander on 8/11/2015.
  */
-public class MapFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnCameraChangeListener {
+public class MapFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraChangeListener {
 
     MapView mMapView;
     private GoogleMap googleMap;
@@ -51,6 +51,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     private int mOutstateId = -1;
     private Marker mCurrentMarker;
     private Boolean mFirstRun = true;
+    private Boolean mIsPopulated;
 
     private static final String[] STATION_COLUMNS = {
             StationContract.StationEntry._ID,
@@ -82,6 +83,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().getSupportLoaderManager().initLoader(MAPS_LOADER, null, this);
+        mIsPopulated = false;
         if (savedInstanceState != null) {
             mStationId = savedInstanceState.getInt(Utilities.EXTRA_STATION_ID);
         }
@@ -127,6 +129,8 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     public void onPause() {
         super.onPause();
         setIsGotoStation(false);
+        mFirstRun = true;
+        mIsPopulated = false;
     }
 
 
@@ -170,11 +174,24 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
                 if (!mIsGotoStation) {
 //                    googleMap.clear();
                     setUserLocation();
+                    if (mOutstateId != -1) {
+                        mStationId = mOutstateId;
+                    }
+                    if (!mIsPopulated) {
+                        populateMap(data);
+                    }
+
                 }
                 mData = data;
             }
         } else {
             setUserLocation();
+            if (mOutstateId != -1) {
+                mStationId = mOutstateId;
+            }
+            if (!mIsPopulated) {
+                populateMap(data);
+            }
         }
     }
 
@@ -214,6 +231,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
         //Create hashmap to store markers for lookup by ID
 
         if (googleMap != null) {
+            mIsPopulated = true;
             //Get visibile bounds of map
             LatLngBounds bounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
             if (data.moveToFirst()) {
@@ -246,8 +264,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
                         }
                     } else {
                         //If the marker was previously on screen, remove it from the map and hashmap
-                        if (mMarkerList.containsKey(stationId)&& stationId!= mOutstateId) {
-                            Log.i("removing marker", String.valueOf(mStationId));
+                        if (mMarkerList.containsKey(stationId)) {
                             mMarkerList.get(stationId).remove();
                             mMarkerList.remove(stationId);
                         }
@@ -272,6 +289,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
     private void setupMap() {
         googleMap.setOnInfoWindowClickListener(this);
+        googleMap.setOnMarkerClickListener(this);
         googleMap.setMyLocationEnabled(true);
     }
 
@@ -286,7 +304,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
         if (mData != null && !mData.isClosed()) {
-            populateMap(mData);
+                populateMap(mData);
         }
 
     }
@@ -305,5 +323,11 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
             outState.putInt(Utilities.EXTRA_STATION_ID, mOutstateId);
         }
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        mStationId = mIdMap.get(marker);
+        return false;
     }
 }
