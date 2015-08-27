@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,11 +43,14 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     MapView mMapView;
     private GoogleMap googleMap;
     private HashMap<Marker, Integer> mIdMap;
+    private HashMap<Integer, Marker> mMarkerList;
     private static int MAPS_LOADER = 100;
     private Cursor mData;
     private Boolean mIsGotoStation = false;
     private int mStationId = -1;
+    private int mOutstateId = -1;
     private Marker mCurrentMarker;
+    private Boolean mFirstRun = true;
 
     private static final String[] STATION_COLUMNS = {
             StationContract.StationEntry._ID,
@@ -78,10 +82,13 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().getSupportLoaderManager().initLoader(MAPS_LOADER, null, this);
-
+        if (savedInstanceState != null) {
+            mStationId = savedInstanceState.getInt(Utilities.EXTRA_STATION_ID);
+        }
 
         //Create hashmap for associating stationId with marker
         mIdMap = new HashMap<Marker, Integer>();
+        mMarkerList = new HashMap<Integer, Marker>();
         setHasOptionsMenu(true);
     }
 
@@ -113,9 +120,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     @Override
     public void onResume() {
         super.onResume();
-        if (mMapView != null) {
-            mMapView.onResume();
-        }
         restartLoader();
     }
 
@@ -123,27 +127,8 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     public void onPause() {
         super.onPause();
         setIsGotoStation(false);
-        if (mMapView != null) {
-            mMapView.onPause();
-        }
-
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mMapView != null) {
-            mMapView.onDestroy();
-        }
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        if (mMapView != null) {
-            mMapView.onLowMemory();
-        }
-    }
 
     @Override
     public void onFragmentShown() {
@@ -183,7 +168,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
             if (googleMap != null && Utilities.isGooglePlayAvailable(getActivity())) {
 
                 if (!mIsGotoStation) {
-                    googleMap.clear();
+//                    googleMap.clear();
                     setUserLocation();
                 }
                 mData = data;
@@ -199,19 +184,22 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     }
 
     private void setUserLocation() {
-        Location userLocation = Utilities.getUserLocation(getActivity());
+        if (googleMap != null && mFirstRun) {
+            mFirstRun = false;
+            Location userLocation = Utilities.getUserLocation(getActivity());
 
-        if (userLocation != null) {
-            //Get the user's location and zoom the camera if less than 20km (20000meters) from Taipei, otherwise zoom to default location
-            float distanceFromTaipei = Utilities.calculateDistance(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG, userLocation);
-            if (distanceFromTaipei <= 20000) {
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 14.5f), 10, null);
+            if (userLocation != null) {
+                //Get the user's location and zoom the camera if less than 20km (20000meters) from Taipei, otherwise zoom to default location
+                float distanceFromTaipei = Utilities.calculateDistance(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG, userLocation);
+                if (distanceFromTaipei <= 20000) {
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 14.5f), 10, null);
+                } else {
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 10, null);
+                }
             } else {
+                //Default location
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 10, null);
             }
-        } else {
-            //Default location
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 10, null);
         }
     }
 
@@ -224,7 +212,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     private void populateMap(Cursor data) {
         //This method adds markers only to the visible section of the map.  Otherwise adding too many markers blocks the UI thread.
         //Create hashmap to store markers for lookup by ID
-        HashMap<Integer, Marker> markerList = new HashMap<Integer, Marker>();
+
         if (googleMap != null) {
             //Get visibile bounds of map
             LatLngBounds bounds = googleMap.getProjection().getVisibleRegion().latLngBounds;
@@ -233,7 +221,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
                     int stationId = data.getInt(COL_STATION_ID);
                     if (bounds.contains(new LatLng(data.getDouble(COL_STATION_LAT), data.getDouble(COL_STATION_LONG)))) {
 
-                        if (!markerList.containsKey(stationId)) {
+                        if (!mMarkerList.containsKey(stationId)) {
                             int bikesAvailable = data.getInt(COL_BIKES_AVAILABLE);
                             int spacesAvailable = data.getInt(COL_SPACES_AVAILABLE);
                             int markerDrawable = Utilities.getMarkerIconDrawable(bikesAvailable, spacesAvailable);
@@ -254,20 +242,22 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
                             markerOptions.icon(BitmapDescriptorFactory.fromResource(markerDrawable));
                             Marker marker = googleMap.addMarker(markerOptions);
                             mIdMap.put(marker, stationId);
-                            markerList.put(stationId, marker);
+                            mMarkerList.put(stationId, marker);
                         }
                     } else {
                         //If the marker was previously on screen, remove it from the map and hashmap
-                        if (markerList.containsKey(stationId)) {
-                            markerList.get(stationId).remove();
-                            markerList.remove(stationId);
+                        if (mMarkerList.containsKey(stationId)&& stationId!= mOutstateId) {
+                            Log.i("removing marker", String.valueOf(mStationId));
+                            mMarkerList.get(stationId).remove();
+                            mMarkerList.remove(stationId);
                         }
                     }
 
                 } while (data.moveToNext());
             }
             if (mStationId != -1) {
-                mCurrentMarker = markerList.get(mStationId);
+                mCurrentMarker = mMarkerList.get(mStationId);
+                mOutstateId = mStationId;
                 if (mCurrentMarker != null) {
                     mCurrentMarker.showInfoWindow();
                 }
@@ -309,4 +299,11 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
         mStationId = stationId;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mOutstateId != -1) {
+            outState.putInt(Utilities.EXTRA_STATION_ID, mOutstateId);
+        }
+        super.onSaveInstanceState(outState);
+    }
 }
