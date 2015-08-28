@@ -80,12 +80,20 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
             @Override
             public void onPageSelected(int position) {
 
+                //Force nearest fragment to reload
+                Fragment fragment = (Fragment) mAdapter.instantiateItem(mViewPager, position);
+                if (fragment instanceof StationDetailFragment) {
+                    ((StationDetailFragment) fragment).onFragmentShown();
+                }
+
                 //Callback to restart the loader to reflect changes
                 if (mLocationChanged || mFavoriteChanged) {
                     FragmentCallback fragmentToShow = (FragmentCallback) mAdapter.instantiateItem(mViewPager, position);
-                    fragmentToShow.onFragmentShown();
-                    mLocationChanged = false;
-                    mFavoriteChanged = false;
+                    if (fragmentToShow instanceof StationListFragment) {
+                        fragmentToShow.onFragmentShown();
+                        mLocationChanged = false;
+                        mFavoriteChanged = false;
+                    }
                 }
             }
 
@@ -149,8 +157,8 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
 
 
         //Maps Fragment
-        MapFragment mapFragment = new MapFragment();
-        mAdapter.addFragment(mapFragment);
+        NewMapFragment NewMapFragment = new NewMapFragment();
+        mAdapter.addFragment(NewMapFragment);
         viewPager.setAdapter(mAdapter);
 
     }
@@ -271,10 +279,10 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
 
     public void gotoMap(LatLng stationLatLng, int stationId) {
         mViewPager.setCurrentItem(3);
-        MapFragment mapFragment = (MapFragment) getCurrentFragment();
-        mapFragment.setIsGotoStation(true);
-        mapFragment.zoomToStation(stationLatLng);
-        mapFragment.setStationId(stationId);
+        NewMapFragment NewMapFragment = (NewMapFragment) getCurrentFragment();
+//        NewMapFragment.setIsGotoStation(true);
+        NewMapFragment.zoomToStation(stationLatLng);
+        NewMapFragment.setStationId(stationId);
     }
 
     public void passShareIntentToFragment(Intent shareIntent) {

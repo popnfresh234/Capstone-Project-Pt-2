@@ -354,7 +354,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onFragmentShown() {
-
         restartLoader();
     }
 

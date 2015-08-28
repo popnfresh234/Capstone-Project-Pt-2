@@ -144,8 +144,16 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // set callback
+        if (getActivity() instanceof MainActivity) {
+            mCallback = (OnFavoriteListener) getActivity();
+        }
+
         //Check if tablet
         mIsTablet = getResources().getBoolean(R.bool.isTablet);
+        if (getActivity() instanceof StationDetailActivity) {
+            mIsFromDetailActivity = true;
+        }
 
         //Check if creating a detail fragment for a specific station
         if (getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1) != -1) {

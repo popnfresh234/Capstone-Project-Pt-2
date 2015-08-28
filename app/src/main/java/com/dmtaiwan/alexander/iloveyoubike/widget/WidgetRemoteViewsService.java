@@ -128,10 +128,9 @@ public class WidgetRemoteViewsService extends RemoteViewsService {
 
             @Override
             public RemoteViews getViewAt(int position) {
-                Log.i(LOG_TAG, String.valueOf(data.getCount()));
+
                 if (position == AdapterView.INVALID_POSITION ||
                         data == null || !data.moveToPosition(position)) {
-                    Log.i(LOG_TAG, "returning null");
                     return null;
 
                 }

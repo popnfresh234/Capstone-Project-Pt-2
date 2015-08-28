@@ -1,5 +1,6 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -7,24 +8,25 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.FragmentCallback;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -35,22 +37,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.HashMap;
 
 /**
- * Created by Alexander on 8/11/2015.
+ * Created by Alexander on 8/28/2015.
  */
-public class MapFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraChangeListener {
+public class NewMapFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback, FragmentCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraChangeListener {
 
-    MapView mMapView;
+    private static final String LOG_TAG = NewMapFragment.class.getSimpleName();
+
+    private static int MAPS_LOADER = 100;
+    private MapView mMapView;
     private GoogleMap mMap;
     private HashMap<Marker, Integer> mIdMap;
     private HashMap<Integer, Marker> mMarkerMap;
-    private static int MAPS_LOADER = 100;
     private Cursor mData;
-    private Boolean mIsGotoStation = false;
-    private int mStationId = -1;
-    private int mOutstateId = -1;
-    private Marker mCurrentMarker;
-    private Boolean mFirstRun = true;
     private Boolean mIsPopulated;
+    private Boolean mIsLocationSet = false;
+    private LatLng mOutstateLatLng;
+    private int mStationId = -1;
 
     private static final String[] STATION_COLUMNS = {
             StationContract.StationEntry._ID,
@@ -80,62 +82,76 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        getActivity().getSupportLoaderManager().initLoader(MAPS_LOADER, null, this);
         mIsPopulated = false;
+        getActivity().getSupportLoaderManager().initLoader(MAPS_LOADER, null, this);
+
+
+
         if (savedInstanceState != null) {
+            mIsLocationSet = savedInstanceState.getBoolean(Utilities.EXTRA_LOCATION_SET);
+            mOutstateLatLng = savedInstanceState.getParcelable(Utilities.EXTRA_OUTSTATE_LATLNG);
             mStationId = savedInstanceState.getInt(Utilities.EXTRA_STATION_ID);
         }
-        //Create hashmap for associating stationId with marker
-        mIdMap = new HashMap<Marker, Integer>();
-        mMarkerMap = new HashMap<Integer, Marker>();
 
         setHasOptionsMenu(true);
     }
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // inflat and return the layout
-        View v = inflater.inflate(R.layout.fragment_map, container,
-                false);
-        mMapView = (MapView) v.findViewById(R.id.mapView);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "onCreateView");
+        View rootView = inflater.inflate(R.layout.fragment_map, container, false);
+        mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
-
         mMapView.onResume();// needed to get the map to display immediately
-
-        try {
-            MapsInitializer.initialize(getActivity().getApplicationContext());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         mMap = mMapView.getMap();
-        if (mMap != null) {
-            mMap.setOnCameraChangeListener(this);
-            setupMap();
-        }
-        return v;
+        setupMap();
+        return rootView;
+    }
+
+    private void setupMap() {
+        mMap.setOnCameraChangeListener(this);
+        mMap.setOnInfoWindowClickListener(this);
+        mMap.setOnMarkerClickListener(this);
+        mMap.setMyLocationEnabled(true);
+
     }
 
     @Override
     public void onResume() {
+        Log.i(LOG_TAG, "onResume");
+        mMapView.onResume();
         super.onResume();
         restartLoader();
+        //Create hashmaps for storing marker and ID once marker added to map
+        mIdMap = new HashMap<Marker, Integer>();
+        mMarkerMap = new HashMap<Integer, Marker>();
+    }
+
+    public void restartLoader() {
+        getActivity().getSupportLoaderManager().restartLoader(MAPS_LOADER, null, this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        setIsGotoStation(false);
-        mFirstRun = true;
-        mIsPopulated = false;
+        mMapView.onPause();
     }
-
 
     @Override
-    public void onFragmentShown() {
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
     }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -143,17 +159,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_settings) {
-            Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
-            startActivity(settingsIntent);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
         Uri allStationsUri = StationContract.StationEntry.buildUriAllStations();
         String sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
         return new CursorLoader(
@@ -167,70 +173,50 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.i(LOG_TAG, "onLoadFinished");
         if (data != null && data.moveToFirst()) {
-            if (mMap != null && Utilities.isGooglePlayAvailable(getActivity())) {
-
-                if (!mIsGotoStation) {
-                    setUserLocation();
-                    if (mOutstateId != -1) {
-                        mStationId = mOutstateId;
-                    }
-                    if (!mIsPopulated) {
-                        populateMap(data);
-                    }
-
-                }
-                mData = data;
-            } else {
-                mIdMap.clear();
-                mMarkerMap.clear();
-                setUserLocation();
-                if (mOutstateId != -1) {
-                    mStationId = mOutstateId;
-                }
-                if (!mIsPopulated) {
-                    populateMap(data);
-                }
-            }
+            mData = data;
+            setUserLocation();
         }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
     private void setUserLocation() {
-        if (mMap != null && mFirstRun) {
-            mFirstRun = false;
-            Location userLocation = Utilities.getUserLocation(getActivity());
+        if (mMap != null) {
+            Log.i(LOG_TAG, checkOutstateLatLng());
+            if (mOutstateLatLng == null) {
 
-            if (userLocation != null) {
-                //Get the user's location and zoom the camera if less than 20km (20000meters) from Taipei, otherwise zoom to default location
-                float distanceFromTaipei = Utilities.calculateDistance(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG, userLocation);
-                if (distanceFromTaipei <= 20000) {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 14.5f), 10, null);
+
+                Location userLocation = Utilities.getUserLocation(getActivity());
+                if (userLocation != null) {
+                    //Get the user's location and zoom the camera if less than 20km (20000meters) from Taipei, otherwise zoom to default location
+                    float distanceFromTaipei = Utilities.calculateDistance(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG, userLocation);
+                    if (distanceFromTaipei <= 20000) {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()), 14.5f), 10, null);
+                    } else {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 10, null);
+                    }
+                    mIsLocationSet = true;
                 } else {
+                    //Default location
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 10, null);
+                    mIsLocationSet = true;
                 }
             } else {
-                //Default location
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 10, null);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mOutstateLatLng, 14f), 10, null);
             }
         }
     }
 
-    public void zoomToStation(LatLng stationLatLng) {
-        if (mMap != null) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(stationLatLng, 14f), 10, null);
-        }
+    private String checkOutstateLatLng() {
+        if (mOutstateLatLng == null) {
+            return "outstate null";
+        }else
+            return "outstate not null";
     }
 
     private void populateMap(Cursor data) {
-        //This method adds markers only to the visible section of the map.  Otherwise adding too many markers blocks the UI thread.
-        //Create hashmap to store markers for lookup by ID
-
-        if (mMap != null) {
+        if (mMap != null && data.moveToFirst()) {
+            Log.i(LOG_TAG, "populatingMap");
             mIsPopulated = true;
             //Get visibile bounds of map
             LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
@@ -272,25 +258,39 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
                 } while (data.moveToNext());
             }
+            //If a station ID has been set from detail fragment, display its info window
             if (mStationId != -1) {
-                mCurrentMarker = mMarkerMap.get(mStationId);
-                mOutstateId = mStationId;
-                if (mCurrentMarker != null) {
-                    mCurrentMarker.showInfoWindow();
+                Marker currentMarker = mMarkerMap.get(mStationId);
+                if (currentMarker != null) {
+                    currentMarker.showInfoWindow();
                 }
-                mStationId = -1;
             }
+        } else {
+            Log.i(LOG_TAG, "data or map null");
         }
     }
 
-    public void restartLoader() {
-        getActivity().getSupportLoaderManager().restartLoader(MAPS_LOADER, null, this);
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 
-    private void setupMap() {
-        mMap.setOnInfoWindowClickListener(this);
-        mMap.setOnMarkerClickListener(this);
-        mMap.setMyLocationEnabled(true);
+    @Override
+    public void handleNewLocation(Location location) {
+
+    }
+
+    @Override
+    public void onFragmentShown() {
+        Log.i(LOG_TAG, "onFragmentShown");
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        Log.i(LOG_TAG, "onCameraChange");
+        if (mData != null && !mData.isClosed()) {
+            populateMap(mData);
+        }
     }
 
     @Override
@@ -302,15 +302,15 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     }
 
     @Override
-    public void onCameraChange(CameraPosition cameraPosition) {
-        if (mData != null && !mData.isClosed()) {
-            populateMap(mData);
-        }
-
+    public boolean onMarkerClick(Marker marker) {
+        mStationId = mIdMap.get(marker);
+        return false;
     }
 
-    public void setIsGotoStation(Boolean isGotoStation) {
-        mIsGotoStation = isGotoStation;
+    public void zoomToStation(LatLng stationLatLng) {
+        if (mMap != null) {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(stationLatLng, 14f), 10, null);
+        }
     }
 
     public void setStationId(int stationId) {
@@ -319,15 +319,12 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (mOutstateId != -1) {
-            outState.putInt(Utilities.EXTRA_STATION_ID, mOutstateId);
+        outState.putBoolean(Utilities.EXTRA_LOCATION_SET, mIsLocationSet);
+        if (mMap != null) {
+            outState.putParcelable(Utilities.EXTRA_OUTSTATE_LATLNG, mMap.getCameraPosition().target);
         }
+        outState.putInt(Utilities.EXTRA_STATION_ID, mStationId);
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        mStationId = mIdMap.get(marker);
-        return false;
-    }
 }

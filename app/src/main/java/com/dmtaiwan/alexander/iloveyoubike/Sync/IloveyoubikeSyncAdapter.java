@@ -123,7 +123,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
             JSONObject result1 = result.getJSONObject("result");
             JSONArray resultsArray = result1.getJSONArray("results");
             Vector<ContentValues> cVVector = new Vector<ContentValues>(resultsArray.length());
-            for (int i = 0; i < 363; i++) {
+            for (int i = 0; i < resultsArray.length(); i++) {
                 JSONObject stationObject = resultsArray.getJSONObject(i);
 
                 String stationId = stationObject.getString("_id");
