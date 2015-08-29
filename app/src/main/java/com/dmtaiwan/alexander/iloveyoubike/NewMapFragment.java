@@ -86,6 +86,8 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
         Log.i(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
         mIsPopulated = false;
+        //Hashmap for looking up ID by marker
+        mIdMap = new HashMap<Marker, Integer>();
         getActivity().getSupportLoaderManager().initLoader(MAPS_LOADER, null, this);
 
 
@@ -125,11 +127,13 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onResume() {
         Log.i(LOG_TAG, "onResume");
-        mMapView.onResume();
+        if (mMapView != null) {
+            mMapView.onResume();
+        }
         super.onResume();
         restartLoader();
-        //Create hashmaps for storing marker and ID once marker added to map
-        mIdMap = new HashMap<Marker, Integer>();
+
+        //Create hashmap for looking up markers by ID
         mMarkerMap = new HashMap<Integer, Marker>();
     }
 
@@ -140,7 +144,9 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onPause() {
         super.onPause();
-        mMapView.onPause();
+        if (mMapView != null) {
+            mMapView.onPause();
+        }
         //Reset the goto station flag for setting the user location
         mIsGoto = false;
     }
@@ -148,13 +154,18 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mMapView.onDestroy();
+        if (mMapView != null) {
+            mMapView.onDestroy();
+        }
+
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mMapView.onLowMemory();
+        if (mMapView != null) {
+            mMapView.onLowMemory();
+        }
     }
 
 
@@ -215,7 +226,6 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
 
     private void populateMap(Cursor data) {
         if (mMap != null && data.moveToFirst()) {
-            Log.i(LOG_TAG, "populatingMap");
             mIsPopulated = true;
             //Get visibile bounds of map
             LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;

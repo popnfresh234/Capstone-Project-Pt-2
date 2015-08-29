@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.Space;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
+        if (!getResources().getBoolean(R.bool.isTablet)) {
+            supportPostponeEnterTransition();
+        }
         //Setup a location provider
         mLocationProvider = new LocationProvider(this, this);
 
@@ -240,8 +244,8 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         Intent detailIntent = new Intent(this, StationDetailActivity.class);
         detailIntent.putExtra(Utilities.EXTRA_DETAIL_ACTIVITY, true);
         detailIntent.putExtra(Utilities.EXTRA_STATION_ID, stationId);
+
         //Transitons
-        //TODO postpone transitons for phone mode
         Pair<View, String> p1 = Pair.create((View) vh.stationStatus, getString(R.string.transition_status_iamge_view));
         Pair<View, String> p2 = Pair.create((View) vh.stationName, getString(R.string.transitoin_station_name_text));
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
@@ -293,10 +297,17 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         }
     }
 
-    public void checkFragmentForNearest() {
+    public void ifNearestStationFragmentSetHasOptions() {
         if (getCurrentFragment() instanceof StationDetailFragment) {
             StationDetailFragment detailFragment = (StationDetailFragment) getCurrentFragment();
             detailFragment.setHasOptionsMenu(true);
+        }
+    }
+
+    public void setTabletNearestStationFragmentSpacers() {
+        if (getCurrentFragment() instanceof StationDetailFragment) {
+            StationDetailFragment detailFragment = (StationDetailFragment) getCurrentFragment();
+            detailFragment.setSpacerVisibility();
         }
     }
 

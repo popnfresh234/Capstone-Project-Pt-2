@@ -21,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -266,6 +267,17 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+        if (!mIsTablet) {
+            mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    getActivity().supportStartPostponedEnterTransition();
+                    return false;
+                }
+            });
+        }
         //If tablet mode, populate detail fragment
 
         if (mIsTablet && data.getCount() > 0 && mCurrentStation != 0) {
@@ -282,9 +294,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.detail_container, detailFragment).commit();
             mCurrentStation = 0;
-        }
-
-        else if (mIsTablet && data.getCount() > 0) {
+        } else if (mIsTablet && data.getCount() > 0) {
             mDetailContainer.setVisibility(View.VISIBLE);
             data.moveToFirst();
             int stationId = data.getInt(COL_STATION_ID);
@@ -298,7 +308,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.detail_container, detailFragment).commit();
         }
-
 
         mAdapter.swapCursor(data);
         updateEmptyView();
@@ -358,7 +367,10 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     }
 
     public void setShareIntent(Intent shareIntent) {
-        mShareActionProvider.setShareIntent(shareIntent);
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
+
     }
 
     public void setStationId(int stationId) {

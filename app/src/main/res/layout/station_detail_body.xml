@@ -10,8 +10,7 @@
     android:paddingLeft="@dimen/detail_station_horizontal_padding"
     android:paddingRight="@dimen/detail_station_horizontal_padding"
     android:paddingStart="@dimen/detail_station_horizontal_padding"
-    android:paddingTop="@dimen/abc_list_item_padding_horizontal_material"
-    android:paddingBottom="@dimen/abc_list_item_padding_horizontal_material"
+
     app:columnCount="2">
 
 

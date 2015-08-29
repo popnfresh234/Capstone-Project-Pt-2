@@ -14,6 +14,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.Space;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
@@ -120,6 +121,15 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @InjectView(R.id.toolbar_detail)
     Toolbar mToolbar;
 
+    @Optional
+    @InjectView(R.id.grid_space_left)
+    Space mGridSpaceLeft;
+
+    @Optional
+    @InjectView(R.id.grid_space_right)
+    Space mGridSpaceRight;
+
+
 
     public interface OnFavoriteListener {
         public void onFavorited(int stationId);
@@ -167,12 +177,12 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             mUsingId = true;
         }
 
-        if (!mIsTablet) {
+        if (!mIsTablet || getActivity() instanceof StationDetailActivity) {
             setHasOptionsMenu(true);
         }
 
         if (getActivity() instanceof MainActivity) {
-            ((MainActivity)getActivity()).checkFragmentForNearest();
+            ((MainActivity)getActivity()).ifNearestStationFragmentSetHasOptions();
         }
 
 
@@ -190,6 +200,16 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
         } else rootView = inflater.inflate(R.layout.fragment_detail_pager_alias, container, false);
         ButterKnife.inject(this, rootView);
+
+        //if fragment hosted in detail activity in tablet mode, set spacers to visible
+        if (mIsFromDetailActivity && mIsTablet) {
+           setSpacerVisibility();
+        }
+
+        //if in tablet mode and nearest station fragment, set spacers to visible
+        if (mIsTablet && getActivity() instanceof MainActivity) {
+            ((MainActivity)getActivity()).setTabletNearestStationFragmentSpacers();
+        }
         return rootView;
     }
 
@@ -208,6 +228,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         }
 
         if (mIsFromDetailActivity) {
+            if (mIsTablet) {
+                mToolbar.setVisibility(View.VISIBLE);
+            }
             ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
         }
 
@@ -459,6 +482,11 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         if(mStationName!= null) {
             mShareActionProvider.setShareIntent(createShareIntent());
         }
+    }
+
+    public void setSpacerVisibility() {
+        mGridSpaceLeft.setVisibility(View.VISIBLE);
+        mGridSpaceRight.setVisibility(View.VISIBLE);
     }
 
 }

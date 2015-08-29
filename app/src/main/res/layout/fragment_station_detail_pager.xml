@@ -15,6 +15,11 @@
         android:orientation="vertical"
         android:background="@android:color/white">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_detail"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"/>
 
         <android.support.v7.widget.Space
             android:layout_width="match_parent"
@@ -67,8 +72,15 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:orientation="horizontal"
         android:layout_height="0dp"
         android:layout_weight="2">
+
+        <android.support.v4.widget.Space
+            android:id="@+id/grid_space_left"
+            android:visibility="gone"
+            android:layout_width="@dimen/grid_space_size"
+            android:layout_height="match_parent" />
 
 
         <android.support.v7.widget.GridLayout
@@ -93,7 +105,7 @@
                 android:textColor="@color/secondary_text_light_bg"
                 app:layout_columnWeight="1"
                 app:layout_gravity="fill"
-                app:layout_rowWeight="1" />
+                app:layout_rowWeight="1"/>
 
             <TextView
                 android:id="@+id/text_view_station_detail_distance"
@@ -178,6 +190,11 @@
             </LinearLayout>
 
         </android.support.v7.widget.GridLayout>
+        <android.support.v4.widget.Space
+            android:id="@+id/grid_space_right"
+            android:visibility="gone"
+            android:layout_width="@dimen/grid_space_size"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
     <TextView
