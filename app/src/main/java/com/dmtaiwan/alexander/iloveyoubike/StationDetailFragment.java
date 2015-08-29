@@ -320,10 +320,10 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
             //Set the distance if we obtain one from the user's location.  If not, set to no data
             Location userLocation = Utilities.getUserLocation(getActivity());
+            mStationLat = cursor.getDouble(COL_STATION_LAT);
+            mStationLong = cursor.getDouble(COL_STATION_LONG);
             if (userLocation != null) {
                 //calculate the distance from the user's last known location
-                mStationLat = cursor.getDouble(COL_STATION_LAT);
-                mStationLong = cursor.getDouble(COL_STATION_LONG);
                 float distance = Utilities.calculateDistance(mStationLat, mStationLong, userLocation);
                 mDistanceTextView.setText(Utilities.formatDistance(distance));
             } else {

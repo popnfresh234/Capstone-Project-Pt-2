@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         if (intent.getParcelableExtra(Utilities.EXTRA_LATLNG) != null) {
             Bundle bundle = intent.getParcelableExtra(Utilities.EXTRA_LATLNG);
             LatLng stationLatLng = bundle.getParcelable(Utilities.EXTRA_LATLNG);
+            Log.i(LOG_TAG, stationLatLng.toString());
             int stationId = bundle.getInt(Utilities.EXTRA_STATION_ID);
             gotoMap(stationLatLng, stationId);
         }

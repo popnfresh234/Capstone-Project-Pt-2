@@ -52,6 +52,7 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
     private Boolean mIsPopulated;
     private Boolean mIsLocationSet = false;
     private LatLng mOutstateLatLng;
+    private Boolean mIsGoto;
     private int mStationId = -1;
 
     private static final String[] STATION_COLUMNS = {
@@ -88,7 +89,6 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
         getActivity().getSupportLoaderManager().initLoader(MAPS_LOADER, null, this);
 
 
-
         if (savedInstanceState != null) {
             mIsLocationSet = savedInstanceState.getBoolean(Utilities.EXTRA_LOCATION_SET);
             mOutstateLatLng = savedInstanceState.getParcelable(Utilities.EXTRA_OUTSTATE_LATLNG);
@@ -107,7 +107,10 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();// needed to get the map to display immediately
         mMap = mMapView.getMap();
-        setupMap();
+        if (mMap != null) {
+            setupMap();
+        }
+
         return rootView;
     }
 
@@ -176,16 +179,16 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
         Log.i(LOG_TAG, "onLoadFinished");
         if (data != null && data.moveToFirst()) {
             mData = data;
-            setUserLocation();
+
+                setUserLocation();
+
+
         }
     }
 
     private void setUserLocation() {
         if (mMap != null) {
-            Log.i(LOG_TAG, checkOutstateLatLng());
             if (mOutstateLatLng == null) {
-
-
                 Location userLocation = Utilities.getUserLocation(getActivity());
                 if (userLocation != null) {
                     //Get the user's location and zoom the camera if less than 20km (20000meters) from Taipei, otherwise zoom to default location
@@ -207,12 +210,6 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
         }
     }
 
-    private String checkOutstateLatLng() {
-        if (mOutstateLatLng == null) {
-            return "outstate null";
-        }else
-            return "outstate not null";
-    }
 
     private void populateMap(Cursor data) {
         if (mMap != null && data.moveToFirst()) {
