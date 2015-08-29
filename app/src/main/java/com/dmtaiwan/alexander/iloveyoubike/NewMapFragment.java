@@ -52,7 +52,7 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
     private Boolean mIsPopulated;
     private Boolean mIsLocationSet = false;
     private LatLng mOutstateLatLng;
-    private Boolean mIsGoto;
+    private Boolean mIsGoto = false;
     private int mStationId = -1;
 
     private static final String[] STATION_COLUMNS = {
@@ -141,6 +141,8 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
     public void onPause() {
         super.onPause();
         mMapView.onPause();
+        //Reset the goto station flag for setting the user location
+        mIsGoto = false;
     }
 
     @Override
@@ -187,7 +189,7 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     private void setUserLocation() {
-        if (mMap != null) {
+        if (mMap != null && !mIsGoto) {
             if (mOutstateLatLng == null) {
                 Location userLocation = Utilities.getUserLocation(getActivity());
                 if (userLocation != null) {
@@ -306,6 +308,7 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
 
     public void zoomToStation(LatLng stationLatLng) {
         if (mMap != null) {
+            mIsGoto = true;
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(stationLatLng, 14f), 10, null);
         }
     }
