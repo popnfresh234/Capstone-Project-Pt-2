@@ -17,4 +17,6 @@
         <item name="textAllCaps">false</item>
     </style>
 
+    <style name="Theme.Detail" parent = "@style/AppTheme"/>
+
 </resources>

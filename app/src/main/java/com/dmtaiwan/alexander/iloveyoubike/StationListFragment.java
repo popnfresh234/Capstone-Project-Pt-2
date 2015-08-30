@@ -376,4 +376,10 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public void setStationId(int stationId) {
         mCurrentStation = stationId;
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
 }

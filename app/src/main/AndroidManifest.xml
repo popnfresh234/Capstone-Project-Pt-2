@@ -38,8 +38,8 @@
 
 
         <!-- StationDetailActivity -->
-        <activity android:name=".StationDetailActivity">
-        </activity>
+        <activity android:name=".StationDetailActivity"
+            android:theme="@style/Theme.Detail"/>
 
         <!-- SettingsActivity -->
         <activity

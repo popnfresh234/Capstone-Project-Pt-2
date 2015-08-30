@@ -1,13 +1,19 @@
 <resources>
     <string name="app_name">I Love Youbike</string>
-    <string name="hello_world">Hello world!</string>
+
+    <!--Action Menu Strings-->
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
+    <string name="action_map">View on Map</string>
+    <string name="action_share">Share</string>
+    <string name="menu_sort_default">Sort by Default Order</string>
+    <string name="menu_sort_location">Sort by Location</string>
 
 
     <!--Activity Titles-->
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_details">Station Details</string>
+    <string name="title_activity_maps">Station Map</string>
 
 
     <string name="sync_account_type" translatable="false">alexander.dmtaiwan.com</string>
@@ -69,18 +75,17 @@
         <item>Map</item>
     </string-array>
 
+    <!--Share Intent Strings-->
     <string name="shareTextOne">There are</string>
     <string name="shareTextTwo">bikes available and</string>
-    <string name="shareTextThree">sapces available at</string>
+    <string name="shareTextThree">spaces available at</string>
     <string name="shareTextFour">station as of</string>
 
 
-    <string name="title_activity_maps">Station Map</string>
-    <string name="action_map">View on Map</string>
-    <string name="action_share">Share</string>
-    <string name="title_widget">I Love Youbike Widget</string>
-    <string name="menu_sort_default">Sort by Default Order</string>
-    <string name="menu_sort_location">Sort by Location</string>
+
+
+    <string name="title_widget">I Love Youbike Favorite Stations Widget</string>
+
 
 
     <!--A11y strings-->

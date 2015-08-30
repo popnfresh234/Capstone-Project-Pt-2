@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -88,6 +89,8 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
         mIsPopulated = false;
         //Hashmap for looking up ID by marker
         mIdMap = new HashMap<Marker, Integer>();
+        //Create hashmap for looking up markers by ID
+        mMarkerMap = new HashMap<Integer, Marker>();
         getActivity().getSupportLoaderManager().initLoader(MAPS_LOADER, null, this);
 
 
@@ -130,11 +133,15 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
         if (mMapView != null) {
             mMapView.onResume();
         }
+        //Clear the map of old markers and clear out hashmap
+        if (mMap != null) {
+            mMap.clear();
+        }
+
+        mMarkerMap.clear();
         super.onResume();
         restartLoader();
 
-        //Create hashmap for looking up markers by ID
-        mMarkerMap = new HashMap<Integer, Marker>();
     }
 
     public void restartLoader() {
@@ -172,6 +179,15 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_generic_settings, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(settingsIntent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -225,6 +241,10 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
 
 
     private void populateMap(Cursor data) {
+        //Check language for setting station title
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String language = preferences.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
+
         if (mMap != null && data.moveToFirst()) {
             mIsPopulated = true;
             //Get visibile bounds of map
@@ -240,10 +260,8 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
                             int markerDrawable = Utilities.getMarkerIconDrawable(bikesAvailable, spacesAvailable);
                             String snippet = getString(R.string.snippet_string_bikes) + String.valueOf(bikesAvailable) + " " + getString(R.string.snippet_string_spaces) + String.valueOf(spacesAvailable);
 
-                            //Check language and get string for snippet title accordingly
-                            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
                             String title;
-                            String language = preferences.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
                             if (language.equals(getActivity().getString(R.string.pref_language_english))) {
                                 title = data.getString(COL_STATION_NAME_EN);
                             } else {

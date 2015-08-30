@@ -170,12 +170,6 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/ic_map_black_48dp"
                     android:contentDescription="@string/a11y_button_map"/>
-
-
-                <android.support.v7.widget.Space
-                    app:layout_columnSpan="2"
-                    app:layout_rowWeight="1" />
-
             </android.support.v7.widget.GridLayout>
 
         </FrameLayout>
