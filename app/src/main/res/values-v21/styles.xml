@@ -15,4 +15,8 @@
         <item name="android:windowReturnTransition">@transition/details_window_return_transition</item>
     </style>
 
+    <style name="Theme.DetailTitle" parent="@style/AppTheme">
+        <item name="android:background">@null</item>
+    </style>
+
 </resources>

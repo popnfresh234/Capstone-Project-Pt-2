@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.Space;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -246,8 +245,8 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         detailIntent.putExtra(Utilities.EXTRA_STATION_ID, stationId);
 
         //Transitons
-        Pair<View, String> p1 = Pair.create((View) vh.stationStatus, getString(R.string.transition_status_iamge_view));
-        Pair<View, String> p2 = Pair.create((View) vh.stationName, getString(R.string.transitoin_station_name_text));
+        Pair<View, String> p1 = Pair.create((View) vh.stationStatus, getString(R.string.transition_status_image_view));
+        Pair<View, String> p2 = Pair.create((View) vh.stationName, getString(R.string.transition_station_name_text));
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             startActivity(detailIntent, options.toBundle());

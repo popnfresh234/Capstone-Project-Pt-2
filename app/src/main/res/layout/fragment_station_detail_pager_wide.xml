@@ -8,6 +8,7 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:baselineAligned="false"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -39,7 +40,7 @@
                 android:layout_marginTop="@dimen/abc_list_item_padding_horizontal_material"
                 android:gravity="center_horizontal"
                 android:textSize="@dimen/station_detail_station_text_size"
-                android:transitionName="@string/transitoin_station_name_text"
+                android:transitionName="@string/transition_station_name_text"
                 tools:text="Taipei City Hall Station (Exit 3)-3" />
 
 
@@ -50,7 +51,7 @@
                 android:layout_gravity="center_horizontal"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_my_location_black_48dp"
-                android:transitionName="@string/transition_status_iamge_view"
+                android:transitionName="@string/transition_status_image_view"
                 android:contentDescription="@string/a11y_status_icon"/>
 
             <TextView
@@ -109,7 +110,7 @@
 
                 <TextView
                     android:id="@+id/text_view_station_detail_distance"
-                    android:gravity="center_vertical|right"
+                    android:gravity="center_vertical|end"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="@color/theme_accent"
                     app:layout_gravity="fill"
@@ -127,7 +128,7 @@
 
                 <TextView
                     android:id="@+id/text_view_station_detail_bikes"
-                    android:gravity="center_vertical|right"
+                    android:gravity="center_vertical|end"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="@color/theme_accent"
                     app:layout_gravity="fill"
@@ -145,7 +146,7 @@
 
                 <TextView
                     android:id="@+id/text_view_station_detail_spaces"
-                    android:gravity="center_vertical|right"
+                    android:gravity="center_vertical|end"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="@color/theme_accent"
                     app:layout_gravity="fill"
@@ -177,6 +178,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:baselineAligned="false"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:orientation="horizontal">

@@ -4,7 +4,6 @@
     <!--Action Menu Strings-->
     <string name="action_settings">設定</string>
     <string name="action_refresh">更新</string>
-    <string name="action_map">查看地圖</string>
     <string name="action_share">分享</string>
     <string name="menu_sort_default">原始設定排序</string>
     <string name="menu_sort_location">地點遠近排序</string>
@@ -12,8 +11,6 @@
 
     <!--Activity Titles-->
     <string name="title_activity_settings">設定</string>
-    <string name="title_activity_details">車站資訊</string>
-    <string name="title_activity_maps">地圖</string>
 
     <!--Station Detail Strings-->
     <string name="text_view_station_detail_spaces_available">可停</string>
@@ -22,7 +19,6 @@
     <string name="text_view_station_detail_no_data">無資料</string>
     <string name="text_view_station_list_time_label">最後更新:</string>
     <string name="text_view_station_detail_empty">無位置資訊</string>
-    <string name="text_view_station_detail_district">行政區</string>
 
     <!--Empty View Strings-->
     <string name="text_view_empty_view">無車站資訊</string>
@@ -42,25 +38,11 @@
 
 
 
-    <!--Snackbar/Toast Strings-->
-    <string name="snackbar_location">Please enable location services!</string>
-    <string name="snackbar_action_settings">SETTINGS</string>
-
-    <string name="snackbar_favorites">No favorites yet!</string>
-    <string name="snackbar_action_list">ALL STATIONS</string>
 
 
     <!--Map Strings-->
-    <string name="marker_user_location">您已到達目的地!</string>
     <string name="snippet_string_bikes">可租:</string>
     <string name="snippet_string_spaces">可停:</string>
-
-    <string-array name="main_list_items">
-        <item>我的最愛</item>
-        <item>最近車站</item>
-        <item>全部車站</item>
-        <item>地圖</item>
-    </string-array>
 
     <string-array name="tab_titles">
         <item>我的最愛</item>

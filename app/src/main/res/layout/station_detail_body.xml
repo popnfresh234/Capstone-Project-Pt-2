@@ -26,7 +26,7 @@
 
     <TextView
         android:id="@+id/text_view_station_detail_distance"
-        android:gravity="center_vertical|right"
+        android:gravity="center_vertical|end"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textColor="@color/theme_accent"
         app:layout_gravity="fill"
@@ -62,7 +62,7 @@
 
     <TextView
         android:id="@+id/text_view_station_detail_spaces"
-        android:gravity="center_vertical|right"
+        android:gravity="center_vertical|end"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textColor="@color/theme_accent"
         app:layout_gravity="fill"

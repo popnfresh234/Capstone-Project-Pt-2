@@ -7,19 +7,11 @@
     <dimen name="recycler_spacing_horizontal">4dp</dimen>
     <dimen name="item_spacing_horizontal">8dp</dimen>
     <dimen name="item_spacing_vertical">8dp</dimen>
-    <dimen name="icon_spacing">48dp</dimen>
-    <dimen name="toolbar_elevation">8dp</dimen>
-    <dimen name="toolbar_inset">0dp</dimen>
-    <dimen name="app_bar_height">56dp</dimen>
-    <dimen name="list_item_height">56dp</dimen>
     <dimen name="item_margin">8dp</dimen>
 
     <dimen name="station_detail_station_text_size">28sp</dimen>
     <dimen name="station_detail_district_text_size">20sp</dimen>
-    <dimen name="station_detail_details_text_size">20sp</dimen>
-
-    <dimen name="detail_view_padding_vertical">@dimen/abc_list_item_padding_horizontal_material</dimen>
-    <dimen name="detail_station_horizontal_padding">32dp</dimen>
+    <dimen name="station_detail_details_text_size">20sp</dimen>    <dimen name="detail_station_horizontal_padding">32dp</dimen>
     <dimen name="status_icon">96dp</dimen>
     <dimen name="grid_space_size">0dp</dimen>
 
