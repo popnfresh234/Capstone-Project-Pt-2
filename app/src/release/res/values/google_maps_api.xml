@@ -1,4 +1,4 @@
 <resources>
     <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
-        AIzaSyCXF3vRUfvuEfO5ZeKCCTjOyGfQWC-dVwU</string>
+        ApiKeyHere</string>
 </resources>
