@@ -42,6 +42,7 @@ public class Utilities {
     public static final String EXTRA_LATLNG = "com.dmtaiwan.alexander.extra.latlng";
     public static final String EXTRA_OUTSTATE_LATLNG = "com.dmtaiwan.alexander.extra.outstatelatlng";
     public static final String EXTRA_LOCATION_SET = "com.dmtaiwan.alexander.extra.locationset";
+    public static final String EXTRA_WIDGET = "com.dmtaiwan.alexander.extra.widget";
 
     //Constants for shared prefs
     public static final String SHARED_PREFS_LOCATION_LAT_KEY = "com.dmtaiwan.alexander.key.location.lat";

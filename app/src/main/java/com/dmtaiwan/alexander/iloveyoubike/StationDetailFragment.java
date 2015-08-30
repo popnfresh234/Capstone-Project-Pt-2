@@ -211,6 +211,12 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         if (mIsTablet && getActivity() instanceof MainActivity) {
             ((MainActivity)getActivity()).setTabletNearestStationFragmentSpacers();
         }
+
+        //If from widget, set home icon
+        if (getActivity().getIntent()!= null && getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_WIDGET, false)) {
+            mMapButton.setImageResource(R.drawable.ic_home);
+        }
+
         return rootView;
     }
 
@@ -437,6 +443,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             args.putInt(Utilities.EXTRA_STATION_ID, mStationId);
             intent.putExtra(Utilities.EXTRA_LATLNG, args);
             startActivity(intent);
+            if (getActivity().getIntent() != null && getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_WIDGET, false)) {
+                getActivity().finish();
+            }
         }
     }
 

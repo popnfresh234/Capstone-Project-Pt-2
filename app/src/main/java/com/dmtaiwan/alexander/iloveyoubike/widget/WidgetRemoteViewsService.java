@@ -180,6 +180,7 @@ public class WidgetRemoteViewsService extends RemoteViewsService {
 
                 final Intent fillInIntent = new Intent();
                 fillInIntent.putExtra(Utilities.EXTRA_STATION_ID,stationId);
+                fillInIntent.putExtra(Utilities.EXTRA_WIDGET, true);
                 views.setOnClickFillInIntent(R.id.list_view_item_widget, fillInIntent);
                 return views;
             }

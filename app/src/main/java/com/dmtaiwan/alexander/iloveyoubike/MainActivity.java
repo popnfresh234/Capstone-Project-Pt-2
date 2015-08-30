@@ -104,6 +104,11 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
             public void onPageScrollStateChanged(int state) {
             }
         });
+        if (getIntent() != null) {
+            if (getIntent().getBooleanExtra(Utilities.EXTRA_WIDGET, false)) {
+                mViewPager.setCurrentItem(3);
+            }
+        }
     }
 
     @Override
@@ -177,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         if (fragment instanceof StationListFragment) {
             StationListFragment stationListFragment = (StationListFragment) fragment;
             //If not favorite station list then save the ID of the favorite position
-            if(mViewPager.getCurrentItem()!=0) {
+            if (mViewPager.getCurrentItem() != 0) {
                 stationListFragment.setStationId(stationPosition);
             }
             stationListFragment.restartLoader();
@@ -275,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         if (mViewPager != null) {
             int currentFragment = mViewPager.getCurrentItem();
             return (Fragment) mAdapter.instantiateItem(mViewPager, currentFragment);
-        }else {
+        } else {
             return null;
         }
 
@@ -284,7 +289,6 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     public void gotoMap(LatLng stationLatLng, int stationId) {
         mViewPager.setCurrentItem(3);
         NewMapFragment NewMapFragment = (NewMapFragment) getCurrentFragment();
-//        NewMapFragment.setIsGotoStation(true);
         NewMapFragment.zoomToStation(stationLatLng);
         NewMapFragment.setStationId(stationId);
     }
