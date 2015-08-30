@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -15,6 +16,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -53,6 +55,8 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     private ShareActionProvider mShareActionProvider;
 
     private int mCurrentStation =0;
+
+    private Parcelable mSavedRecyclerState;
 
     @InjectView(R.id.recycler_view_station_list)
     RecyclerView mRecyclerView;
@@ -137,6 +141,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "onCreateView");
         View rootView = inflater.inflate(R.layout.fragment_station_list, container, false);
 
 
@@ -172,6 +177,15 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         }, mEmptyView, mIsTablet);
         mRecyclerView.setAdapter(mAdapter);
         return rootView;
+    }
+
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            mSavedRecyclerState = savedInstanceState.getParcelable(Utilities.OUTSTATE_SCROLL_POSITION);
+        }
     }
 
     @Override
@@ -289,11 +303,11 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
             //pass on favorites flag
             args.putBoolean(Utilities.EXTRA_FAVORITES, mIsFavorites);
             args.putInt(Utilities.EXTRA_STATION_ID, stationId);
-            args.putBoolean("TEST", true);
             detailFragment.setArguments(args);
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.detail_container, detailFragment).commit();
             mCurrentStation = 0;
+
         } else if (mIsTablet && data.getCount() > 0) {
             mDetailContainer.setVisibility(View.VISIBLE);
             data.moveToFirst();
@@ -303,7 +317,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
             //pass on favorites flag
             args.putBoolean(Utilities.EXTRA_FAVORITES, mIsFavorites);
             args.putInt(Utilities.EXTRA_STATION_ID, stationId);
-            args.putBoolean("TEST", true);
             detailFragment.setArguments(args);
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.detail_container, detailFragment).commit();
@@ -311,7 +324,14 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
         mAdapter.swapCursor(data);
         updateEmptyView();
+        restoreLayoutPosition();
 
+    }
+
+    private void restoreLayoutPosition() {
+        if (mSavedRecyclerState != null) {
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mSavedRecyclerState);
+        }
     }
 
     private void updateEmptyView() {
@@ -380,6 +400,9 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (mRecyclerView != null) {
+            outState.putParcelable(Utilities.OUTSTATE_SCROLL_POSITION, mRecyclerView.getLayoutManager().onSaveInstanceState());
+        }
 
     }
 }
