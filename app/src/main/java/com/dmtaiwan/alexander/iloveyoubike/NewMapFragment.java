@@ -84,7 +84,6 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
         mIsPopulated = false;
         //Hashmap for looking up ID by marker
@@ -106,7 +105,6 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.i(LOG_TAG, "onCreateView");
         View rootView = inflater.inflate(R.layout.fragment_map, container, false);
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
@@ -129,7 +127,6 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onResume() {
-        Log.i(LOG_TAG, "onResume");
         if (mMapView != null) {
             mMapView.onResume();
         }
@@ -205,7 +202,6 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i(LOG_TAG, "onLoadFinished");
         if (data != null && data.moveToFirst()) {
             mData = data;
 
@@ -292,8 +288,6 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
                     currentMarker.showInfoWindow();
                 }
             }
-        } else {
-            Log.i(LOG_TAG, "data or map null");
         }
     }
 
@@ -309,12 +303,11 @@ public class NewMapFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onFragmentShown() {
-        Log.i(LOG_TAG, "onFragmentShown");
     }
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
-        Log.i(LOG_TAG, "onCameraChange");
+
         if (mData != null && !mData.isClosed()) {
             populateMap(mData);
         }

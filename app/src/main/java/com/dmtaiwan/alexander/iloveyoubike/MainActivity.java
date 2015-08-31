@@ -155,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
 
         //Check if tablet
         mTabletLayout = getResources().getBoolean(R.bool.isTablet);
-        Log.i(LOG_TAG, String.valueOf(mTabletLayout));
         detailArgs.putBoolean(Utilities.EXTRA_DETAIL_TABLET, mTabletLayout);
         nearestStationFragment.setArguments(detailArgs);
         mAdapter.addFragment(nearestStationFragment);
@@ -243,7 +242,6 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     public void onItemSelected(int stationId, RecyclerAdapterStation.ViewHolder vh, boolean isTablet) {
         //Check if tablet layout
         mTabletLayout = isTablet;
-        //TODO move tablet logic back here
         //Else start detail activity
         Intent detailIntent = new Intent(this, StationDetailActivity.class);
         detailIntent.putExtra(Utilities.EXTRA_DETAIL_ACTIVITY, true);
