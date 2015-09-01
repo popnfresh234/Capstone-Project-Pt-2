@@ -377,7 +377,9 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     }
 
     public void restartLoader() {
-        getLoaderManager().restartLoader(STATION_LOADER, null, this);
+        if (getActivity() != null) {
+            getLoaderManager().restartLoader(STATION_LOADER, null, this);
+        }
     }
 
     @Override

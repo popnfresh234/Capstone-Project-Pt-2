@@ -456,7 +456,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     }
 
     public void restartLoader() {
-        getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
+        if (getActivity() != null) {
+            getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
+        }
     }
 
     private void checkFavorite() {

@@ -165,8 +165,8 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
 
 
         //Maps Fragment
-        NewMapFragment NewMapFragment = new NewMapFragment();
-        mAdapter.addFragment(NewMapFragment);
+        MapFragment MapFragment = new MapFragment();
+        mAdapter.addFragment(MapFragment);
         viewPager.setAdapter(mAdapter);
 
     }
@@ -286,9 +286,9 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
 
     public void gotoMap(LatLng stationLatLng, int stationId) {
         mViewPager.setCurrentItem(3);
-        NewMapFragment NewMapFragment = (NewMapFragment) getCurrentFragment();
-        NewMapFragment.zoomToStation(stationLatLng);
-        NewMapFragment.setStationId(stationId);
+        MapFragment MapFragment = (MapFragment) getCurrentFragment();
+        MapFragment.zoomToStation(stationLatLng);
+        MapFragment.setStationId(stationId);
     }
 
     public void passShareIntentToFragment(Intent shareIntent) {
