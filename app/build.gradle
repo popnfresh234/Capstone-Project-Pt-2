@@ -8,23 +8,14 @@ android {
         applicationId "com.dmtaiwan.alexander.iloveyoubike"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
-    }
-    signingConfigs {
-        release {
-            keyAlias 'dmtaiwan'
-            keyPassword 'password'
-            storeFile file("$rootDir/keystore.jks")
-            storePassword 'password'
-        }
+        versionCode 5
+        versionName "1.13"
     }
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
         }
     }
 }
