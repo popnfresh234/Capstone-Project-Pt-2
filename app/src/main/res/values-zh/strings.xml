@@ -33,6 +33,7 @@
 
     <string name="pref_language_label_english">英文</string>
     <string name="pref_language_label_chinese">中文</string>
+    <string name="pref_language_label_pinyin">拼音</string>
 
 
 
