@@ -68,7 +68,13 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
         String language = preferences.getString(mContext.getString(R.string.pref_key_language), mContext.getString(R.string.pref_language_english));
         if (language.equals(mContext.getString(R.string.pref_language_english))) {
             holder.stationName.setText(mCursor.getString(StationListFragment.COL_STATION_NAME_EN));
-        }else{
+        }else if (language.equals(mContext.getString(R.string.pref_language_pinyin))){
+            //Look up the station's pinyin string based on station id
+            int stringId = mContext.getResources().getIdentifier("station" + String.valueOf(mCursor.getInt(StationListFragment.COL_STATION_ID)), "string", mContext.getPackageName());
+            String stationName = mContext.getString(stringId);
+            holder.stationName.setText(stationName);
+        }
+        else{
             holder.stationName.setText(mCursor.getString(StationListFragment.COL_STATION_NAME_ZH));
         }
 

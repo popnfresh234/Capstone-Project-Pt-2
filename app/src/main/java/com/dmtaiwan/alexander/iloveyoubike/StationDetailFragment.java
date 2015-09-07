@@ -343,7 +343,13 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                 mStationName = cursor.getString(COL_STATION_NAME_EN);
                 mStationNameTextView.setText(mStationName);
                 mDistrictTextView.setText(cursor.getString(COL_STATION_DISTRICT_EN));
-            } else {
+                //If pinyin
+            } else if(language.equals(getActivity().getString(R.string.pref_language_pinyin))) {
+                int stringId = getResources().getIdentifier("station" + String.valueOf(mStationId), "string", getActivity().getPackageName());
+                String stationName = getString(stringId);
+                mStationNameTextView.setText(stationName);
+                mDistrictTextView.setText(cursor.getString(COL_STATION_DISTRICT_EN));
+            }else {
                 mStationName = cursor.getString(COL_STATION_NAME_ZH);
                 mStationNameTextView.setText(mStationName);
                 mDistrictTextView.setText(cursor.getString(COL_STATION_DISTRICT_ZH));
