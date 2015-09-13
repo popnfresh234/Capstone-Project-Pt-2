@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     private boolean mTabletLayout = false;
     private boolean mFavoriteChanged = false;
     private boolean mLocationChanged = false;
-    ViewPagerAdaper mAdapter;
+    ViewPagerAdapter mAdapter;
     private LocationProvider mLocationProvider;
 
     @InjectView(R.id.toolbar)
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
     }
 
     public void setupViewPager(ViewPager viewPager) {
-        mAdapter = new ViewPagerAdaper(getSupportFragmentManager(), this);
+        mAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this);
 
         //Set up favorites fragment
         StationListFragment favoritesFragment = new StationListFragment();
@@ -207,11 +207,11 @@ public class MainActivity extends AppCompatActivity implements StationListFragme
         }
     }
 
-    public class ViewPagerAdaper extends FragmentPagerAdapter {
+    public class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private Context mContext;
 
-        public ViewPagerAdaper(FragmentManager fm, Context context) {
+        public ViewPagerAdapter(FragmentManager fm, Context context) {
             super(fm);
             mContext = context;
         }
