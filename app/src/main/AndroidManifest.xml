@@ -36,6 +36,16 @@
             </intent-filter>
         </activity>
 
+        <!-- SettingsActivity -->
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.dmtaiwan.alexander.iloveyoubike.MainActivity" />
+        </activity>
+
 
         <!-- SyncAdapter's dummy authentication service -->
         <service android:name=".sync.IloveyoubikeAuthenticatorService">

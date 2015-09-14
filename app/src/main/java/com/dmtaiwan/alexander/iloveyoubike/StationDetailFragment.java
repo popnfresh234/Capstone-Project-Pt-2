@@ -1,5 +1,6 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
@@ -10,10 +11,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -46,18 +53,33 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     private double mStationLong;
 
     //Share provider
+    //Share provider
+    private ShareActionProvider mShareActionProvider;
     private String mStationName;
     private String mBikesAvailable;
     private String mSpacesAvailable;
     private String mLastUpdate;
 
 
+    @Bind(R.id.image_view_station_detail_status)
+    ImageView mStatus;
+
     @Bind(R.id.text_view_station_detail_station_name)
     TextView mStationNameTextView;
+
+    @Bind(R.id.text_view_station_detail_distance)
+    TextView mDistanceTextView;
 
     @Bind(R.id.text_view_station_detail_district)
     TextView mDistrictTextView;
 
+    @Bind(R.id.text_view_station_detail_bikes)
+    TextView mBikesAvailableTextView;
+
+    @Bind(R.id.text_view_station_detail_spaces)
+    TextView mSpacesAvailableTextView;
+
+    //For Empty View
     @Bind(R.id.linear_layout_station_title)
     LinearLayout mTitleView;
 
@@ -66,6 +88,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
     @Bind(R.id.text_view_station_detail_empty)
     TextView mEmptyView;
+    //End for empty view
 
 
     public static StationDetailFragment newInstance(int page, String title) {
@@ -91,7 +114,25 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         EventBus.getInstance().register(this);
         mPage = getArguments().getInt("pageInt", 0);
         mTitle = getArguments().getString("title");
-        mStationId = 1;
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.i(LOG_TAG, "Station Detail onCreatOptions");
+        inflater.inflate(R.menu.menu_detail_fragment, menu);
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+        setShareIntent();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(settingsIntent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -120,7 +161,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         mBodyView.setVisibility(View.GONE);
         mEmptyView.setVisibility(View.VISIBLE);
     }
-
     private void hideEmptyView() {
         mTitleView.setVisibility(View.VISIBLE);
         mBodyView.setVisibility(View.VISIBLE);
@@ -136,10 +176,11 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
             //If activity is MainActivity, then we want the nearest station
             if (getActivity() instanceof MainActivity) {
-                Uri nearestStatonUri = StationContract.StationEntry.buildUriAllStations();
+                Log.i(LOG_TAG, "should be here");
+                Uri nearestStationUri = StationContract.StationEntry.buildUriAllStations();
                 return new CursorLoader(
                         getActivity(),
-                        nearestStatonUri,
+                        nearestStationUri,
                         StationContract.STATION_COLUMNS,
                         null,
                         null,
@@ -167,6 +208,13 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         if (cursor != null && cursor.moveToFirst()) {
             Log.i(LOG_TAG, "cursor");
             cursor.moveToFirst();
+            hideEmptyView();
+
+            //Set status icon
+            mStatus.setImageResource(Utilities.getStatusIconDrawable(cursor, Utilities.ICON_SIZE_LARGE));
+
+            //Get the stationID and check for favorite
+            mStationId = cursor.getInt(StationContract.COL_STATION_ID);
 
             //Get the preferred language
             String language = PreferenceManager.getDefaultSharedPreferences(getActivity())
@@ -188,12 +236,33 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                 mDistrictTextView.setText(cursor.getString(StationContract.COL_STATION_DISTRICT_ZH));
             }
 
-            if (cursor != null) {
-                hideEmptyView();
+            //Set the distance if we obtain one from the user's location.  If not, set to no data
+            Location userLocation = Utilities.getUserLocation(getActivity());
+            mStationLat = cursor.getDouble(StationContract.COL_STATION_LAT);
+            mStationLong = cursor.getDouble(StationContract.COL_STATION_LONG);
+            if (userLocation != null) {
+                //calculate the distance from the user's last known location
+                float distance = Utilities.calculateDistance(mStationLat, mStationLong, userLocation);
+                mDistanceTextView.setText(Utilities.formatDistance(distance));
+            } else {
+                mDistanceTextView.setText(getActivity().getString(R.string.text_view_station_detail_no_data));
             }
+
+            mBikesAvailable = String.valueOf(cursor.getInt(StationContract.COL_BIKES_AVAILABLE));
+            mBikesAvailableTextView.setText(mBikesAvailable);
+
+            mSpacesAvailable = String.valueOf(cursor.getInt(StationContract.COL_SPACES_AVAILABLE));
+            mSpacesAvailableTextView.setText(mSpacesAvailable);
+
+            mLastUpdate = Utilities.formatTime(cursor.getString(StationContract.COL_LAST_UPDATED));
+
+
         }
 
-
+        //Set the share intent
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(createShareIntent());
+        }
     }
 
     @Override
@@ -204,6 +273,22 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     public void restartLoader() {
         if (getActivity() != null) {
             getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
+        }
+    }
+
+    public Intent createShareIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        String shareText = Utilities.buildShareText(getActivity(), mBikesAvailable, mSpacesAvailable, mStationName, mLastUpdate);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+
+        return shareIntent;
+    }
+
+    public void setShareIntent() {
+        if(mStationName!= null) {
+            mShareActionProvider.setShareIntent(createShareIntent());
         }
     }
 

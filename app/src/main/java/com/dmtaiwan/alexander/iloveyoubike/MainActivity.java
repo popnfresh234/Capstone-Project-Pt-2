@@ -61,27 +61,6 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     protected void onResume() {
@@ -107,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     }
 
     public static class PagerAdapter extends FragmentPagerAdapter {
-        private static int NUM_ITEMS = 3;
+        private static int NUM_ITEMS = 4;
 
         public PagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -117,11 +96,13 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return TestFragment.newInstance(0, "First");
+                    return StationListFragment.newInstance(0, "First");
                 case 1:
                     return StationDetailFragment.newInstance(1, null);
                 case 2:
-                    return TestFragment.newInstance(2, "Third");
+                    return StationListFragment.newInstance(2, "Third");
+                case 3:
+                    return TestFragment.newInstance(3, "Fourth");
                 default:
                     return null;
             }

@@ -38,6 +38,7 @@ public class StationContract {
     public static final int COL_STATION_LONG = 7;
     public static final int COL_BIKES_AVAILABLE = 8;
     public static final int COL_SPACES_AVAILABLE = 9;
+    public static final int COL_LAST_UPDATED = 10;
 
 
 
