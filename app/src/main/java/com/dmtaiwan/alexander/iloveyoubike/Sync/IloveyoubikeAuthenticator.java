@@ -1,4 +1,4 @@
-package com.dmtaiwan.alexander.iloveyoubike.Sync;
+package com.dmtaiwan.alexander.iloveyoubike.sync;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
@@ -6,11 +6,10 @@ import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.os.Bundle;
-
 /**
- * Created by Alexander on 7/29/2015.
+ * Created by Alexander on 9/14/2015.
  */
-public class IloveyoubikeAuthenticator extends AbstractAccountAuthenticator {
+public class IloveyoubikeAuthenticator extends AbstractAccountAuthenticator{
     public IloveyoubikeAuthenticator(Context context) {
         super(context);
     }

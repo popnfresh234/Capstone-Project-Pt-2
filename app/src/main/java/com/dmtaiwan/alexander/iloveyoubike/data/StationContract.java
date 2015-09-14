@@ -14,6 +14,31 @@ public class StationContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_STATION = "station";
 
+    public static final String[] STATION_COLUMNS = {
+            StationContract.StationEntry._ID,
+            StationContract.StationEntry.COLUMN_STATION_ID,
+            StationContract.StationEntry.COLUMN_STATION_NAME_ZH,
+            StationContract.StationEntry.COLUMN_STATION_DISTRICT_ZH,
+            StationContract.StationEntry.COLUMN_STATION_NAME_EN,
+            StationContract.StationEntry.COLUMN_STATION_DISTRICT_EN,
+            StationContract.StationEntry.COLUMN_STATION_LAT,
+            StationContract.StationEntry.COLUMN_STATION_LONG,
+            StationContract.StationEntry.COLUMN_BIKES_AVAIABLE,
+            StationContract.StationEntry.COLUMN_SPACES_AVAILABLE,
+            StationContract.StationEntry.COLUMN_LAST_UPDATED
+    };
+
+    public static final int COL_ID = 0;
+    public static final int COL_STATION_ID = 1;
+    public static final int COL_STATION_NAME_ZH = 2;
+    public static final int COL_STATION_DISTRICT_ZH = 3;
+    public static final int COL_STATION_NAME_EN = 4;
+    public static final int COL_STATION_DISTRICT_EN = 5;
+    public static final int COL_STATION_LAT = 6;
+    public static final int COL_STATION_LONG = 7;
+    public static final int COL_BIKES_AVAILABLE = 8;
+    public static final int COL_SPACES_AVAILABLE = 9;
+
 
 
     public static final class StationEntry implements BaseColumns {

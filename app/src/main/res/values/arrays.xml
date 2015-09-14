@@ -11,4 +11,6 @@
         <item>@string/pref_language_chinese</item>
         <item>@string/pref_language_pinyin</item>
     </string-array>
+
+
 </resources>

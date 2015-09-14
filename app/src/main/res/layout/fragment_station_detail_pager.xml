@@ -9,6 +9,7 @@
     android:paddingBottom="56dp">
 
     <LinearLayout
+        android:id="@+id/linear_layout_station_title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
@@ -37,8 +38,7 @@
             android:layout_marginTop="@dimen/abc_list_item_padding_horizontal_material"
             android:gravity="center_horizontal"
             android:textSize="@dimen/station_detail_station_text_size"
-            android:transitionName="@string/transition_station_name_text"
-            tools:text="station name" />
+            android:transitionName="@string/transition_station_name_text"/>
 
 
         <ImageView
@@ -47,7 +47,6 @@
             android:layout_height="@dimen/status_icon"
             android:layout_gravity="center_horizontal"
             android:adjustViewBounds="true"
-            android:src="@drawable/ic_my_location_black_48dp"
             android:transitionName="@string/transition_status_image_view"
             android:contentDescription="@string/a11y_status_icon"/>
 
@@ -59,8 +58,7 @@
             android:layout_marginBottom="@dimen/abc_list_item_padding_horizontal_material"
             android:layout_marginTop="@dimen/abc_list_item_padding_horizontal_material"
             android:gravity="center_horizontal"
-            android:textSize="@dimen/station_detail_district_text_size"
-            tools:text="station district" />
+            android:textSize="@dimen/station_detail_district_text_size"/>
 
 
         <android.support.v7.widget.Space
@@ -72,6 +70,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linear_layout_station_body"
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_height="0dp"

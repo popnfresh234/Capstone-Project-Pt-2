@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item type="layout" name="fragment_detail_alias">@layout/fragment_station_detail</item>
-    <item type="layout" name="fragment_detail_pager_alias">@layout/fragment_station_detail_pager</item>
-</resources>

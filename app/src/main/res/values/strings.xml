@@ -21,7 +21,7 @@
     <string name="text_view_station_detail_distance">Distance</string>
     <string name="text_view_station_detail_no_data">No Data</string>
     <string name="text_view_station_list_time_label">Last update:</string>
-    <string name="text_view_station_detail_empty">No Location Data Available</string>
+
     
     <!--Empty View Strings-->
     <string name="text_view_empty_view">No Station Data</string>
@@ -29,6 +29,7 @@
     <string name="text_view_empty_view_server_invalid">No data available.  The server is returning invalid data.</string>
     <string name="text_view_empty_view_network">No data available.  The network is not available.</string>
     <string name="text_view_empty_view_favorites">No favorites have been selected yet!</string>
+    <string name="text_view_station_detail_empty">No Data Available</string>
 
 
     <!--Shared Prefs -->

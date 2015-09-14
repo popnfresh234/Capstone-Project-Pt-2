@@ -1,4 +1,4 @@
-package com.dmtaiwan.alexander.iloveyoubike.Sync;
+package com.dmtaiwan.alexander.iloveyoubike.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;

@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract.StationEntry;
+
 /**
  * Created by Alexander on 7/28/2015.
  */

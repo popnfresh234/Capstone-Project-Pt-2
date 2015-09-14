@@ -3,15 +3,14 @@ package com.dmtaiwan.alexander.iloveyoubike.Utilities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 
 import com.dmtaiwan.alexander.iloveyoubike.R;
-import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
-import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
+//import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
+import com.dmtaiwan.alexander.iloveyoubike.sync.IloveyoubikeSyncAdapter;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -155,29 +154,29 @@ public class Utilities {
         return selection;
     }
 
-    public static int getStatusIconDrawable(Cursor cursor, int size) {
-        int bikesAvailable = cursor.getInt(StationListFragment.COL_BIKES_AVAILABLE);
-        int spacesAvailable = cursor.getInt(StationListFragment.COL_SPACES_AVAILABLE);
-        if (bikesAvailable > 0 && spacesAvailable > 0) {
-            return R.drawable.ic_green96x96;
-        } else if (spacesAvailable == 0) {
-            return R.drawable.ic_yellow96x96;
-        } else {
-            return R.drawable.ic_red96x96;
-        }
-    }
+//    public static int getStatusIconDrawable(Cursor cursor, int size) {
+//        int bikesAvailable = cursor.getInt(StationListFragment.COL_BIKES_AVAILABLE);
+//        int spacesAvailable = cursor.getInt(StationListFragment.COL_SPACES_AVAILABLE);
+//        if (bikesAvailable > 0 && spacesAvailable > 0) {
+//            return R.drawable.ic_green96x96;
+//        } else if (spacesAvailable == 0) {
+//            return R.drawable.ic_yellow96x96;
+//        } else {
+//            return R.drawable.ic_red96x96;
+//        }
+//    }
 
-    public static String getContentDescription(Cursor cursor, Context context) {
-        int bikesAvailable = cursor.getInt(StationListFragment.COL_BIKES_AVAILABLE);
-        int spacesAvailable = cursor.getInt(StationListFragment.COL_SPACES_AVAILABLE);
-        if (bikesAvailable > 0 && spacesAvailable > 0) {
-            return context.getString(R.string.a11y_status_bikes);
-        } else if (spacesAvailable == 0) {
-            return context.getString(R.string.a11y_status_no_spaces);
-        } else {
-            return context.getString(R.string.a11y_status_no_bikes);
-        }
-    }
+//    public static String getContentDescription(Cursor cursor, Context context) {
+//        int bikesAvailable = cursor.getInt(StationListFragment.COL_BIKES_AVAILABLE);
+//        int spacesAvailable = cursor.getInt(StationListFragment.COL_SPACES_AVAILABLE);
+//        if (bikesAvailable > 0 && spacesAvailable > 0) {
+//            return context.getString(R.string.a11y_status_bikes);
+//        } else if (spacesAvailable == 0) {
+//            return context.getString(R.string.a11y_status_no_spaces);
+//        } else {
+//            return context.getString(R.string.a11y_status_no_bikes);
+//        }
+//    }
 
     public static int getMarkerIconDrawable(int bikesAvailable, int spacesAvailable) {
 
