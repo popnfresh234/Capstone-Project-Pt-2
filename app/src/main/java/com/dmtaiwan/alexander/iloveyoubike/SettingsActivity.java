@@ -7,6 +7,9 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.EventBus;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.LanguageEvent;
+
 /**
  * Created by Alexander on 7/29/2015.
  */
@@ -44,10 +47,12 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if ( key.equals(getString(R.string.pref_key_language)) ) {
+        LanguageEvent languageEvent = new LanguageEvent();
+        EventBus.getInstance().post(languageEvent);
+        if (key.equals(getString(R.string.pref_key_language))) {
             //Language has been changed
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            String language = prefs.getString(getString(R.string.pref_key_language),getString(R.string.pref_language_english));
+            String language = prefs.getString(getString(R.string.pref_key_language), getString(R.string.pref_language_english));
         }
     }
 

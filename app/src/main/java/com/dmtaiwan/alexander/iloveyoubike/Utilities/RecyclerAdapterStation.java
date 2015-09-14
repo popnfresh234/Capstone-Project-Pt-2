@@ -130,6 +130,10 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
             int stationId = mCursor.getInt(StationContract.COL_STATION_ID);
+            RecyclerEvent recyclerEvent = new RecyclerEvent();
+            recyclerEvent.setStationId(stationId);
+            recyclerEvent.setVh(this);
+            EventBus.getInstance().post(recyclerEvent);
         }
     }
 

@@ -30,7 +30,9 @@ import android.widget.TextView;
 
 
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.EventBus;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.FavoriteEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.FragmentCallback;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.LanguageEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
@@ -54,8 +56,7 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
 
     private Boolean mSortDefaultOrder = false;
-
-
+    private Boolean mIsFavorites;
     private String mLanguage;
     private ShareActionProvider mShareActionProvider;
 
@@ -69,11 +70,12 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     TextView mEmptyView;
 
 
-    public static StationListFragment newInstance(int page, String title) {
+    public static StationListFragment newInstance(int page, String title, Boolean isFavorites) {
         StationListFragment listFragment = new StationListFragment();
         Bundle args = new Bundle();
         args.putInt("pageInt", page);
         args.putString("title", title);
+        args.putBoolean(Utilities.EXTRA_FAVORITES, isFavorites);
         listFragment.setArguments(args);
         return listFragment;
     }
@@ -96,6 +98,8 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         setHasOptionsMenu(true);
         //Register Event Bus
         EventBus.getInstance().register(this);
+        //Check if favorites list
+        mIsFavorites = getArguments().getBoolean(Utilities.EXTRA_FAVORITES, false);
         //Get the language setting
         mLanguage = PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getString(getString(R.string.pref_key_language), getString(R.string.pref_language_english));
@@ -185,9 +189,21 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         String[] selectionArgs = null;
 
         //If favorites view, load the favorites array and set the selection args
+        if (mIsFavorites) {
+            ArrayList<String> favoritesArray = Utilities.getFavoriteArray(getActivity());
+            if (favoritesArray != null) {
+                String[] strings = new String[favoritesArray.size()];
+                selectionArgs = favoritesArray.toArray(strings);
+                selection = Utilities.generateFavoritesWhereString(favoritesArray);
+            } else {
+                //fake args to return empty cursor and trigger empty view
+                String[] fakeArgs = {"999"};
+                selectionArgs = fakeArgs;
+                selection = StationContract.StationEntry.COLUMN_STATION_ID + " in (?)";
+            }
+        }
 
-
-        //Otherwise view all stations
+        //Otherwise selection and
 
         return new CursorLoader(
                 getActivity(),
@@ -216,29 +232,29 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     private void updateEmptyView() {
         if (mAdapter.getItemCount() == 0) {
-
             if (mEmptyView != null) {
-
                 int emptyViewText = R.string.text_view_empty_view;
-                int status = Utilities.getServerStatus(getActivity());
+                if (mIsFavorites) {
+                    mEmptyView.setText(R.string.text_view_empty_view_favorites);
+                } else {
+                    int status = Utilities.getServerStatus(getActivity());
+                    switch (status) {
+                        case IloveyoubikeSyncAdapter.STATUS_SERVER_DOWN:
+                            emptyViewText = R.string.text_view_empty_view_server_down;
+                            break;
+                        case IloveyoubikeSyncAdapter.STATUS_SERVER_INVALID:
+                            emptyViewText = R.string.text_view_empty_view_server_invalid;
+                            break;
+                        case IloveyoubikeSyncAdapter.STATUS_FAVORITES_EMPTY:
+                            emptyViewText = R.string.text_view_empty_view_favorites;
+                            break;
+                        default:
+                            if (!Utilities.isNetworkAvailable(getActivity())) {
+                                emptyViewText = R.string.text_view_empty_view_network;
+                            }
 
-
-                switch (status) {
-                    case IloveyoubikeSyncAdapter.STATUS_SERVER_DOWN:
-                        emptyViewText = R.string.text_view_empty_view_server_down;
-                        break;
-                    case IloveyoubikeSyncAdapter.STATUS_SERVER_INVALID:
-                        emptyViewText = R.string.text_view_empty_view_server_invalid;
-                        break;
-                    case IloveyoubikeSyncAdapter.STATUS_FAVORITES_EMPTY:
-                        emptyViewText = R.string.text_view_empty_view_favorites;
-                        break;
-                    default:
-                        if (!Utilities.isNetworkAvailable(getActivity())) {
-                            emptyViewText = R.string.text_view_empty_view_network;
-                        }
-
-                        mEmptyView.setText(emptyViewText);
+                            mEmptyView.setText(emptyViewText);
+                    }
                 }
 
             }
@@ -288,6 +304,18 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     @Subscribe
     public void onLocationChange(LocationEvent locationEvent) {
         Log.i(LOG_TAG, "location changed");
+        restartLoader();
+    }
+
+    //Listen for favorite change
+    @Subscribe
+    public void onFavoriteChange(FavoriteEvent favoriteEvent) {
+        Log.i(LOG_TAG, "favorite changed");
+        restartLoader();
+    }
+
+    @Subscribe
+    public void onLanguageChange(LanguageEvent languageEvent) {
         restartLoader();
     }
 }
