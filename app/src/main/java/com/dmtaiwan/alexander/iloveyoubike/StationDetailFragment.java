@@ -23,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -173,15 +174,20 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_station_detail_pager, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_detail_alias, container, false);
         ButterKnife.bind(this, rootView);
         showEmptyView();
 
         //If detail activity framgnet, setup toolbar
         if (mIsDetailActivityFragment) {
-            mStationDetailContainer.setPadding(0,0,0,0);
+            mStationDetailContainer.setPadding(0, 0, 0, 0);
+            mToolbar.setVisibility(View.VISIBLE);
             ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
             ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+            if (getResources().getBoolean(R.bool.isLandscape)) {
+                mTitleView.setPadding(0,0,0,0);
+                mBodyView.setPadding(0,0,0,0);
+            }
         }
         return rootView;
     }

@@ -6,7 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="56dp">
+    android:paddingBottom="@dimen/action_bar_height">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_detail"
+        android:background="@android:color/white"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"/>
 
     <LinearLayout
         android:id="@+id/linear_layout_station_title"
@@ -16,12 +23,7 @@
         android:orientation="vertical"
         android:background="@android:color/white">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar_detail"
-            android:background="@android:color/white"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"/>
+
 
         <android.support.v7.widget.Space
             android:layout_width="match_parent"
