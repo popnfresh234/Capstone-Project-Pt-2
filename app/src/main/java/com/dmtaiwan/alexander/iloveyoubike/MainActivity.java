@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
                     //All stations fragment
                     return StationListFragment.newInstance(2, "Third", false);
                 case 3:
-                    return StationDetailFragment.newInstance(1, null, false);
+                    return MapFragment.newInstance(1, null);
                 default:
                     return null;
             }
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         detailIntent.putExtra(Utilities.EXTRA_DETAIL_ACTIVITY, true);
         detailIntent.putExtra(Utilities.EXTRA_STATION_ID, stationId);
 
-        //Transitons
+        //Transitions
         Pair<View, String> p1 = Pair.create((View) vh.stationStatus, getString(R.string.transition_status_image_view));
         Pair<View, String> p2 = Pair.create((View) vh.stationName, getString(R.string.transition_station_name_text));
         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
