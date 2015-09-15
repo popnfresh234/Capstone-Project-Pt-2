@@ -25,6 +25,8 @@ import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerEvent;
 import com.dmtaiwan.alexander.iloveyoubike.sync.IloveyoubikeSyncAdapter;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.squareup.otto.Subscribe;
 
 import butterknife.Bind;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
 
     private FragmentPagerAdapter mPagerAdapter;
     private LocationProvider mLocationProvider;
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -69,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
 
         //Register event bus
         EventBus.getInstance().register(this);
+
+        checkPlayServices();
     }
 
 
@@ -153,5 +158,20 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         } else {
             startActivity(detailIntent);
         }
+    }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(LOG_TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 }
