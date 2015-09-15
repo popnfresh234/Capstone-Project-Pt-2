@@ -51,17 +51,19 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     private int mPage;
 
 
+    //Constants
     private static final String LOG_TAG = StationDetailFragment.class.getSimpleName();
     public static final int DETAIL_LOADER = 0;
+
     private int mStationId =-1;
-    private boolean isFavorite;
-    private boolean mIsDetailActivityFragment;
     private ArrayList<String> mFavoritesArray;
-    private String mLanguage;
     private double mStationLat;
     private double mStationLong;
 
-    //Share provider
+    //Flags
+    private boolean isFavorite;
+    private boolean mIsDetailActivityFragment;
+
     //Share provider
     private ShareActionProvider mShareActionProvider;
     private String mStationName;
