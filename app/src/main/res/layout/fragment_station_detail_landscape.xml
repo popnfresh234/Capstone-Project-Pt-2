@@ -87,7 +87,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/action_bar_height">
 
             <android.support.v7.widget.GridLayout
                 android:id="@+id/detail_additional_pane"
@@ -115,7 +116,6 @@
                     android:text="@string/text_view_station_detail_distance"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textColor="@color/secondary_text_light_bg"
-
                     app:layout_gravity="fill"
                     app:layout_rowWeight="1" />
 
@@ -183,7 +183,6 @@
                     android:gravity="center_horizontal"
                     android:src="@drawable/ic_map_black_48dp" />
             </android.support.v7.widget.GridLayout>
-            LinearLayout>
 
 
             <TextView
@@ -194,24 +193,6 @@
                 android:text="@string/text_view_station_detail_empty"
                 android:visibility="gone" />
         </LinearLayout>
-    </LinearLayout>
-    <LinearLayout
-        android:baselineAligned="false"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:orientation="horizontal">
-
-        <FrameLayout
-            android:layout_height="56dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:background="@android:color/white"/>
-
-        <FrameLayout
-            android:layout_height="56dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            />
     </LinearLayout>
 
 </LinearLayout>

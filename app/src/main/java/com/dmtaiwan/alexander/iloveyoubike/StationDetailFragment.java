@@ -23,7 +23,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -94,10 +93,11 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Bind(R.id.station_detail_container)
     LinearLayout mStationDetailContainer;
 
+    @Nullable
     @Bind(R.id.linear_layout_station_title)
     LinearLayout mTitleView;
 
-
+    @Nullable
     @Bind(R.id.linear_layout_station_body)
     LinearLayout mBodyView;
 
@@ -196,13 +196,13 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     }
 
     private void showEmptyView() {
-        mTitleView.setVisibility(View.GONE);
-        mBodyView.setVisibility(View.GONE);
+//        mTitleView.setVisibility(View.GONE);
+//        mBodyView.setVisibility(View.GONE);
         mEmptyView.setVisibility(View.VISIBLE);
     }
     private void hideEmptyView() {
-        mTitleView.setVisibility(View.VISIBLE);
-        mBodyView.setVisibility(View.VISIBLE);
+//        mTitleView.setVisibility(View.VISIBLE);
+//        mBodyView.setVisibility(View.VISIBLE);
         mEmptyView.setVisibility(View.GONE);
     }
 
