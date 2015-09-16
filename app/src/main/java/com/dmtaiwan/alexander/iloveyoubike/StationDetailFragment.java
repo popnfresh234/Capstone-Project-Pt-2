@@ -184,10 +184,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             mToolbar.setVisibility(View.VISIBLE);
             ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
             ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
-            if (getResources().getBoolean(R.bool.isLandscape)) {
-                mTitleView.setPadding(0,0,0,0);
-                mBodyView.setPadding(0,0,0,0);
-            }
         }
         return rootView;
     }
