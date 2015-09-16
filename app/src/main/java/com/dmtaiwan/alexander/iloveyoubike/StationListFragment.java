@@ -121,14 +121,15 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         return rootView;
     }
 
-
     @Override
     public void onViewStateRestored(Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "onViewStateRestored");
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
             mSavedRecyclerState = savedInstanceState.getParcelable(Utilities.OUTSTATE_SCROLL_POSITION);
         }
     }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -217,7 +218,17 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-
+        //if not tablet, postpone enter transition
+        if (!getResources().getBoolean(R.bool.isTablet)) {
+            mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    getActivity().supportStartPostponedEnterTransition();
+                    return false;
+                }
+            });
+        }
         mAdapter.swapCursor(data);
         updateEmptyView();
         restoreLayoutPosition();
@@ -226,6 +237,8 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     private void restoreLayoutPosition() {
         if (mSavedRecyclerState != null) {
+            //Null out mSavedRecyclerState so that we don't keep restoring to this position
+            mSavedRecyclerState = null;
             mRecyclerView.getLayoutManager().onRestoreInstanceState(mSavedRecyclerState);
         }
     }

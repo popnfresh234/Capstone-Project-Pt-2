@@ -58,6 +58,11 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        //If not tablet mode, enter transition
+        if (!getResources().getBoolean(R.bool.isTablet)) {
+            supportPostponeEnterTransition();
+        }
+
         //Setup a location provider
         mLocationProvider = new LocationProvider(this, this);
 

@@ -93,11 +93,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Bind(R.id.station_detail_container)
     LinearLayout mStationDetailContainer;
 
-    @Nullable
     @Bind(R.id.linear_layout_station_title)
     LinearLayout mTitleView;
 
-    @Nullable
     @Bind(R.id.linear_layout_station_body)
     LinearLayout mBodyView;
 
@@ -181,6 +179,8 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         //If detail activity framgnet, setup toolbar
         if (mIsDetailActivityFragment) {
             mStationDetailContainer.setPadding(0, 0, 0, 0);
+            mTitleView.setPadding(0,0,0,0);
+            mBodyView.setPadding(0,0,0,0);
             mToolbar.setVisibility(View.VISIBLE);
             ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
             ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);

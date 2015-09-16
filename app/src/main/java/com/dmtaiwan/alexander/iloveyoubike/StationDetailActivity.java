@@ -26,5 +26,4 @@ public class StationDetailActivity extends AppCompatActivity {
                     .commit();
         }
     }
-
 }
