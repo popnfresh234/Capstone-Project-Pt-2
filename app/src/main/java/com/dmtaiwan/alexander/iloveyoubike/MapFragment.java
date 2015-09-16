@@ -51,7 +51,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     private HashMap<Integer, Marker> mMarkerMap;
     private Cursor mData;
     private Boolean mIsPopulated;
-    private Boolean mIsLocationSet = false;
     private LatLng mCurrentCameraLatLng;
     private Boolean mIsGoto = false;
     private int mStationId = -1;
@@ -79,7 +78,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
 
         if (savedInstanceState != null) {
-            mIsLocationSet = savedInstanceState.getBoolean(Utilities.EXTRA_LOCATION_SET);
             mCurrentCameraLatLng = savedInstanceState.getParcelable(Utilities.EXTRA_OUTSTATE_LATLNG);
             mStationId = savedInstanceState.getInt(Utilities.EXTRA_STATION_ID);
         }
@@ -140,8 +138,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
         }
         //Reset the goto station flag for setting the user location
         mIsGoto = false;
-        //Save the current camera position
-        mCurrentCameraLatLng = mMap.getCameraPosition().target;
     }
 
     @Override
@@ -202,8 +198,10 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
         if (mMap != null && !mIsGoto) {
             Log.i(LOG_TAG, String.valueOf(mCurrentCameraLatLng));
             if (mCurrentCameraLatLng == null) {
+                Log.i(LOG_TAG, "CAMERA_CURRENTLATLNG_NULL");
                 Location userLocation = Utilities.getUserLocation(getActivity());
                 if (userLocation != null) {
+                    Log.i(LOG_TAG, "CAMERA USER LOCATION NULL");
                     //Get the user's location and zoom the camera if less than 20km (20000meters) from Taipei, otherwise zoom to default location
                     float distanceFromTaipei = Utilities.calculateDistance(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG, userLocation);
                     if (distanceFromTaipei <= 20000) {
@@ -211,13 +209,13 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
                     } else {
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 10, null);
                     }
-                    mIsLocationSet = true;
                 } else {
+                    Log.i(LOG_TAG, "CAMERA DEFAULT SHOULD BE HERE");
                     //Default location
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 10, null);
-                    mIsLocationSet = true;
                 }
             } else {
+                Log.i(LOG_TAG, "CAMERA CURRENT CAMERA LATLNG");
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCurrentCameraLatLng, 14f), 10, null);
             }
         }
@@ -298,6 +296,8 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
         if (mData != null && !mData.isClosed()) {
             populateMap(mData);
         }
+        //Set current camera positoin
+        mCurrentCameraLatLng = cameraPosition.target;
     }
 
     @Override
@@ -328,10 +328,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.i(LOG_TAG, "onSaveInstanceState");
-        outState.putBoolean(Utilities.EXTRA_LOCATION_SET, mIsLocationSet);
-
-            outState.putParcelable(Utilities.EXTRA_OUTSTATE_LATLNG, mCurrentCameraLatLng);
-
+        outState.putParcelable(Utilities.EXTRA_OUTSTATE_LATLNG, mCurrentCameraLatLng);
         outState.putInt(Utilities.EXTRA_STATION_ID, mStationId);
         super.onSaveInstanceState(outState);
     }
