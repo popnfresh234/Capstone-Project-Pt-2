@@ -27,7 +27,6 @@
             android:maxWidth="48dp"
             android:layout_gravity="center_vertical"
             android:layout_margin="@dimen/item_margin"
-            android:src="@drawable/ic_my_location_black_48dp"
             android:contentDescription="@string/a11y_status_icon"/>
 
         <LinearLayout
