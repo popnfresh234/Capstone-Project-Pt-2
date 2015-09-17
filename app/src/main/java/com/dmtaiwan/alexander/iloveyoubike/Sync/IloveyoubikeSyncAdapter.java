@@ -38,7 +38,7 @@ import java.util.Vector;
 public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String LOG_TAG = IloveyoubikeSyncAdapter.class.getSimpleName();
     private static final String APIUrl = "http://data.taipei/opendata/datalist/apiAccess?scope=resourceAquire&rid=ddb80380-f1b3-4f8e-8016-7ed9cba571d5";
-
+    private static final int NUMBER_OF_STATIONS = 396;
 
     public static final String ACTION_DATA_UPDATED = "com.dmtaiwan.alexander.iloveyoubike.app.ACTION_DATA_UPDATED";
 
@@ -124,7 +124,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
             JSONObject result1 = result.getJSONObject("result");
             JSONArray resultsArray = result1.getJSONArray("results");
             Vector<ContentValues> cVVector = new Vector<ContentValues>(resultsArray.length());
-            for (int i = 0; i < resultsArray.length(); i++) {
+            for (int i = 0; i < NUMBER_OF_STATIONS; i++) {
                 JSONObject stationObject = resultsArray.getJSONObject(i);
                 String stationId = stationObject.getString("_id");
                 String stationNameChinese = stationObject.getString("sna");
