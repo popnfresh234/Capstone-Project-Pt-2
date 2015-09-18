@@ -22,8 +22,7 @@
     @com.squareup.otto.Produce public *;
 }
 
--keep class com.google.android.gms.** { *; }
--dontwarn com.google.android.gms.**
+
 
 #Butterknife
 -keep class butterknife.** { *; }
