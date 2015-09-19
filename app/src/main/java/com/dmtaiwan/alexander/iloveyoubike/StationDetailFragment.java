@@ -52,7 +52,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     private static final String LOG_TAG = StationDetailFragment.class.getSimpleName();
     public static final int DETAIL_LOADER = 0;
 
-    private int mStationId =-1;
+    private int mStationId = -1;
     private ArrayList<String> mFavoritesArray;
     private double mStationLat;
     private double mStationLong;
@@ -183,11 +183,11 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         //If detail activity framgnet, setup toolbar
         if (mIsDetailActivityFragment) {
             mStationDetailContainer.setPadding(0, 0, 0, 0);
-            mTitleView.setPadding(0,0,0,0);
-            mBodyView.setPadding(0,0,0,0);
+            mTitleView.setPadding(0, 0, 0, 0);
+            mBodyView.setPadding(0, 0, 0, 0);
             mToolbar.setVisibility(View.VISIBLE);
             ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
         return rootView;
     }
@@ -204,6 +204,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         mBodyView.setVisibility(View.GONE);
         mEmptyView.setVisibility(View.VISIBLE);
     }
+
     private void hideEmptyView() {
         mTitleView.setVisibility(View.VISIBLE);
         mBodyView.setVisibility(View.VISIBLE);
@@ -338,7 +339,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
     public void restartLoader() {
         if (getActivity() != null) {
-                getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
+            getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
         }
     }
 
@@ -353,7 +354,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     }
 
     public void setShareIntent() {
-        if(mStationName!= null) {
+        if (mStationName != null) {
             mShareActionProvider.setShareIntent(createShareIntent());
         }
     }
@@ -391,7 +392,10 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         spe.putString(Utilities.SHARED_PREFS_FAVORITE_KEY, gson.toJson(mFavoritesArray));
         spe.commit();
         FavoriteEvent favoriteEvent = new FavoriteEvent();
+        favoriteEvent.setStationId(mStationId);
         EventBus.getInstance().post(favoriteEvent);
+
+
     }
 
     //Listen for location change
@@ -404,5 +408,26 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Subscribe
     public void onLanguageChange(LanguageEvent languageEvent) {
         restartLoader();
+    }
+
+    //Listen for favorite change
+    @Subscribe
+    public void onFavoriteChange(FavoriteEvent favoriteEvent) {
+        Log.i(LOG_TAG, "favorite changed");
+        checkFavorite();
+        restartLoader();
+    }
+
+    private void checkFavorite() {
+        //In case the nearest station was unfavorited from favorite or all station list
+        //Check if station is contained in the list of favorites, if so make sure button is in the proper state
+        ArrayList<String> favoritesArray = Utilities.getFavoriteArray(getActivity());
+        if (favoritesArray != null && favoritesArray.contains(String.valueOf(mStationId))) {
+            isFavorite = true;
+            mFavoriteButton.setImageResource(R.drawable.ic_favorite_black_48dp);
+        } else {
+            isFavorite = false;
+            mFavoriteButton.setImageResource(R.drawable.ic_favorite_outline_grey600_48dp);
+        }
     }
 }

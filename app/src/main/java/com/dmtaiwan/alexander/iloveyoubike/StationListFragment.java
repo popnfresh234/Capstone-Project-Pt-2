@@ -50,7 +50,7 @@ import butterknife.Bind;
 /**
  * Created by Alexander on 7/28/2015.
  */
-public class StationListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, FragmentCallback {
+public class StationListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = StationListFragment.class.getSimpleName();
     private static final int STATION_LOADER = 0;
     private RecyclerAdapterStation mAdapter;
@@ -241,7 +241,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
             StationDetailFragment detailFragment = new StationDetailFragment();
             Bundle args = new Bundle();
             //pass on favorites flag
-            args.putBoolean(Utilities.EXTRA_FAVORITES, mIsFavorites);
             args.putInt(Utilities.EXTRA_STATION_ID, stationId);
             detailFragment.setArguments(args);
             getChildFragmentManager().beginTransaction()
@@ -277,6 +276,11 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     private void updateEmptyView() {
         if (mAdapter.getItemCount() == 0) {
+            //If tablet mode, hide detail container
+            if (getResources().getBoolean(R.bool.isTablet)) {
+                mDetailContainer.setVisibility(View.GONE);
+            }
+
             if (mEmptyView != null) {
                 int emptyViewText = R.string.text_view_empty_view;
                 if (mIsFavorites) {
@@ -321,11 +325,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         }
     }
 
-    @Override
-    public void onFragmentShown() {
-        restartLoader();
-    }
-
     public void setShareIntent(Intent shareIntent) {
         if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(shareIntent);
@@ -355,7 +354,11 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     //Listen for favorite change
     @Subscribe
     public void onFavoriteChange(FavoriteEvent favoriteEvent) {
-        Log.i(LOG_TAG, "favorite changed");
+
+        //As long as this is not the favorites tab, save the position of the station we were favoriting
+        if (((MainActivity) getActivity()).getFragmentPosition() != 0) {
+            mCurrentStation = favoriteEvent.getStationId();
+        }
         restartLoader();
     }
 

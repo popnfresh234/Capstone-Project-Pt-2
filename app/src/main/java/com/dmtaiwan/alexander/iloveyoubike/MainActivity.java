@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.EventBus;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.FavoriteEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerEvent;
@@ -32,7 +33,7 @@ import com.squareup.otto.Subscribe;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback {
+public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback{
 
     private static String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -143,6 +144,37 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         public CharSequence getPageTitle(int position) {
             return "Page " + position;
         }
+
+    }
+
+
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(LOG_TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public Fragment getCurrentFragment() {
+        if (mViewPager != null) {
+            int currentFragment = mViewPager.getCurrentItem();
+            return (Fragment) mPagerAdapter.instantiateItem(mViewPager, currentFragment);
+        }else{
+            return null;
+        }
+    }
+
+    public int getFragmentPosition() {
+        return mViewPager.getCurrentItem();
     }
 
     @Subscribe
@@ -171,30 +203,6 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
             args.putInt(Utilities.EXTRA_STATION_ID, recyclerEvent.getStationId());
             stationDetailFragment.setArguments(args);
             getCurrentFragment().getChildFragmentManager().beginTransaction().replace(R.id.detail_container, stationDetailFragment).commit();
-        }
-    }
-
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Log.i(LOG_TAG, "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
-
-    private Fragment getCurrentFragment() {
-        if (mViewPager != null) {
-            int currentFragment = mViewPager.getCurrentItem();
-            return (Fragment) mPagerAdapter.instantiateItem(mViewPager, currentFragment);
-        }else{
-            return null;
         }
     }
 }
