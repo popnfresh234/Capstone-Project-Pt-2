@@ -47,9 +47,6 @@ import butterknife.OnClick;
  * Created by Alexander on 9/12/2015.
  */
 public class StationDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private String mTitle;
-    private int mPage;
-
 
     //Constants
     private static final String LOG_TAG = StationDetailFragment.class.getSimpleName();
@@ -136,10 +133,17 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
         //Register Event Bus
         EventBus.getInstance().register(this);
-        mPage = getArguments().getInt("pageInt", 0);
-        mTitle = getArguments().getString("title");
         mIsDetailActivityFragment = getArguments().getBoolean(Utilities.EXTRA_DETAIL_ACTIVITY);
-        setHasOptionsMenu(true);
+
+        //If tablet mode, check for stationID
+        if (getArguments() != null && getArguments().getInt(Utilities.EXTRA_STATION_ID, -1) != -1) {
+            mStationId = getArguments().getInt(Utilities.EXTRA_STATION_ID);
+        }
+
+        //if not tablet or fragment in StationDetailActivity
+        if (!getResources().getBoolean(R.bool.isTablet) || getActivity() instanceof StationDetailActivity) {
+            setHasOptionsMenu(true);
+        }
 
         //Check and see if this is created from a detailActivity with an ID
         if (getActivity().getIntent().getIntExtra(Utilities.EXTRA_STATION_ID, -1) != -1) {
@@ -196,13 +200,13 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     }
 
     private void showEmptyView() {
-//        mTitleView.setVisibility(View.GONE);
-//        mBodyView.setVisibility(View.GONE);
+        mTitleView.setVisibility(View.GONE);
+        mBodyView.setVisibility(View.GONE);
         mEmptyView.setVisibility(View.VISIBLE);
     }
     private void hideEmptyView() {
-//        mTitleView.setVisibility(View.VISIBLE);
-//        mBodyView.setVisibility(View.VISIBLE);
+        mTitleView.setVisibility(View.VISIBLE);
+        mBodyView.setVisibility(View.VISIBLE);
         mEmptyView.setVisibility(View.GONE);
     }
 

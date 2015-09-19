@@ -32,7 +32,7 @@ import com.squareup.otto.Subscribe;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback{
+public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback {
 
     private static String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
 
     @Bind(R.id.view_pager)
     ViewPager mViewPager;
-
 
 
     @Override
@@ -148,20 +147,30 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
 
     @Subscribe
     public void onItemSelected(RecyclerEvent recyclerEvent) {
-        int stationId = recyclerEvent.getStationId();
-        RecyclerAdapterStation.ViewHolder vh = recyclerEvent.getVh();
-        Intent detailIntent = new Intent(this, StationDetailActivity.class);
-        detailIntent.putExtra(Utilities.EXTRA_DETAIL_ACTIVITY, true);
-        detailIntent.putExtra(Utilities.EXTRA_STATION_ID, stationId);
 
-        //Transitions
-        Pair<View, String> p1 = Pair.create((View) vh.stationStatus, getString(R.string.transition_status_image_view));
-        Pair<View, String> p2 = Pair.create((View) vh.stationName, getString(R.string.transition_station_name_text));
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            startActivity(detailIntent, options.toBundle());
-        } else {
-            startActivity(detailIntent);
+        //Only execute this code if not tablet mode
+        if (!getResources().getBoolean(R.bool.isTablet)) {
+            int stationId = recyclerEvent.getStationId();
+            RecyclerAdapterStation.ViewHolder vh = recyclerEvent.getVh();
+            Intent detailIntent = new Intent(this, StationDetailActivity.class);
+            detailIntent.putExtra(Utilities.EXTRA_DETAIL_ACTIVITY, true);
+            detailIntent.putExtra(Utilities.EXTRA_STATION_ID, stationId);
+            //Transitions
+            Pair<View, String> p1 = Pair.create((View) vh.stationStatus, getString(R.string.transition_status_image_view));
+            Pair<View, String> p2 = Pair.create((View) vh.stationName, getString(R.string.transition_station_name_text));
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p2);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                startActivity(detailIntent, options.toBundle());
+            } else {
+                startActivity(detailIntent);
+            }
+        }else{
+
+            StationDetailFragment stationDetailFragment = StationDetailFragment.newInstance(0, null, false);
+            Bundle args = new Bundle();
+            args.putInt(Utilities.EXTRA_STATION_ID, recyclerEvent.getStationId());
+            stationDetailFragment.setArguments(args);
+            getCurrentFragment().getChildFragmentManager().beginTransaction().replace(R.id.detail_container, stationDetailFragment).commit();
         }
     }
 
@@ -178,5 +187,14 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
             return false;
         }
         return true;
+    }
+
+    private Fragment getCurrentFragment() {
+        if (mViewPager != null) {
+            int currentFragment = mViewPager.getCurrentItem();
+            return (Fragment) mPagerAdapter.instantiateItem(mViewPager, currentFragment);
+        }else{
+            return null;
+        }
     }
 }

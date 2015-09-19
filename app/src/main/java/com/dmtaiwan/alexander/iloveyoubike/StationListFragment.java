@@ -35,6 +35,7 @@ import com.dmtaiwan.alexander.iloveyoubike.Utilities.FragmentCallback;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LanguageEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
 import com.dmtaiwan.alexander.iloveyoubike.sync.IloveyoubikeSyncAdapter;
@@ -68,6 +69,10 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     RecyclerView mRecyclerView;
     @Bind(R.id.station_list_empty_view)
     TextView mEmptyView;
+
+    @Nullable
+    @Bind(R.id.detail_container)
+    FrameLayout mDetailContainer;
 
 
     public static StationListFragment newInstance(int page, String title, Boolean isFavorites) {
@@ -114,8 +119,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(llm);
-
-
         mAdapter = new RecyclerAdapterStation(getActivity(), mEmptyView);
         mRecyclerView.setAdapter(mAdapter);
         return rootView;
@@ -229,6 +232,35 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
                 }
             });
         }
+
+        //If tablet mode, populate detail fragment
+        if (getResources().getBoolean(R.bool.isTablet) && data.getCount() > 0 && mCurrentStation != 0) {
+            mDetailContainer.setVisibility(View.VISIBLE);
+            data.moveToPosition(mCurrentStation);
+            int stationId = mCurrentStation;
+            StationDetailFragment detailFragment = new StationDetailFragment();
+            Bundle args = new Bundle();
+            //pass on favorites flag
+            args.putBoolean(Utilities.EXTRA_FAVORITES, mIsFavorites);
+            args.putInt(Utilities.EXTRA_STATION_ID, stationId);
+            detailFragment.setArguments(args);
+            getChildFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, detailFragment).commit();
+            mCurrentStation = 0;
+
+        } else if (getResources().getBoolean(R.bool.isTablet) && data.getCount() > 0) {
+            mDetailContainer.setVisibility(View.VISIBLE);
+            data.moveToFirst();
+            int stationId = data.getInt(StationContract.COL_STATION_ID);
+            StationDetailFragment detailFragment = new StationDetailFragment();
+            Bundle args = new Bundle();
+            //pass on favorites flag
+            args.putBoolean(Utilities.EXTRA_FAVORITES, mIsFavorites);
+            args.putInt(Utilities.EXTRA_STATION_ID, stationId);
+            detailFragment.setArguments(args);
+            getChildFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, detailFragment).commit();
+        }
         mAdapter.swapCursor(data);
         updateEmptyView();
         restoreLayoutPosition();
@@ -331,4 +363,5 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     public void onLanguageChange(LanguageEvent languageEvent) {
         restartLoader();
     }
+
 }
