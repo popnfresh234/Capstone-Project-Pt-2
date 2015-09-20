@@ -33,7 +33,7 @@ import com.squareup.otto.Subscribe;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback{
+public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback {
 
     private static String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         Log.i(LOG_TAG, "Location Changed");
         Utilities.setUserLocation(location, this);
         LocationEvent locationEvent = new LocationEvent();
+        locationEvent.setNewLocation(location);
         EventBus.getInstance().post(locationEvent);
     }
 
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
                     //Favorites fragment
                     return StationListFragment.newInstance(0, "First", true);
                 case 1:
-                    return StationDetailFragment.newInstance(1, null, false);
+                    return StationDetailFragment.newInstance(1, null, false, true);
                 case 2:
                     //All stations fragment
                     return StationListFragment.newInstance(2, "Third", false);
@@ -148,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     }
 
 
-
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
@@ -168,13 +168,16 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         if (mViewPager != null) {
             int currentFragment = mViewPager.getCurrentItem();
             return (Fragment) mPagerAdapter.instantiateItem(mViewPager, currentFragment);
-        }else{
+        } else {
             return null;
         }
     }
 
-    public int getFragmentPosition() {
-        return mViewPager.getCurrentItem();
+    public void passShareIntentToFragment(Intent shareIntent) {
+        if (getCurrentFragment() instanceof StationListFragment) {
+            StationListFragment stationListFragment = (StationListFragment) getCurrentFragment();
+            stationListFragment.setShareIntent(shareIntent);
+        }
     }
 
     @Subscribe
@@ -196,9 +199,8 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
             } else {
                 startActivity(detailIntent);
             }
-        }else{
-
-            StationDetailFragment stationDetailFragment = StationDetailFragment.newInstance(0, null, false);
+        } else {
+            StationDetailFragment stationDetailFragment = StationDetailFragment.newInstance(0, null, false, false);
             Bundle args = new Bundle();
             args.putInt(Utilities.EXTRA_STATION_ID, recyclerEvent.getStationId());
             stationDetailFragment.setArguments(args);

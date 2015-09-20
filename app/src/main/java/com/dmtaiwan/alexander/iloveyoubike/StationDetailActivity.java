@@ -20,7 +20,7 @@ public class StationDetailActivity extends AppCompatActivity {
             // using a fragment transaction.
 
 
-            StationDetailFragment fragment = StationDetailFragment.newInstance(0, null, true);
+            StationDetailFragment fragment = StationDetailFragment.newInstance(0, null, true, false);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.station_detail_container, fragment)
                     .commit();

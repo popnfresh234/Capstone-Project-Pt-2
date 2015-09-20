@@ -13,6 +13,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.Space;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
@@ -110,13 +111,22 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Bind(R.id.toolbar_detail)
     Toolbar mToolbar;
 
+    //Spacers for Nearest Station Fragment in Tablet Mode
+    @Nullable
+    @Bind(R.id.grid_space_left)
+    Space mGridSpaceLeft;
 
-    public static StationDetailFragment newInstance(int page, String title, Boolean isDetailActivity) {
+    @Nullable
+    @Bind(R.id.grid_space_right)
+    Space mGridSpaceRight;
+
+    public static StationDetailFragment newInstance(int page, String title, Boolean isDetailActivity, Boolean isNearestStationFragment) {
         StationDetailFragment testFragment = new StationDetailFragment();
         Bundle args = new Bundle();
         args.putInt("pageInt", page);
         args.putString("title", title);
         args.putBoolean(Utilities.EXTRA_DETAIL_ACTIVITY, isDetailActivity);
+        args.putBoolean(Utilities.EXTRA_IS_NEAREST_STATION_FRAGMENT, isNearestStationFragment);
         testFragment.setArguments(args);
         return testFragment;
     }
@@ -142,6 +152,10 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
         //if not tablet or fragment in StationDetailActivity
         if (!getResources().getBoolean(R.bool.isTablet) || getActivity() instanceof StationDetailActivity) {
+            setHasOptionsMenu(true);
+        }
+
+        if (getArguments().getBoolean(Utilities.EXTRA_IS_NEAREST_STATION_FRAGMENT, false)) {
             setHasOptionsMenu(true);
         }
 
@@ -189,7 +203,25 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
+
+        //If detail activity fragment and tablet mode
+        if (mIsDetailActivityFragment && getResources().getBoolean(R.bool.isLandscape)) {
+            setSpacerVisibility();
+        }
+
+        //If tablet mode and nearest station fragment
+        if (getResources().getBoolean(R.bool.isTablet) && getArguments().getBoolean(Utilities.EXTRA_IS_NEAREST_STATION_FRAGMENT, false)) {
+            setSpacerVisibility();
+        }
+
         return rootView;
+
+
+    }
+
+    private void setSpacerVisibility() {
+        mGridSpaceLeft.setVisibility(View.VISIBLE);
+        mGridSpaceRight.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -330,6 +362,11 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(createShareIntent());
         }
+
+        //if tablet, set stationList shareIntent
+        if (getResources().getBoolean(R.bool.isTablet) && getActivity() instanceof MainActivity) {
+            ((MainActivity)getActivity()).passShareIntentToFragment(createShareIntent());
+        }
     }
 
     @Override
@@ -394,8 +431,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         FavoriteEvent favoriteEvent = new FavoriteEvent();
         favoriteEvent.setStationId(mStationId);
         EventBus.getInstance().post(favoriteEvent);
-
-
     }
 
     //Listen for location change

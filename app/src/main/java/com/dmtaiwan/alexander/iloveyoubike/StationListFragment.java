@@ -31,7 +31,6 @@ import android.widget.TextView;
 
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.EventBus;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.FavoriteEvent;
-import com.dmtaiwan.alexander.iloveyoubike.Utilities.FragmentCallback;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LanguageEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
@@ -136,7 +135,21 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_station_list, menu);
+        if (getResources().getBoolean(R.bool.isLandscape)) {
+            inflater.inflate(R.menu.menu_super, menu);
+            MenuItem menuItem = menu.findItem(R.id.action_share);
+            mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+            //Get detail activity
+            StationDetailFragment detailFragment = (StationDetailFragment) getChildFragmentManager().findFragmentById(R.id.detail_container);
+            if (detailFragment != null) {
+                Intent shareIntent = detailFragment.createShareIntent();
+                mShareActionProvider.setShareIntent(shareIntent);
+            }
+
+        } else {
+            inflater.inflate(R.menu.menu_station_list, menu);
+        }
 
     }
 
@@ -245,7 +258,9 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
             detailFragment.setArguments(args);
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.detail_container, detailFragment).commit();
-            mCurrentStation = 0;
+            if(mIsFavorites) {
+                mCurrentStation = 0;
+            }
 
         } else if (getResources().getBoolean(R.bool.isTablet) && data.getCount() > 0) {
             mDetailContainer.setVisibility(View.VISIBLE);
@@ -347,24 +362,25 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
     //Listen for location change
     @Subscribe
     public void onLocationChange(LocationEvent locationEvent) {
-        Log.i(LOG_TAG, "location changed");
-        restartLoader();
+            restartLoader();
     }
 
     //Listen for favorite change
     @Subscribe
     public void onFavoriteChange(FavoriteEvent favoriteEvent) {
-
-        //As long as this is not the favorites tab, save the position of the station we were favoriting
-        if (((MainActivity) getActivity()).getFragmentPosition() != 0) {
+        if (!mIsFavorites) {
             mCurrentStation = favoriteEvent.getStationId();
         }
         restartLoader();
     }
 
     @Subscribe
+    public void onRecyclerClick(RecyclerEvent recyclerEvent) {
+        mCurrentStation = recyclerEvent.getStationId();
+    }
+
+    @Subscribe
     public void onLanguageChange(LanguageEvent languageEvent) {
         restartLoader();
     }
-
 }
