@@ -273,6 +273,9 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
     }
 
+    public void setStationId(int stationId) {
+        mStationId = stationId;
+    }
 
 
     @Override

@@ -29,6 +29,7 @@ import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.model.LatLng;
 import com.squareup.otto.Subscribe;
 
 import butterknife.Bind;
@@ -80,6 +81,18 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         EventBus.getInstance().register(this);
 
         checkPlayServices();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.getParcelableExtra(Utilities.EXTRA_LATLNG) != null) {
+            Bundle bundle = intent.getParcelableExtra(Utilities.EXTRA_LATLNG);
+            LatLng stationLatLng = bundle.getParcelable(Utilities.EXTRA_LATLNG);
+            Log.i(LOG_TAG, stationLatLng.toString());
+            int stationId = bundle.getInt(Utilities.EXTRA_STATION_ID);
+            gotoMap(stationLatLng, stationId);
+        }
     }
 
 
@@ -182,6 +195,13 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
             StationListFragment stationListFragment = (StationListFragment) getCurrentFragment();
             stationListFragment.setShareIntent(shareIntent);
         }
+    }
+
+    public void gotoMap(LatLng stationLatLng, int stationId) {
+        mViewPager.setCurrentItem(3);
+        MapFragment MapFragment = (MapFragment) getCurrentFragment();
+        MapFragment.zoomToStation(stationLatLng);
+        MapFragment.setStationId(stationId);
     }
 
     @Subscribe

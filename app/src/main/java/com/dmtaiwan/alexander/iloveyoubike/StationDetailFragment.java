@@ -35,6 +35,7 @@ import com.dmtaiwan.alexander.iloveyoubike.Utilities.LanguageEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.squareup.otto.Subscribe;
 
@@ -431,6 +432,24 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         FavoriteEvent favoriteEvent = new FavoriteEvent();
         favoriteEvent.setStationId(mStationId);
         EventBus.getInstance().post(favoriteEvent);
+    }
+
+    @OnClick(R.id.button_station_detail_map)
+    public void onMapButtonCLicked() {
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).gotoMap(new LatLng(mStationLat, mStationLong), mStationId);
+        } else {
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Bundle args = new Bundle();
+            args.putParcelable(Utilities.EXTRA_LATLNG, new LatLng(mStationLat, mStationLong));
+            args.putInt(Utilities.EXTRA_STATION_ID, mStationId);
+            intent.putExtra(Utilities.EXTRA_LATLNG, args);
+            startActivity(intent);
+            if (getActivity().getIntent() != null && getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_WIDGET, false)) {
+                getActivity().finish();
+            }
+        }
     }
 
     //Listen for location change
