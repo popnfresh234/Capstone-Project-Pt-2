@@ -228,7 +228,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Unregister
+        //Unregister event bus
         EventBus.getInstance().unregister(this);
     }
 
@@ -455,7 +455,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     //Listen for location change
     @Subscribe
     public void onLocationChange(LocationEvent locationEvent) {
-        Log.i(LOG_TAG, "location changed");
         restartLoader();
     }
 
@@ -467,7 +466,6 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     //Listen for favorite change
     @Subscribe
     public void onFavoriteChange(FavoriteEvent favoriteEvent) {
-        Log.i(LOG_TAG, "favorite changed");
         checkFavorite();
         restartLoader();
     }

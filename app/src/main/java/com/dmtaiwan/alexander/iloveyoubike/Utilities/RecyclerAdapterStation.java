@@ -126,7 +126,6 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
 
         @Override
         public void onClick(View v) {
-            Log.i(LOG_TAG, "onClick");
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
             int stationId = mCursor.getInt(StationContract.COL_STATION_ID);

@@ -21,6 +21,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.EventBus;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.LanguageEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
@@ -33,6 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.otto.Subscribe;
 
 import java.util.HashMap;
 
@@ -66,7 +69,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(LOG_TAG, "onCreate");
         //Hashmap for looking up ID by marker
         mIdMap = new HashMap<Marker, Integer>();
         //Create hashmap for looking up markers by ID
@@ -108,7 +110,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
     @Override
     public void onResume() {
-        Log.i(LOG_TAG, "onResume");
         if (mMapView != null) {
             mMapView.onResume();
         }
@@ -140,6 +141,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     @Override
     public void onDestroy() {
         super.onDestroy();
+        EventBus.getInstance().unregister(this);
         if (mMapView != null) {
             mMapView.onDestroy();
         }
@@ -192,7 +194,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
     private void setUserLocation() {
         if (mMap != null && !mIsGoto) {
-            Log.i(LOG_TAG, String.valueOf(mCurrentCameraLatLng));
             if (mCurrentCameraLatLng == null) {
                 Location userLocation = Utilities.getUserLocation(getActivity());
                 if (userLocation != null) {
@@ -237,7 +238,11 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
                             String title;
                             if (language.equals(getActivity().getString(R.string.pref_language_english))) {
                                 title = data.getString(StationContract.COL_STATION_NAME_EN);
-                            } else {
+                            } else if(language.equals(getActivity().getString(R.string.pref_language_pinyin))){
+                                int stringId = getResources().getIdentifier("station" + String.valueOf(mStationId), "string", getActivity().getPackageName());
+                                title = getString(stringId);
+                            }
+                            else {
                                 title = data.getString(StationContract.COL_STATION_NAME_ZH);
                             }
 

@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         if (intent.getParcelableExtra(Utilities.EXTRA_LATLNG) != null) {
             Bundle bundle = intent.getParcelableExtra(Utilities.EXTRA_LATLNG);
             LatLng stationLatLng = bundle.getParcelable(Utilities.EXTRA_LATLNG);
-            Log.i(LOG_TAG, stationLatLng.toString());
             int stationId = bundle.getInt(Utilities.EXTRA_STATION_ID);
             gotoMap(stationLatLng, stationId);
         }
@@ -118,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     @Override
     public void handleNewLocation(Location location) {
         //Set the user's location
-        Log.i(LOG_TAG, "Location Changed");
         Utilities.setUserLocation(location, this);
         LocationEvent locationEvent = new LocationEvent();
         locationEvent.setNewLocation(location);

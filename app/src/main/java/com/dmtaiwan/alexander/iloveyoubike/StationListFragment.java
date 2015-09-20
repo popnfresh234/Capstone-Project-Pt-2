@@ -125,7 +125,6 @@ public class StationListFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onViewStateRestored(Bundle savedInstanceState) {
-        Log.i(LOG_TAG, "onViewStateRestored");
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
             mSavedRecyclerState = savedInstanceState.getParcelable(Utilities.OUTSTATE_SCROLL_POSITION);
