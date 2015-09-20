@@ -39,10 +39,8 @@ public class Utilities {
     public static final String EXTRA_STATION_ID = "com.dmtaiwan.alexander.extra.stationid";
     public static final String EXTRA_FAVORITES = "com.dmtaiwan.alexander.extra.favorites";
     public static final String EXTRA_DETAIL_ACTIVITY = "com.dmtaiwan.alexander.extra.detail";
-    public static final String EXTRA_DETAIL_TABLET = "com.dmtaiwan.alexander.extra.tablet";
     public static final String EXTRA_LATLNG = "com.dmtaiwan.alexander.extra.latlng";
     public static final String EXTRA_OUTSTATE_LATLNG = "com.dmtaiwan.alexander.extra.outstatelatlng";
-    public static final String EXTRA_LOCATION_SET = "com.dmtaiwan.alexander.extra.locationset";
     public static final String EXTRA_WIDGET = "com.dmtaiwan.alexander.extra.widget";
     public static final String EXTRA_IS_NEAREST_STATION_FRAGMENT = "com.dmtaiwan.alexadner.extra.nearest";
 

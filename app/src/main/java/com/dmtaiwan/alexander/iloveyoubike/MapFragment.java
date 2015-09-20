@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.dmtaiwan.alexander.iloveyoubike.Utilities.FragmentCallback;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
@@ -40,7 +39,7 @@ import java.util.HashMap;
 /**
  * Created by Alexander on 8/28/2015.
  */
-public class MapFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback, FragmentCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraChangeListener {
+public class MapFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraChangeListener {
 
     private static final String LOG_TAG = MapFragment.class.getSimpleName();
 
@@ -287,9 +286,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
     }
 
-    @Override
-    public void onFragmentShown() {
-    }
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
