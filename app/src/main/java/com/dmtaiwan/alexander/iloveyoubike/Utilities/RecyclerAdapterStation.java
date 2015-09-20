@@ -32,7 +32,6 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
     private Cursor mCursor;
     final private Context mContext;
     final private View mEmptyView;
-    private boolean mIsTablet;
 
 
     public RecyclerAdapterStation(Context context, View emptyView) {
@@ -80,7 +79,7 @@ public class RecyclerAdapterStation extends RecyclerView.Adapter<RecyclerAdapter
         String time = Utilities.formatTime(mCursor.getString(StationContract.COL_LAST_UPDATED));
         holder.time.setText(time);
 
-        //calculate the distasnce from the user's last known location
+        //calculate the distance from the user's last known location
         double stationLat = mCursor.getDouble(StationContract.COL_STATION_LAT);
         double stationLong = mCursor.getDouble(StationContract.COL_STATION_LONG);
 

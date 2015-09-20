@@ -206,7 +206,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         }
 
         //If detail activity fragment and tablet mode
-        if (mIsDetailActivityFragment && getResources().getBoolean(R.bool.isLandscape)) {
+        if (mIsDetailActivityFragment && getResources().getBoolean(R.bool.isTablet)) {
             setSpacerVisibility();
         }
 
@@ -290,6 +290,9 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         if (cursor != null && cursor.moveToFirst()) {
             cursor.moveToFirst();
             hideEmptyView();
+
+            //Start postponed transition
+            getActivity().supportStartPostponedEnterTransition();
 
             //Set status icon
             mStatus.setImageResource(Utilities.getStatusIconDrawable(cursor, Utilities.ICON_SIZE_LARGE));

@@ -28,6 +28,7 @@
             android:layout_weight="1"
             android:background="@android:color/white"
             android:orientation="vertical"
+            android:theme="@style/Theme.DetailTitle"
             android:paddingBottom="@dimen/action_bar_height">
 
             <android.support.v7.widget.Space

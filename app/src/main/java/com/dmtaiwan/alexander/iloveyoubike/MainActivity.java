@@ -204,7 +204,6 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
 
     @Subscribe
     public void onItemSelected(RecyclerEvent recyclerEvent) {
-
         //Only execute this code if not tablet mode
         if (!getResources().getBoolean(R.bool.isTablet)) {
             int stationId = recyclerEvent.getStationId();

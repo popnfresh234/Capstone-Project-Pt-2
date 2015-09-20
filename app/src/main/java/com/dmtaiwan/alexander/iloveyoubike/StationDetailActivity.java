@@ -19,6 +19,7 @@ public class StationDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
 
+            supportPostponeEnterTransition();
 
             StationDetailFragment fragment = StationDetailFragment.newInstance(0, null, true, false);
             getSupportFragmentManager().beginTransaction()
