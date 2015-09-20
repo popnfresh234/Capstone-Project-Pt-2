@@ -39,7 +39,7 @@ import java.util.HashMap;
 /**
  * Created by Alexander on 8/28/2015.
  */
-public class MapFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, LocationProvider.LocationCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraChangeListener {
+public class MapFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraChangeListener {
 
     private static final String LOG_TAG = MapFragment.class.getSimpleName();
 
@@ -49,7 +49,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     private HashMap<Marker, Integer> mIdMap;
     private HashMap<Integer, Marker> mMarkerMap;
     private Cursor mData;
-    private Boolean mIsPopulated;
     private LatLng mCurrentCameraLatLng;
     private Boolean mIsGoto = false;
     private int mStationId = -1;
@@ -68,7 +67,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(LOG_TAG, "onCreate");
-        mIsPopulated = false;
         //Hashmap for looking up ID by marker
         mIdMap = new HashMap<Marker, Integer>();
         //Create hashmap for looking up markers by ID
@@ -186,7 +184,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i(LOG_TAG, "onLoadFinished");
         if (data != null && data.moveToFirst()) {
             mData = data;
             setUserLocation();
@@ -197,10 +194,8 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
         if (mMap != null && !mIsGoto) {
             Log.i(LOG_TAG, String.valueOf(mCurrentCameraLatLng));
             if (mCurrentCameraLatLng == null) {
-                Log.i(LOG_TAG, "CAMERA_CURRENTLATLNG_NULL");
                 Location userLocation = Utilities.getUserLocation(getActivity());
                 if (userLocation != null) {
-                    Log.i(LOG_TAG, "CAMERA USER LOCATION NULL");
                     //Get the user's location and zoom the camera if less than 20km (20000meters) from Taipei, otherwise zoom to default location
                     float distanceFromTaipei = Utilities.calculateDistance(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG, userLocation);
                     if (distanceFromTaipei <= 20000) {
@@ -209,12 +204,10 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 10, null);
                     }
                 } else {
-                    Log.i(LOG_TAG, "CAMERA DEFAULT SHOULD BE HERE");
                     //Default location
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Utilities.TAIPEI_LAT, Utilities.TAIPEI_LONG), 14f), 10, null);
                 }
             } else {
-                Log.i(LOG_TAG, "CAMERA CURRENT CAMERA LATLNG");
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCurrentCameraLatLng, 14f), 10, null);
             }
         }
@@ -227,7 +220,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
         String language = preferences.getString(getActivity().getString(R.string.pref_key_language), getActivity().getString(R.string.pref_language_english));
 
         if (mMap != null && data.moveToFirst()) {
-            mIsPopulated = true;
             //Get visibile bounds of map
             LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
             if (data.moveToFirst()) {
@@ -281,10 +273,6 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
 
     }
 
-    @Override
-    public void handleNewLocation(Location location) {
-
-    }
 
 
     @Override
@@ -317,16 +305,10 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
         }
     }
 
-    public void setStationId(int stationId) {
-        mStationId = stationId;
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.i(LOG_TAG, "onSaveInstanceState");
         outState.putParcelable(Utilities.EXTRA_OUTSTATE_LATLNG, mCurrentCameraLatLng);
         outState.putInt(Utilities.EXTRA_STATION_ID, mStationId);
         super.onSaveInstanceState(outState);
     }
-
 }

@@ -1,5 +1,6 @@
 package com.dmtaiwan.alexander.iloveyoubike;
 
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         mLocationProvider = new LocationProvider(this, this);
 
         //Setup Viewpager and Toolbar
-        mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        mPagerAdapter = new PagerAdapter(getSupportFragmentManager(), this);
         setSupportActionBar(mToolbar);
         mViewPager.setAdapter(mPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
@@ -113,9 +114,11 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
 
     public static class PagerAdapter extends FragmentPagerAdapter {
         private static int NUM_ITEMS = 4;
+        private Context mContext;
 
-        public PagerAdapter(FragmentManager fragmentManager) {
+        public PagerAdapter(FragmentManager fragmentManager, Context context) {
             super(fragmentManager);
+            mContext = context;
         }
 
         @Override
@@ -143,7 +146,8 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "Page " + position;
+            String[] titleArray = mContext.getResources().getStringArray(R.array.tab_titles);
+            return titleArray[position];
         }
 
     }

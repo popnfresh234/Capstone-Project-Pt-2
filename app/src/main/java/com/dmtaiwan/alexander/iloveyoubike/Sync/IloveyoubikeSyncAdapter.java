@@ -162,17 +162,17 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
                 Utilities.updateWidgets(getContext());
             }
 
-            String sortOrder = StationContract.StationEntry.COLUMN_STATION_NAME_EN + " ASC";
-            Uri uri = StationContract.StationEntry.CONTENT_URI_TEST;
-            Cursor cur = getContext().getContentResolver().query(uri, null, null, null, sortOrder);
-            cVVector = new Vector<ContentValues>(cur.getCount());
-            if (cur.moveToFirst()) {
-                do {
-                    ContentValues cv = new ContentValues();
-                    DatabaseUtils.cursorRowToContentValues(cur, cv);
-                    cVVector.add(cv);
-                } while (cur.moveToNext());
-            }
+//            String sortOrder = StationContract.StationEntry.COLUMN_STATION_NAME_EN + " ASC";
+//            Uri uri = StationContract.StationEntry.CONTENT_URI_TEST;
+//            Cursor cur = getContext().getContentResolver().query(uri, null, null, null, sortOrder);
+//            cVVector = new Vector<ContentValues>(cur.getCount());
+//            if (cur.moveToFirst()) {
+//                do {
+//                    ContentValues cv = new ContentValues();
+//                    DatabaseUtils.cursorRowToContentValues(cur, cv);
+//                    cVVector.add(cv);
+//                } while (cur.moveToNext());
+//            }
 
         } catch (JSONException e) {
             e.printStackTrace();
