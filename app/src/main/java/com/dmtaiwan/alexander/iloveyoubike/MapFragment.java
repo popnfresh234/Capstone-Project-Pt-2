@@ -14,6 +14,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,7 +51,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
     private MapView mMapView;
     private GoogleMap mMap;
     private HashMap<Marker, Integer> mIdMap;
-    private HashMap<Integer, Marker> mMarkerMap;
+    private SparseArray<Marker> mMarkerMap;
     private Cursor mData;
     private LatLng mCurrentCameraLatLng;
     private Boolean mIsGoto = false;
@@ -72,7 +73,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
         //Hashmap for looking up ID by marker
         mIdMap = new HashMap<Marker, Integer>();
         //Create hashmap for looking up markers by ID
-        mMarkerMap = new HashMap<Integer, Marker>();
+        mMarkerMap = new SparseArray<Marker>();
         getActivity().getSupportLoaderManager().initLoader(MAPS_LOADER, null, this);
 
 
@@ -228,7 +229,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
                     int stationId = data.getInt(StationContract.COL_STATION_ID);
                     if (bounds.contains(new LatLng(data.getDouble(StationContract.COL_STATION_LAT), data.getDouble(StationContract.COL_STATION_LONG)))) {
 
-                        if (!mMarkerMap.containsKey(stationId)) {
+                        if (mMarkerMap.indexOfKey(stationId)<0) {
                             int bikesAvailable = data.getInt(StationContract.COL_BIKES_AVAILABLE);
                             int spacesAvailable = data.getInt(StationContract.COL_SPACES_AVAILABLE);
                             int markerDrawable = Utilities.getMarkerIconDrawable(bikesAvailable, spacesAvailable);
@@ -255,7 +256,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
                         }
                     } else {
                         //If the marker was previously on screen, remove it from the map and hashmap
-                        if (mMarkerMap.containsKey(stationId)) {
+                        if (mMarkerMap.indexOfKey(stationId)>=0) {
                             mMarkerMap.get(stationId).remove();
                             mMarkerMap.remove(stationId);
                         }

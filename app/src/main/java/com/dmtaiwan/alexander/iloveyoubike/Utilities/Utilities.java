@@ -129,7 +129,7 @@ public class Utilities {
             spe = settings.edit();
             spe.putLong(Utilities.SHARED_PREFS_LOCATION_LAT_KEY, Double.doubleToRawLongBits(lat));
             spe.putLong(Utilities.SHARED_PREFS_LOCATION_LONG_KEY, Double.doubleToRawLongBits(longitude));
-            spe.commit();
+            spe.apply();
         }
     }
 
@@ -224,7 +224,7 @@ public class Utilities {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor spe = sp.edit();
         spe.putInt(Utilities.SHARED_PREFS_DATA_STATUS_KEY, locationStatus);
-        spe.commit();
+        spe.apply();
     }
 
     public static int getServerStatus(Context c) {

@@ -22,5 +22,11 @@
         <item name="android:background">@null</item>
     </style>
 
+    <!--Style for setting width of list item in recycler view for landscape vs portrait-->
+    <style name="station_list_recycler">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
 
 </resources>

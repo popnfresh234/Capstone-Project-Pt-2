@@ -6,9 +6,8 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_station_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        style="@style/station_list_recycler" />
 
     <TextView
         android:id="@+id/station_list_empty_view"

@@ -431,7 +431,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         }
         //Convert array to json string and store in shared prefs
         spe.putString(Utilities.SHARED_PREFS_FAVORITE_KEY, gson.toJson(mFavoritesArray));
-        spe.commit();
+        spe.apply();
         FavoriteEvent favoriteEvent = new FavoriteEvent();
         favoriteEvent.setStationId(mStationId);
         EventBus.getInstance().post(favoriteEvent);
