@@ -1,4 +1,4 @@
-package com.dmtaiwan.alexander.iloveyoubike.sync;
+package com.dmtaiwan.alexander.iloveyoubike.Sync;
 
 import android.app.Service;
 import android.content.Intent;

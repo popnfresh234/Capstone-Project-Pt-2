@@ -1,9 +1,8 @@
-package com.dmtaiwan.alexander.iloveyoubike.sync;
+package com.dmtaiwan.alexander.iloveyoubike.Sync;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 
 /**
  * Created by Alexander on 9/14/2015.

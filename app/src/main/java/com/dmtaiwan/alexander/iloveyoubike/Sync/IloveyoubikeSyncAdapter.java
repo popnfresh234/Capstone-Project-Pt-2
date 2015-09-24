@@ -1,4 +1,4 @@
-package com.dmtaiwan.alexander.iloveyoubike.sync;
+package com.dmtaiwan.alexander.iloveyoubike.Sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -9,9 +9,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncRequest;
 import android.content.SyncResult;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
