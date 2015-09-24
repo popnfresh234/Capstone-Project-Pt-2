@@ -236,7 +236,7 @@ public class MapFragment extends Fragment implements LoaderManager.LoaderCallbac
                             if (language.equals(getActivity().getString(R.string.pref_language_english))) {
                                 title = data.getString(StationContract.COL_STATION_NAME_EN);
                             } else if(language.equals(getActivity().getString(R.string.pref_language_pinyin))){
-                                int stringId = getResources().getIdentifier("station" + String.valueOf(mStationId), "string", getActivity().getPackageName());
+                                int stringId = getResources().getIdentifier("station" + String.valueOf(stationId), "string", getActivity().getPackageName());
                                 title = getString(stringId);
                             }
                             else {
