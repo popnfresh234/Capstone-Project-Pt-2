@@ -10,10 +10,8 @@ import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 
 import com.dmtaiwan.alexander.iloveyoubike.R;
-//import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
-import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
-import com.dmtaiwan.alexander.iloveyoubike.sync.IloveyoubikeSyncAdapter;
-import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
+import com.dmtaiwan.alexander.iloveyoubike.Data.StationContract;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.gson.Gson;

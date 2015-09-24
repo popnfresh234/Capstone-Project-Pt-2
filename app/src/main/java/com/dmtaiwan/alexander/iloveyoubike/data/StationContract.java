@@ -1,4 +1,4 @@
-package com.dmtaiwan.alexander.iloveyoubike.data;
+package com.dmtaiwan.alexander.iloveyoubike.Data;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;

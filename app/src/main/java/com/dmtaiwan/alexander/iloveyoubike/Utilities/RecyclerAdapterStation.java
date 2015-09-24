@@ -7,7 +7,6 @@ import android.location.Location;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dmtaiwan.alexander.iloveyoubike.R;
-import com.dmtaiwan.alexander.iloveyoubike.StationListFragment;
-import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+import com.dmtaiwan.alexander.iloveyoubike.Data.StationContract;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

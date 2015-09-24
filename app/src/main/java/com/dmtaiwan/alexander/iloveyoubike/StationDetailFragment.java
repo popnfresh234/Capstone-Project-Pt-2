@@ -17,7 +17,6 @@ import android.support.v4.widget.Space;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,7 +33,7 @@ import com.dmtaiwan.alexander.iloveyoubike.Utilities.FavoriteEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LanguageEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
-import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+import com.dmtaiwan.alexander.iloveyoubike.Data.StationContract;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.squareup.otto.Subscribe;
@@ -215,9 +214,12 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
             setSpacerVisibility();
         }
 
+        //If from widget, set home icon
+        if (getActivity().getIntent()!= null && getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_WIDGET, false)) {
+            mMapButton.setImageResource(R.drawable.ic_home);
+        }
+
         return rootView;
-
-
     }
 
     private void setSpacerVisibility() {

@@ -17,7 +17,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,8 +35,8 @@ import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapterStation;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
-import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
-import com.dmtaiwan.alexander.iloveyoubike.sync.IloveyoubikeSyncAdapter;
+import com.dmtaiwan.alexander.iloveyoubike.Data.StationContract;
+import com.dmtaiwan.alexander.iloveyoubike.Sync.IloveyoubikeSyncAdapter;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;

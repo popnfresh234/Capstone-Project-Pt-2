@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,10 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.EventBus;
-import com.dmtaiwan.alexander.iloveyoubike.Utilities.LanguageEvent;
-import com.dmtaiwan.alexander.iloveyoubike.Utilities.LocationProvider;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
-import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+import com.dmtaiwan.alexander.iloveyoubike.Data.StationContract;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -36,7 +33,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.squareup.otto.Subscribe;
 
 import java.util.HashMap;
 

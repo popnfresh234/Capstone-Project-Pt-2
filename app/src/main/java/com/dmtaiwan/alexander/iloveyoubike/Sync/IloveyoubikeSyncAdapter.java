@@ -15,7 +15,7 @@ import android.util.Log;
 
 import com.dmtaiwan.alexander.iloveyoubike.R;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
-import com.dmtaiwan.alexander.iloveyoubike.data.StationContract;
+import com.dmtaiwan.alexander.iloveyoubike.Data.StationContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
