@@ -16,6 +16,9 @@ import android.util.Log;
 import com.dmtaiwan.alexander.iloveyoubike.R;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.Data.StationContract;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +37,7 @@ import java.util.Vector;
  */
 public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final String LOG_TAG = IloveyoubikeSyncAdapter.class.getSimpleName();
-    private static final String APIUrl = "http://data.taipei/opendata/datalist/apiAccess?scope=resourceAquire&rid=ddb80380-f1b3-4f8e-8016-7ed9cba571d5";
+    private static final String APIUrl = "https://ybapp01.youbike.com.tw/json/gwjs.json";
     private static final int NUMBER_OF_STATIONS = 396;
 
     public static final String ACTION_DATA_UPDATED = "com.dmtaiwan.alexander.iloveyoubike.app.ACTION_DATA_UPDATED";
@@ -58,15 +61,15 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
         String responseString = null;
         try {
             url = new URL(APIUrl);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setConnectTimeout(5000);
-            urlConnection.setReadTimeout(5000);
-            int responseCode = urlConnection.getResponseCode();
+            OkHttpClient client = Utilities.getUnsafeOkHttpClient();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+            Response response = client.newCall(request).execute();
+            int responseCode = response.code();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                responseString = readStream(urlConnection.getInputStream());
-                parseJson(responseString);
-            } else {
-                Log.i("Async Error", String.valueOf(responseCode));
+                parseJson(response.body().string());
+            }else{
                 switch (responseCode) {
                     case HttpURLConnection.HTTP_NOT_FOUND:
                         Utilities.setServerStatus(getContext(), STATUS_SERVER_INVALID);
@@ -78,10 +81,7 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (Exception e) {
             e.printStackTrace();
             Utilities.setServerStatus(getContext(), STATUS_SERVER_DOWN);
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
+
         }
     }
 
@@ -118,12 +118,12 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
 
         try {
             JSONObject result = new JSONObject(jsonData);
-            JSONObject result1 = result.getJSONObject("result");
-            JSONArray resultsArray = result1.getJSONArray("results");
+            Log.i(LOG_TAG, result.toString());
+            JSONArray resultsArray = result.getJSONArray("retVal");
             Vector<ContentValues> cVVector = new Vector<ContentValues>(resultsArray.length());
             for (int i = 0; i < NUMBER_OF_STATIONS; i++) {
                 JSONObject stationObject = resultsArray.getJSONObject(i);
-                String stationId = stationObject.getString("_id");
+                String stationId = stationObject.getString("iid");
                 String stationNameChinese = stationObject.getString("sna");
                 String stationDistrictChinese = stationObject.getString("sarea");
                 String stationNameEnglish = stationObject.getString("snaen");
