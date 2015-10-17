@@ -3,13 +3,13 @@
     <string-array name="pref_units_options">
         <item>@string/pref_language_label_english</item>
         <item>@string/pref_language_label_chinese</item>
-        <item>@string/pref_language_label_pinyin</item>
+        <!--<item>@string/pref_language_label_pinyin</item>-->
     </string-array>
 
     <string-array name="pref_language_values">
         <item>@string/pref_language_english</item>
         <item>@string/pref_language_chinese</item>
-        <item>@string/pref_language_pinyin</item>
+        <!--<item>@string/pref_language_pinyin</item>-->
     </string-array>
 
 

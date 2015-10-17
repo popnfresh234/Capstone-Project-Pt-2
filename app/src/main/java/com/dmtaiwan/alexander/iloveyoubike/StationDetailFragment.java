@@ -17,6 +17,7 @@ import android.support.v4.widget.Space;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -215,7 +216,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         }
 
         //If from widget, set home icon
-        if (getActivity().getIntent()!= null && getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_WIDGET, false)) {
+        if (getActivity().getIntent() != null && getActivity().getIntent().getBooleanExtra(Utilities.EXTRA_WIDGET, false)) {
             mMapButton.setImageResource(R.drawable.ic_home);
         }
 
@@ -251,17 +252,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
         //Fetch user location
         Location userLocation = Utilities.getUserLocation(getActivity());
 
-        if (mStationId != -1) {
-            Uri stationDetailUri = StationContract.StationEntry.buildUriStation(mStationId);
-            return new CursorLoader(
-                    getActivity(),
-                    stationDetailUri,
-                    StationContract.STATION_COLUMNS,
-                    null,
-                    null,
-                    null);
-        } else if (userLocation != null) {
-            //Coming from Nearest Station, query for nearest station
+        if (userLocation != null && getActivity() instanceof MainActivity) {
             Uri nearestStatonUri = StationContract.StationEntry.buildUriAllStations();
             return new CursorLoader(
                     getActivity(),
@@ -271,6 +262,16 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
                     null,
                     Utilities.getSortOrderDistanceString(userLocation.getLatitude(), userLocation.getLongitude()) + "LIMIT 1"
             );
+        } else if (mStationId != -1) {
+            Uri stationDetailUri = StationContract.StationEntry.buildUriStation(mStationId);
+            return new CursorLoader(
+                    getActivity(),
+                    stationDetailUri,
+                    StationContract.STATION_COLUMNS,
+                    null,
+                    null,
+                    null);
+
         } else {
             String sortOrder = StationContract.StationEntry.COLUMN_STATION_ID + " ASC";
             Uri allStationUri = StationContract.StationEntry.buildUriAllStations();
@@ -371,7 +372,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
 
         //if tablet, set stationList shareIntent
         if (getResources().getBoolean(R.bool.isTablet) && getActivity() instanceof MainActivity) {
-            ((MainActivity)getActivity()).passShareIntentToFragment(createShareIntent());
+            ((MainActivity) getActivity()).passShareIntentToFragment(createShareIntent());
         }
     }
 
@@ -460,6 +461,7 @@ public class StationDetailFragment extends Fragment implements LoaderManager.Loa
     //Listen for location change
     @Subscribe
     public void onLocationChange(LocationEvent locationEvent) {
+        Log.i(LOG_TAG, "location change");
         restartLoader();
     }
 

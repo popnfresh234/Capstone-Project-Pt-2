@@ -118,7 +118,6 @@ public class IloveyoubikeSyncAdapter extends AbstractThreadedSyncAdapter {
 
         try {
             JSONObject result = new JSONObject(jsonData);
-            Log.i(LOG_TAG, result.toString());
             JSONArray resultsArray = result.getJSONArray("retVal");
             Vector<ContentValues> cVVector = new Vector<ContentValues>(resultsArray.length());
             for (int i = 0; i < NUMBER_OF_STATIONS; i++) {
