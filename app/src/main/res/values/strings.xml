@@ -1,68 +1,47 @@
 <resources>
+
     <string name="app_name">I Love Youbike</string>
-
-    <!--Action Menu Strings-->
-    <string name="action_settings">Settings</string>
-    <string name="action_refresh">Refresh</string>
-    <string name="action_share">Share</string>
-    <string name="menu_sort_default">Sort by Default Order</string>
-    <string name="menu_sort_location">Sort by Location</string>
-
 
     <!--Activity Titles-->
     <string name="title_activity_settings">Settings</string>
 
+    <!--Menu Strings-->
+    <string name="action_sort_default">Sort by Default Order</string>
+    <string name="action_sort_location">Sort by Location</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_share">Share</string>
 
-    <string name="sync_account_type" translatable="false">alexander.dmtaiwan.com</string>
-    <string name="content_authority" translatable="false">com.dmtaiwan.alexander.iloveyoubike</string>
+    <!--Shared Prefs -->
+    <string name="pref_key_language" translatable="false">language</string>
+    <string name="pref_language_label" translatable="false">Language</string>
 
+    <string name="pref_language_label_english">English</string>
+    <string name="pref_language_label_chinese">Chinese</string>
+    <string name="pref_language_label_pinyin">Pinyin</string>
+
+    <string name="pref_language_english" translatable="false">english</string>
+    <string name="pref_language_chinese" translatable="false">chinese</string>
+    <string name="pref_language_pinyin" translatable="false">pinyin</string>
+
+    <!--Text Views-->
     <string name="text_view_station_detail_spaces_available">Spaces Available</string>
     <string name="text_view_station_detail_bikes_available">Bikes Available</string>
     <string name="text_view_station_detail_distance">Distance</string>
     <string name="text_view_station_detail_no_data">No Data</string>
     <string name="text_view_station_list_time_label">Last update:</string>
 
-    
     <!--Empty View Strings-->
-    <string name="text_view_empty_view">No Station Data</string>
-    <string name="text_view_empty_view_server_down">No data available.  The server is not responding.</string>
-    <string name="text_view_empty_view_server_invalid">No data available.  The server is returning invalid data.</string>
-    <string name="text_view_empty_view_network">No data available.  The network is not available.</string>
-    <string name="text_view_empty_view_favorites">No favorites have been selected yet!</string>
     <string name="text_view_station_detail_empty">No Data Available</string>
 
-
-    <!--Shared Prefs -->
-    <string name="pref_key_language" translatable="false">language</string>
-    <string name="pref_language_label" translatable="false">Language</string>
-    
-    <string name="pref_language_label_english">English</string>
-    <string name="pref_language_label_chinese">Chinese</string>
-    <string name="pref_language_label_pinyin">Pinyin</string>
-    
-    <string name="pref_language_english" translatable="false">english</string>
-    <string name="pref_language_chinese" translatable="false">chinese</string>
-    <string name="pref_language_pinyin" translatable="false">pinyin</string>
+    <!--A11y Strings-->
+    <string name="a11y_status_icon">Status Icon</string>
+    <string name="a11y_button_map">View On Map Button</string>
+    <string name="a11y_button_favorite">Favorite Button</string>
 
     <!--Transition Strings-->
     <string name="transition_status_image_view" translatable="false">status_image</string>
     <string name="transition_station_name_text" translatable="false">station_name</string>
-
-
-
-
-
-    <!--Map Strings-->
-    <string name="snippet_string_bikes">Bikes:</string>
-    <string name="snippet_string_spaces">Spaces:</string>
-
-
-    <string-array name="tab_titles">
-        <item>Favorites</item>
-        <item>Nearest</item>
-        <item>All Stations</item>
-        <item>Map</item>
-    </string-array>
 
     <!--Share Intent Strings-->
     <string name="shareTextOne">There are</string>
@@ -70,18 +49,15 @@
     <string name="shareTextThree">spaces available at</string>
     <string name="shareTextFour">station as of</string>
 
+    <!--Map Strings-->
+    <string name="snippet_string_bikes">Bikes:</string>
+    <string name="snippet_string_spaces">Spaces:</string>
+    <string name="title_activity_maps">Map</string>
 
+    <string-array name="tab_titles">
+        <item>Favorites</item>
+        <item>All Stations</item>
+        <item>Map</item>
+    </string-array>
 
-
-    <string name="title_widget">I Love Youbike Favorite Stations Widget</string>
-
-
-
-    <!--A11y strings-->
-    <string name="a11y_status_icon">Status Icon</string>
-    <string name="a11y_status_bikes">Status Icon Bikes Available</string>
-    <string name="a11y_status_no_bikes">Status Icon No Bikes Available</string>
-    <string name="a11y_status_no_spaces">Status Icon No Spaces Available</string>
-    <string name="a11y_button_favorite">Favorite Button</string>
-    <string name="a11y_button_map">View On Map Button</string>
 </resources>

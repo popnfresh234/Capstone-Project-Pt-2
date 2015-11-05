@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="theme_primary">#ff9800</color>
-    <color name="theme_primary_dark">#f57c00</color>
-    <color name="theme_accent">#8c9eff</color>
 
+    <!--Theme colors-->
+    <color name="colorPrimary">#ff9800</color>
+    <color name="colorPrimaryDark">#f57c00</color>
+    <color name="colorAccent">#8c9eff</color>
+
+    <!--Text colors-->
     <color name="default_text_light_bg">#de000000</color>
     <color name="secondary_text_light_bg">#89000000</color>
-
-
-    <!-- the activated state color -->
-    <color name="activated">#E0E0E0</color>
-
-    <!--Default highlight color-->
-    <color name="ripple_material_dark">#4dffffff</color>
-    <color name="ripple_material_light">#1f000000</color>
-
 </resources>
