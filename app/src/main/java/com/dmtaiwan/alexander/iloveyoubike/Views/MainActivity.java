@@ -13,6 +13,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.dmtaiwan.alexander.iloveyoubike.Bus.EventBus;
 import com.dmtaiwan.alexander.iloveyoubike.Bus.RecyclerClickEvent;
@@ -32,7 +34,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements MainView, LocationProvider.LocationCallback {
+public class MainActivity extends AppCompatActivity implements MainView, LocationProvider.LocationCallback, ViewPager.OnPageChangeListener {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private LocationProvider mLocationProvider;
@@ -60,9 +62,43 @@ public class MainActivity extends AppCompatActivity implements MainView, Locatio
         setSupportActionBar(mToolbar);
         mPagerAdapter = new PagerAdapter(getSupportFragmentManager(), this);
         mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.addOnPageChangeListener(this);
         mTabLayout.setupWithViewPager(mViewPager);
         checkPlayServices();
         EventBus.getInstance().register(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (mViewPager.getCurrentItem() == 0) {
+            getMenuInflater().inflate(R.menu.menu_main, menu);
+        }else if (mViewPager.getCurrentItem() == 1) {
+            getMenuInflater().inflate(R.menu.menu_main, menu);
+        }else if (mViewPager.getCurrentItem() == 2) {
+            getMenuInflater().inflate(R.menu.menu_map, menu);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_refresh:
+                mPresenter.requestData();
+                break;
+            case R.id.action_sort_default:
+                Log.i(LOG_TAG, "default sort");
+                break;
+            case R.id.action_sort_proximity:
+                Log.i(LOG_TAG, "proximity sort");
+                break;
+            case R.id.action_settings:
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -111,6 +147,22 @@ public class MainActivity extends AppCompatActivity implements MainView, Locatio
         mPresenter.requestData();
     }
 
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        supportInvalidateOptionsMenu();
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
@@ -125,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Locatio
         }
         return true;
     }
+
 
     public static class PagerAdapter extends FragmentPagerAdapter {
         private static int NUM_ITEMS = 3;
