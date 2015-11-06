@@ -5,8 +5,6 @@ import android.content.Context;
 import com.dmtaiwan.alexander.iloveyoubike.Models.MainInteractor;
 import com.dmtaiwan.alexander.iloveyoubike.Models.MainInteractorImpl;
 import com.dmtaiwan.alexander.iloveyoubike.Models.Station;
-import com.dmtaiwan.alexander.iloveyoubike.Utilities.DistanceComparator;
-import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.dmtaiwan.alexander.iloveyoubike.Views.MainView;
 
 import org.json.JSONArray;
@@ -14,7 +12,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -93,11 +90,7 @@ public class MainPresenterImpl implements MainPresenter, MainInteractorImpl.Main
         }
 
 
-        if (pojoStations != null) {
-            //Sort by distance
-            DistanceComparator comparator = new DistanceComparator(Utilities.getUserLocation(mContext));
-            Collections.sort(pojoStations, comparator);
-        }
+
 
 
         return pojoStations;

@@ -16,6 +16,7 @@ import com.dmtaiwan.alexander.iloveyoubike.Bus.RecyclerClickEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Models.Station;
 import com.dmtaiwan.alexander.iloveyoubike.R;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -105,14 +106,38 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         }
     }
 
+    public void sortData(int sortCode) {
+        Utilities.setSortOrder(sortCode, mContext);
+        sortList(sortCode);
+        notifyDataSetChanged();
+    }
+
     public void updateData(List<Station> stationList) {
         Log.i(LOG_TAG, "updateData");
         mStationList = stationList;
+        int sortCode = Utilities.getSortOrder(mContext);
+        sortList(sortCode);
         notifyDataSetChanged();
         mEmptyView.setVisibility(mStationList.size() == 0 ? View.VISIBLE : View.GONE);
     }
 
     public void setEmptyView() {
         mEmptyView.setVisibility(View.VISIBLE);
+    }
+
+    private void sortList(int sortCode) {
+        if (mStationList != null) {
+            if (sortCode == Utilities.SORT_PROXIMITY) {
+
+                //Sort by distance
+                DistanceComparator comparator = new DistanceComparator(Utilities.getUserLocation(mContext));
+                Collections.sort(mStationList, comparator);
+
+            } else {
+                //Sort by default ID order
+                IDComparator idComparator = new IDComparator();
+                Collections.sort(mStationList, idComparator);
+            }
+        }
     }
 }

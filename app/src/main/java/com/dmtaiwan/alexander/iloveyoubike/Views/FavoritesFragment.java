@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.dmtaiwan.alexander.iloveyoubike.Bus.EventBus;
 import com.dmtaiwan.alexander.iloveyoubike.Bus.FavoritesEvent;
+import com.dmtaiwan.alexander.iloveyoubike.Bus.SortEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Bus.StationListEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Models.Station;
 import com.dmtaiwan.alexander.iloveyoubike.R;
@@ -104,6 +105,14 @@ public class FavoritesFragment extends Fragment {
         }
     }
 
+    public void sortData(int sortCode) {
+        if (mAdapter != null) {
+            mAdapter.sortData(sortCode);
+        }
+    }
+
+
+
     @Subscribe
     public void onDataReturned(StationListEvent event) {
         fillAdapter(event.getStationList());
@@ -112,5 +121,10 @@ public class FavoritesFragment extends Fragment {
     @Subscribe
     public void onFavoritesEvent(FavoritesEvent favoritesEvent) {
         mFavoritesArray = favoritesEvent.getFavoritesArray();
+    }
+
+    @Subscribe
+    public void onSortEvent(SortEvent event) {
+        sortData(event.getSortCode());
     }
 }

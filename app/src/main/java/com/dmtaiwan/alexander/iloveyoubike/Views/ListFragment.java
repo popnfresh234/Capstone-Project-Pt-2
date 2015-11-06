@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dmtaiwan.alexander.iloveyoubike.Bus.EventBus;
+import com.dmtaiwan.alexander.iloveyoubike.Bus.SortEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Bus.StationListEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Models.Station;
 import com.dmtaiwan.alexander.iloveyoubike.R;
@@ -91,8 +92,19 @@ public class ListFragment extends Fragment {
         }
     }
 
+    private void sortData(int sortCode) {
+        if (mAdapter != null) {
+            mAdapter.sortData(sortCode);
+        }
+    }
+
     @Subscribe
     public void onDataReturned(StationListEvent event) {
         fillAdapter(event.getStationList());
+    }
+
+    @Subscribe
+    public void onSortEvent(SortEvent event) {
+        sortData(event.getSortCode());
     }
 }

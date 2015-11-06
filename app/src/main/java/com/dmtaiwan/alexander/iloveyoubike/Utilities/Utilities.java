@@ -44,6 +44,10 @@ public class Utilities {
     public static final int ICON_SIZE_SMALL = 0;
     public static final int ICON_SIZE_LARGE = 1;
 
+    //Sort codes
+    public static final int SORT_DEFAULT =2222;
+    public static final int SORT_PROXIMITY = 3333;
+
     //Extra codes
     public static final String EXTRA_STATION = "com.dmtaiwan.extra.station";
     public static final String EXTRA_OUTSTATE_LATLNG = "com.dmtaiwan.extra.outstatelatlng";
@@ -54,6 +58,7 @@ public class Utilities {
     public static final String SHARED_PREFS_LOCATION_LONG_KEY = "com.dmtaiwan.alexander.key.location.long";
     public static final String SHARED_PREFS_FAVORITE_KEY = "com.dmtaiwan.alexander.key.favorite";
     public static final String SHARED_PREFS_DATA_STATUS_KEY = "com.dmtaiwan.alexander.key.data";
+    public static final String SHARED_PREFS_SORT_KEY = "com.dmtaiwan.alexander.key.sort";
 
     static public boolean isNetworkAvailable(Context c) {
         ConnectivityManager cm =
@@ -191,6 +196,21 @@ public class Utilities {
         } else {
             return null;
         }
+    }
+
+    public static void setSortOrder(int sortKey, Context context) {
+        SharedPreferences settings;
+        SharedPreferences.Editor spe;
+        settings = PreferenceManager.getDefaultSharedPreferences(context);
+        spe = settings.edit();
+        spe.putInt(SHARED_PREFS_SORT_KEY, sortKey);
+        spe.apply();
+    }
+
+    public static int getSortOrder(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        int sortKey = prefs.getInt(Utilities.SHARED_PREFS_SORT_KEY, SORT_DEFAULT);
+        return sortKey;
     }
 
 

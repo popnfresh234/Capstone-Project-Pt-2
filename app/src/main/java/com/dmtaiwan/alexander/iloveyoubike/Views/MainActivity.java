@@ -18,6 +18,7 @@ import android.view.MenuItem;
 
 import com.dmtaiwan.alexander.iloveyoubike.Bus.EventBus;
 import com.dmtaiwan.alexander.iloveyoubike.Bus.RecyclerClickEvent;
+import com.dmtaiwan.alexander.iloveyoubike.Bus.SortEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Bus.StationListEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Models.Station;
 import com.dmtaiwan.alexander.iloveyoubike.Presenters.MainPresenter;
@@ -88,10 +89,13 @@ public class MainActivity extends AppCompatActivity implements MainView, Locatio
                 mPresenter.requestData();
                 break;
             case R.id.action_sort_default:
-                Log.i(LOG_TAG, "default sort");
+                SortEvent defaultSortEvent = new SortEvent(Utilities.SORT_DEFAULT);
+                EventBus.getInstance().post(defaultSortEvent);
                 break;
             case R.id.action_sort_proximity:
                 Log.i(LOG_TAG, "proximity sort");
+                SortEvent proximitySortEvent = new SortEvent(Utilities.SORT_PROXIMITY);
+                EventBus.getInstance().post(proximitySortEvent);
                 break;
             case R.id.action_settings:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
