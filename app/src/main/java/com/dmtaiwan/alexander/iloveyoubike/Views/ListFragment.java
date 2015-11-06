@@ -15,6 +15,7 @@ import com.dmtaiwan.alexander.iloveyoubike.Bus.StationListEvent;
 import com.dmtaiwan.alexander.iloveyoubike.Models.Station;
 import com.dmtaiwan.alexander.iloveyoubike.R;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.RecyclerAdapter;
+import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -89,6 +90,18 @@ public class ListFragment extends Fragment {
             } else if (mAdapter!= null){
                 mAdapter.setEmptyView();
             }
+        }
+
+        if (getResources().getBoolean(R.bool.isTablet)) {
+            Station firstStation = stationList.get(0);
+            Bundle args = new Bundle();
+            args.putParcelable(Utilities.EXTRA_STATION, firstStation);
+            DetailFragment detailFragment = new DetailFragment();
+            detailFragment.setArguments(args);
+            getChildFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.detail_container, detailFragment)
+                    .commit();
         }
     }
 

@@ -103,6 +103,18 @@ public class FavoritesFragment extends Fragment {
         } else if (mAdapter != null) {
             mAdapter.setEmptyView();
         }
+
+        if (getResources().getBoolean(R.bool.isTablet)) {
+            Station firstStation = stationList.get(0);
+            Bundle args = new Bundle();
+            args.putParcelable(Utilities.EXTRA_STATION, firstStation);
+            DetailFragment detailFragment = new DetailFragment();
+            detailFragment.setArguments(args);
+            getChildFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.detail_container, detailFragment)
+                    .commit();
+        }
     }
 
     public void sortData(int sortCode) {
