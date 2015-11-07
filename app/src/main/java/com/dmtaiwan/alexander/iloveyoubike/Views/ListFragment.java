@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.dmtaiwan.alexander.iloveyoubike.Bus.EventBus;
 import com.dmtaiwan.alexander.iloveyoubike.Bus.SortEvent;
@@ -39,6 +40,8 @@ public class ListFragment extends Fragment {
     @Bind(R.id.recycler_view_station_list)
     RecyclerView mRecyclerView;
 
+    @Bind(R.id.detail_container)
+    FrameLayout mDetailContainer;
 
     public static ListFragment newInstance() {
         ListFragment listFragment = new ListFragment();
@@ -68,6 +71,11 @@ public class ListFragment extends Fragment {
         //Set adapter
         mAdapter = new RecyclerAdapter(getActivity(), mEmptyView);
         mRecyclerView.setAdapter(mAdapter);
+
+        //Set container visibility if tablet mode
+        if (getResources().getBoolean(R.bool.isTablet)) {
+            mDetailContainer.setVisibility(View.VISIBLE);
+        }
         return rootView;
     }
 
@@ -92,7 +100,7 @@ public class ListFragment extends Fragment {
             }
         }
 
-        if (getResources().getBoolean(R.bool.isTablet)) {
+        if (getResources().getBoolean(R.bool.isTablet)&& stationList!= null) {
             Station firstStation = stationList.get(0);
             Bundle args = new Bundle();
             args.putParcelable(Utilities.EXTRA_STATION, firstStation);

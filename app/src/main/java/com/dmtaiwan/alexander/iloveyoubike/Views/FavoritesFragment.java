@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.dmtaiwan.alexander.iloveyoubike.Bus.EventBus;
 import com.dmtaiwan.alexander.iloveyoubike.Bus.FavoritesEvent;
@@ -43,6 +44,10 @@ public class FavoritesFragment extends Fragment {
     RecyclerView mRecyclerView;
 
 
+    @Bind(R.id.detail_container)
+    FrameLayout mDetailContainer;
+
+
     public static FavoritesFragment newInstance() {
         FavoritesFragment favoritesFragment = new FavoritesFragment();
         return favoritesFragment;
@@ -71,6 +76,11 @@ public class FavoritesFragment extends Fragment {
         //Set adapter
         mAdapter = new RecyclerAdapter(getActivity(), mEmptyView);
         mRecyclerView.setAdapter(mAdapter);
+
+        //Set container visibility if tablet mode
+        if (getResources().getBoolean(R.bool.isTablet)) {
+            mDetailContainer.setVisibility(View.VISIBLE);
+        }
         return rootView;
     }
 
@@ -87,8 +97,9 @@ public class FavoritesFragment extends Fragment {
     }
 
     public void fillAdapter(List<Station> stationList) {
+        List<Station> favoriteStations = new ArrayList<Station>();
         if (stationList != null && mFavoritesArray != null && mAdapter != null) {
-            List<Station> favoriteStations = new ArrayList<Station>();
+
             for (String id : mFavoritesArray) {
                 for (int i = 0; i < stationList.size(); i++) {
                     Station station = stationList.get(i);
@@ -104,8 +115,8 @@ public class FavoritesFragment extends Fragment {
             mAdapter.setEmptyView();
         }
 
-        if (getResources().getBoolean(R.bool.isTablet)) {
-            Station firstStation = stationList.get(0);
+        if (getResources().getBoolean(R.bool.isTablet)&& favoriteStations.size()>0) {
+            Station firstStation = favoriteStations.get(0);
             Bundle args = new Bundle();
             args.putParcelable(Utilities.EXTRA_STATION, firstStation);
             DetailFragment detailFragment = new DetailFragment();
