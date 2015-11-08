@@ -33,6 +33,7 @@
 
     <!--Empty View Strings-->
     <string name="text_view_station_detail_empty">No Data Available</string>
+    <string name="text_view_favorites_empty">No Favorites have been selected!</string>
 
     <!--A11y Strings-->
     <string name="a11y_status_icon">Status Icon</string>

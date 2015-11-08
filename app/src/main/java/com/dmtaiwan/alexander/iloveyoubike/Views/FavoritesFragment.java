@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.dmtaiwan.alexander.iloveyoubike.Bus.EventBus;
 import com.dmtaiwan.alexander.iloveyoubike.Bus.FavoritesEvent;
@@ -38,11 +39,10 @@ public class FavoritesFragment extends Fragment {
     private ArrayList<String> mFavoritesArray;
 
     @Bind(R.id.empty_view)
-    View mEmptyView;
+    TextView mEmptyView;
 
     @Bind(R.id.recycler_view_station_list)
     RecyclerView mRecyclerView;
-
 
     @Bind(R.id.detail_container)
     FrameLayout mDetailContainer;
@@ -113,6 +113,7 @@ public class FavoritesFragment extends Fragment {
 
         } else if (mAdapter != null) {
             mAdapter.setEmptyView();
+            mEmptyView.setText(getResources().getString(R.string.text_view_empty_view_favorites));
         }
 
         if (getResources().getBoolean(R.bool.isTablet)&& favoriteStations.size()>0) {
