@@ -40,6 +40,7 @@ public class ListFragment extends Fragment {
     @Bind(R.id.recycler_view_station_list)
     RecyclerView mRecyclerView;
 
+    @Nullable
     @Bind(R.id.detail_container)
     FrameLayout mDetailContainer;
 
@@ -110,6 +111,15 @@ public class ListFragment extends Fragment {
                     .beginTransaction()
                     .replace(R.id.detail_container, detailFragment)
                     .commit();
+        }
+        updateEmptyView();
+    }
+
+    private void updateEmptyView() {
+        if (mAdapter.getItemCount() == 0) {
+            if (getResources().getBoolean(R.bool.isTablet)) {
+                mDetailContainer.setVisibility(View.GONE);
+            }
         }
     }
 

@@ -44,6 +44,7 @@ public class FavoritesFragment extends Fragment {
     @Bind(R.id.recycler_view_station_list)
     RecyclerView mRecyclerView;
 
+    @Nullable
     @Bind(R.id.detail_container)
     FrameLayout mDetailContainer;
 
@@ -117,6 +118,7 @@ public class FavoritesFragment extends Fragment {
         }
 
         if (getResources().getBoolean(R.bool.isTablet)&& favoriteStations.size()>0) {
+            mDetailContainer.setVisibility(View.VISIBLE);
             Station firstStation = favoriteStations.get(0);
             Bundle args = new Bundle();
             args.putParcelable(Utilities.EXTRA_STATION, firstStation);
@@ -154,6 +156,7 @@ public class FavoritesFragment extends Fragment {
     @Subscribe
     public void onFavoritesEvent(FavoritesEvent favoritesEvent) {
         mFavoritesArray = favoritesEvent.getFavoritesArray();
+        fillAdapter(((MainActivity)getActivity()).getStationList());
     }
 
     @Subscribe

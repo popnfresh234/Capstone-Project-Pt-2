@@ -29,6 +29,7 @@ import com.dmtaiwan.alexander.iloveyoubike.Models.Station;
 import com.dmtaiwan.alexander.iloveyoubike.R;
 import com.dmtaiwan.alexander.iloveyoubike.Utilities.Utilities;
 import com.google.gson.Gson;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
@@ -76,10 +77,10 @@ public class DetailFragment extends Fragment {
     LinearLayout mStationDetailContainer;
 
     @Bind(R.id.linear_layout_station_title)
-    LinearLayout mTitleView;
+    LinearLayout mLinearLayoutTitle;
 
     @Bind(R.id.linear_layout_station_body)
-    LinearLayout mBodyView;
+    LinearLayout mLinearLayoutBody;
 
     @Bind(R.id.text_view_station_detail_empty)
     TextView mEmptyView;
@@ -110,14 +111,16 @@ public class DetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
 
+        //If detailActivity, remove margin
+        if (getActivity() instanceof DetailActivity) {
+            mStationDetailContainer.setPadding(0, 0, 0, 0);
+        }
+
         //Get the station from the intent
         if (getArguments() != null) {
             mStation = getArguments().getParcelable(Utilities.EXTRA_STATION);
             loadDetails();
-
         }
-
-
 
         if (getResources().getBoolean(R.bool.isTablet)) {
             mToolbar.setVisibility(View.GONE);
@@ -147,6 +150,13 @@ public class DetailFragment extends Fragment {
             mIsFavorite = false;
         }
 
+        //Register bus
+        EventBus.getInstance().register(this);
+
+        //Set spacers if tablet
+        if (getResources().getBoolean(R.bool.isTablet)) {
+            setSpacerVisibility();
+        }
         return rootView;
 
 
@@ -160,6 +170,17 @@ public class DetailFragment extends Fragment {
             mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
             setShareIntent();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getInstance().unregister(this);
+    }
+
+    private void setSpacerVisibility() {
+        mGridSpaceLeft.setVisibility(View.VISIBLE);
+        mGridSpaceRight.setVisibility(View.VISIBLE);
     }
 
     private void loadDetails() {
@@ -267,5 +288,25 @@ public class DetailFragment extends Fragment {
         FavoritesEvent favoritesEvent = new FavoritesEvent();
         favoritesEvent.setFavoritesArray(mFavoritesArray);
         EventBus.getInstance().post(favoritesEvent);
+    }
+
+    //Check for changes to favorite
+    @Subscribe
+    public void onFavoriteChange(FavoritesEvent event) {
+        checkFavorite();
+        loadDetails();
+    }
+
+    private void checkFavorite() {
+        //In case the nearest station was unfavorited from favorite or all station list
+        //Check if station is contained in the list of favorites, if so make sure button is in the proper state
+        ArrayList<String> favoritesArray = Utilities.getFavoriteArray(getActivity());
+        if (favoritesArray != null && favoritesArray.contains(String.valueOf(mStation.getId()))) {
+            mIsFavorite = true;
+            mFavoriteButton.setImageResource(R.drawable.ic_favorite_black_48dp);
+        } else {
+            mIsFavorite = false;
+            mFavoriteButton.setImageResource(R.drawable.ic_favorite_outline_grey600_48dp);
+        }
     }
 }
