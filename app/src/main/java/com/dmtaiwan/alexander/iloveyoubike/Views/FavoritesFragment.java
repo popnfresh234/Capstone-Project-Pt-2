@@ -113,7 +113,7 @@ public class FavoritesFragment extends Fragment {
 
         } else if (mAdapter != null) {
             mAdapter.setEmptyView();
-            mEmptyView.setText(getResources().getString(R.string.text_view_empty_view_favorites));
+            mEmptyView.setText(getResources().getString(R.string.text_view_favorites_empty));
         }
 
         if (getResources().getBoolean(R.bool.isTablet)&& favoriteStations.size()>0) {
@@ -126,6 +126,15 @@ public class FavoritesFragment extends Fragment {
                     .beginTransaction()
                     .replace(R.id.detail_container, detailFragment)
                     .commit();
+        }
+        updateEmptyView();
+    }
+
+    private void updateEmptyView() {
+        if (mAdapter.getItemCount() == 0) {
+            if (getResources().getBoolean(R.bool.isTablet)) {
+                mDetailContainer.setVisibility(View.GONE);
+            }
         }
     }
 

@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements MainView, Locatio
         mTabLayout.setupWithViewPager(mViewPager);
         checkPlayServices();
         EventBus.getInstance().register(this);
+
     }
 
     @Override
